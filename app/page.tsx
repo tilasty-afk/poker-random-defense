@@ -146,14 +146,12 @@ const SELL_VALUES: Record<Category, [
 function sellValue(unit: Result) { const value = SELL_VALUES[unit.category]; return typeof value === "number" ? value : value[(unit.tier || 1) - 1]; }
 const STARTING_HAND: Card[] = [{ id: "s1", rank: 2, suit: "spade" }, { id: "s2", rank: 2, suit: "heart" }, { id: "s3", rank: 5, suit: "diamond" }, { id: "s4", rank: 5, suit: "club" }, { id: "s5", rank: 9, suit: "spade" }, { id: "s6", rank: 11, suit: "diamond" }, { id: "s7", rank: 13, suit: "club" }];
 function rankLabel(rank: number) { return rank === 15 ? "JOKER" : rank === 14 ? "A" : rank === 13 ? "K" : rank === 12 ? "Q" : rank === 11 ? "J" : String(rank); }
-function shuffled<T>(items: T[]) { return [...items].sort(() => Math.random() - .5); }
+function shuffled<T>(items: T[]) { const result = [...items]; for (let index = result.length - 1; index > 0; index--) { const swapIndex = Math.floor(Math.random() * (index + 1)); [result[index], result[swapIndex]] = [result[swapIndex], result[index]]; } return result; }
 function cardKey(card: Card) { return card.rank === 15 ? `joker-${card.joker}` : `${card.rank}-${card.suit}`; }
 function buildDeck(prefix = "deck") { const deck: Card[] = []; for (let rank = 2; rank <= 14; rank++)
     for (const suit of SUITS)
         deck.push({ id: `${prefix}-${rank}-${suit}`, rank, suit }); deck.push({ id: `${prefix}-joker-black`, rank: 15, suit: "spade", joker: "black" }, { id: `${prefix}-joker-color`, rank: 15, suit: "heart", joker: "color" }); return deck; }
-function forcedSaintessHand() { const rank = 2 + Math.floor(Math.random() * 13), seed = `blessing-${Date.now()}`, kickers = [rank === 14 ? 13 : 14, rank === 2 ? 3 : 2]; return shuffled([{ id: `${seed}-0`, rank, suit: "spade" }, { id: `${seed}-1`, rank, suit: "heart" }, { id: `${seed}-2`, rank, suit: "diamond" }, { id: `${seed}-black`, rank: 15, suit: "spade", joker: "black" }, { id: `${seed}-color`, rank: 15, suit: "heart", joker: "color" }, { id: `${seed}-5`, rank: kickers[0], suit: "club" }, { id: `${seed}-6`, rank: kickers[1], suit: "club" }] as Card[]); }
-function dealHand(saintPity: number): Card[] { if (saintPity >= 574)
-    return forcedSaintessHand(); return shuffled(buildDeck(`deal-${Date.now()}`)).slice(0, 7).map((card, index) => ({ ...card, id: `${card.id}-${index}-${Math.random().toString(36).slice(2)}` })); }
+function dealHand(): Card[] { return shuffled(buildDeck(`deal-${Date.now()}`)).slice(0, 7).map((card, index) => ({ ...card, id: `${card.id}-${index}-${Math.random().toString(36).slice(2)}` })); }
 function drawFromDeck(count: number, kept: Card[]) { const excluded = new Set(kept.map(cardKey)); return shuffled(buildDeck(`draw-${Date.now()}`).filter(card => !excluded.has(cardKey(card)))).slice(0, count).map((card, index) => ({ ...card, id: `${card.id}-${index}-${Math.random().toString(36).slice(2)}` })); }
 function pointOnPath(progress: number) { const loop = ((progress % 1) + 1) % 1, p = loop * (PATH.length - 1), i = Math.min(PATH.length - 2, Math.floor(p)), t = p - i; return { x: PATH[i].x + (PATH[i + 1].x - PATH[i].x) * t, y: PATH[i].y + (PATH[i + 1].y - PATH[i].y) * t }; }
 function tierFor(category: Category, power: number): Tier | null { if (category === "royalFlush" || category === "fiveKind" || category === "sixKind")
@@ -267,7 +265,7 @@ function roleDescription(unit: Result, locale: Locale = activeLocale) { if (loca
 } }
 export default function Home() {
     const [selectedRerollCount, setSelectedRerollCount] = useState(0);
-    const [hand, setHand] = useState<Card[]>(STARTING_HAND), [selected, setSelected] = useState<string[]>([]), [inventory, setInventory] = useState<Unit[]>([]), [selectedInventory, setSelectedInventory] = useState<string | null>(null), [towers, setTowers] = useState<Tower[]>([]), [selectedTower, setSelectedTower] = useState<string | null>(null), [saleConfirmId, setSaleConfirmId] = useState<string | null>(null), [enemies, setEnemies] = useState<Enemy[]>([]), [hitFx, setHitFx] = useState<HitFx[]>([]), [attackFx, setAttackFx] = useState<AttackFx[]>([]), [alchemyPools, setAlchemyPools] = useState<AlchemyPool[]>([]), [running, setRunning] = useState(false), [gameOver, setGameOver] = useState(false), [won, setWon] = useState(false), [gold, setGold] = useState(20), [attackLevel, setAttackLevel] = useState(0), [attackSpeedLevel, setAttackSpeedLevel] = useState(0), [wave, setWave] = useState(1), [kills, setKills] = useState(0), [spawned, setSpawned] = useState(0), [cooldown, setCooldown] = useState(0), [saintPity, setSaintPity] = useState(0), [message, setMessage] = useState(T.hint), [waveCue, setWaveCue] = useState<string | null>(null), [tutorialStep, setTutorialStep] = useState(0), [soundOn, setSoundOn] = useState(true), [locale, setLocale] = useState<Locale>("ko"), [languageChosen, setLanguageChosen] = useState(false);
+    const [hand, setHand] = useState<Card[]>(STARTING_HAND), [selected, setSelected] = useState<string[]>([]), [inventory, setInventory] = useState<Unit[]>([]), [selectedInventory, setSelectedInventory] = useState<string | null>(null), [towers, setTowers] = useState<Tower[]>([]), [selectedTower, setSelectedTower] = useState<string | null>(null), [saleConfirmId, setSaleConfirmId] = useState<string | null>(null), [enemies, setEnemies] = useState<Enemy[]>([]), [hitFx, setHitFx] = useState<HitFx[]>([]), [attackFx, setAttackFx] = useState<AttackFx[]>([]), [alchemyPools, setAlchemyPools] = useState<AlchemyPool[]>([]), [running, setRunning] = useState(false), [gameOver, setGameOver] = useState(false), [won, setWon] = useState(false), [gold, setGold] = useState(20), [attackLevel, setAttackLevel] = useState(0), [attackSpeedLevel, setAttackSpeedLevel] = useState(0), [wave, setWave] = useState(1), [kills, setKills] = useState(0), [spawned, setSpawned] = useState(0), [cooldown, setCooldown] = useState(0), [message, setMessage] = useState(T.hint), [waveCue, setWaveCue] = useState<string | null>(null), [tutorialStep, setTutorialStep] = useState(0), [soundOn, setSoundOn] = useState(true), [locale, setLocale] = useState<Locale>("ko"), [languageChosen, setLanguageChosen] = useState(false);
     activeLocale = locale;
     const result = useMemo(() => evaluate(hand), [hand, locale]), attackMultiplier = 1 + attackLevel * .025, attackSpeedMultiplier = 1 + attackSpeedLevel * .025, upgradeCost = (attackLevel + 1) * 5, speedUpgradeCost = (attackSpeedLevel + 1) * 5, initialDealRef = useRef(false), lastFxAt = useRef(0), gameAudioRef = useRef<ReturnType<typeof createGameAudio> | null>(null), alchemyPoolsRef = useRef<AlchemyPool[]>([]), alchemyLastCastRef = useRef<Map<string, number>>(new Map()), lastAttackAtRef = useRef<Map<string, number>>(new Map()), selectedPlaced = towers.find(t => t.id === selectedTower);
     const [gameSpeed, setGameSpeed] = useState<1 | 2 | 3>(1), [playbackPaused, setPlaybackPaused] = useState(false), [bossTimeLeft, setBossTimeLeft] = useState<number | null>(null), [bossWaveHold, setBossWaveHold] = useState(0), gameClockRef = useRef(0), lastTickAtRef = useRef(0), bossDeadlineRef = useRef(0), bossWaveReleaseRef = useRef(0);
@@ -277,7 +275,7 @@ export default function Home() {
     const waveTarget = wave % 10 === 0 ? 1 : 40, isBossWave = wave % 10 === 0, monsterKind = monsterKindForWave(isBossWave ? Math.max(1, wave - 1) : wave), monsterBase = MONSTERS[monsterKind];
     const monster = useMemo(() => ({ ...monsterBase, 0: MONSTER_NAMES[locale][monsterKind], locale }), [monsterBase, monsterKind, locale]);
     useEffect(() => { if (initialDealRef.current)
-        return; initialDealRef.current = true; setHand(dealHand(0)); }, []);
+        return; initialDealRef.current = true; setHand(dealHand()); }, []);
     useEffect(() => { document.documentElement.lang = locale; if (languageChosen)
         setMessage(copy.pausedRecruit); }, [locale, languageChosen, copy.pausedRecruit]);
     useEffect(() => { if (!running || gameOver || spawned >= waveTarget || wave > 100)
@@ -462,13 +460,13 @@ export default function Home() {
         return; const priority: AttackSound[] = ["royalFlush", "straightFlush", "fourKind", "flush", "triple", "straight", "twoPair", "pair", "high", "fullHouse"], category = priority.find(kind => attackFx.some(fx => fx.category === kind)) || "high"; gameAudioRef.current?.playAttack(category); gameAudioRef.current?.play("hit"); }, [attackFx, running, soundOn]);
     useEffect(() => { if (cooldown <= 0)
         return; const timer = window.setTimeout(() => { if (cooldown === 1) {
-        setHand(dealHand(saintPity));
+        setHand(dealHand());
         setSelectedRerollCount(0);
         setCooldown(0);
         setMessage(T.hint);
     }
     else
-        setCooldown(v => v - 1); }, 1000 / gameSpeed); return () => window.clearTimeout(timer); }, [cooldown, saintPity, gameSpeed]);
+        setCooldown(v => v - 1); }, 1000 / gameSpeed); return () => window.clearTimeout(timer); }, [cooldown, gameSpeed]);
     function gameAudio() { const audio = gameAudioRef.current || createGameAudio(); gameAudioRef.current = audio; audio.setMuted(!soundOn); return audio; }
     function playSound(sound: GameSound) { if (!soundOn)
         return; const audio = gameAudio(); void audio.unlock().then(unlocked => { if (unlocked)
@@ -501,23 +499,19 @@ export default function Home() {
         return; if (gold < 3) {
         setMessage(T.noGold);
         return;
-    } setGold(v => v - 3); setHand(dealHand(saintPity)); setSelected([]); setSelectedRerollCount(0); setMessage("전체 손패를 교체했습니다. 선택 카드 교체 비용이 1회차로 초기화되었습니다."); playSound("reroll"); }
+    } setGold(v => v - 3); setHand(dealHand()); setSelected([]); setSelectedRerollCount(0); setMessage("전체 손패를 교체했습니다. 선택 카드 교체 비용이 1회차로 초기화되었습니다."); playSound("reroll"); }
     function recruit() { if (cooldown > 0)
         return; if (!running && !playbackPaused && !(wave === 1 && spawned === 0 && inventory.length + towers.length === 0)) {
         setMessage("웨이브 진행 중에 다음 유닛을 소환할 수 있습니다");
         return;
     } if (result.effect === "jackpot") {
         setGold(v => v + 2000);
-        setSaintPity(v => v + 1);
         setMessage("식스 카드 잭팟 +2,000G");
         setSelected([]);
         setCooldown(5);
         playSound("jackpot");
         return;
-    } const unit: Unit = { ...result, id: `unit-${Date.now()}` }; setInventory(v => [...v, unit]); if (result.effect === "purge")
-        setSaintPity(0);
-    else
-        setSaintPity(v => v + 1); setMessage(`${result.tierLabel} ${result.job} 인벤토리 보관`); setSelected([]); setCooldown(5); playSound(result.effect === "purge" ? "saintess" : "summon"); }
+    } const unit: Unit = { ...result, id: `unit-${Date.now()}` }; setInventory(v => [...v, unit]); setMessage(`${result.tierLabel} ${result.job} 인벤토리 보관`); setSelected([]); setCooldown(5); playSound(result.effect === "purge" ? "saintess" : "summon"); }
     function chooseInventory(id: string) { setSelectedInventory(v => v === id ? null : id); setSelectedTower(null); setSaleConfirmId(null); }
     function confirmRareSale(unit: Unit | Tower) { const protectedUnit = ["fourKind", "straightFlush", "royalFlush", "fiveKind"].includes(unit.category); if (protectedUnit && saleConfirmId !== unit.id) {
         setSaleConfirmId(unit.id);
@@ -588,7 +582,7 @@ export default function Home() {
         setMessage(T.noGold);
         return;
     } setGold(v => v - speedUpgradeCost); setAttackSpeedLevel(v => v + 1); setMessage(`전체 공격속도 LV.${attackSpeedLevel + 1} 강화 완료`); playSound("upgrade"); }
-    function restart() { setHand(dealHand(0)); setSelected([]); setSelectedRerollCount(0); setInventory([]); setSelectedInventory(null); setTowers([]); setSelectedTower(null); setSaleConfirmId(null); setEnemies([]); setHitFx([]); setAttackFx([]); setAlchemyPools([]); alchemyPoolsRef.current = []; alchemyLastCastRef.current.clear(); lastAttackAtRef.current.clear(); lastFxAt.current = 0; gameClockRef.current = 0; lastTickAtRef.current = 0; bossDeadlineRef.current = 0; bossWaveReleaseRef.current = 0; setBossTimeLeft(null); setBossWaveHold(0); setGameSpeed(1); setPlaybackPaused(false); setRunning(false); setGameOver(false); setWon(false); setGold(20); setAttackLevel(0); setAttackSpeedLevel(0); setWave(1); setKills(0); setSpawned(0); setCooldown(0); setSaintPity(0); setMessage(T.hint); }
+    function restart() { setHand(dealHand()); setSelected([]); setSelectedRerollCount(0); setInventory([]); setSelectedInventory(null); setTowers([]); setSelectedTower(null); setSaleConfirmId(null); setEnemies([]); setHitFx([]); setAttackFx([]); setAlchemyPools([]); alchemyPoolsRef.current = []; alchemyLastCastRef.current.clear(); lastAttackAtRef.current.clear(); lastFxAt.current = 0; gameClockRef.current = 0; lastTickAtRef.current = 0; bossDeadlineRef.current = 0; bossWaveReleaseRef.current = 0; setBossTimeLeft(null); setBossWaveHold(0); setGameSpeed(1); setPlaybackPaused(false); setRunning(false); setGameOver(false); setWon(false); setGold(20); setAttackLevel(0); setAttackSpeedLevel(0); setWave(1); setKills(0); setSpawned(0); setCooldown(0); setMessage(T.hint); }
     const guide: [
         [
             Category,
