@@ -69,6 +69,10 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /baseDamage \* \(target\.boss \? 1\.5 : 1\)/);
   assert.doesNotMatch(page, /장거리 \+ 피해 20% 표식/);
   assert.match(page, /const MAX_ATTACK_SPEED_LEVEL = 30/);
+  assert.match(page, /attackMultiplier = 1 \+ attackLevel \* \.025/);
+  assert.match(page, /attackSpeedMultiplier = 1 \+ attackSpeedLevel \* \.025/);
+  assert.match(page, /attackLevel \* 2\.5\}%/);
+  assert.match(page, /attackSpeedLevel \* 2\.5\}%/);
   assert.match(page, /attackSpeedLevel >= MAX_ATTACK_SPEED_LEVEL/);
   assert.match(page, /전체 공격속도는 LV\.30이 최대입니다/);
   assert.match(page, /lastAttackAtRef = useRef<Map<string, number>>/);
