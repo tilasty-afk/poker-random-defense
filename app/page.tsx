@@ -267,11 +267,12 @@ function roleDescription(unit: Result, locale: Locale = activeLocale) { if (loca
     case "sixKind": return "소환 즉시 2,000G 획득";
 } }
 export default function Home() {
+    const [selectedRerollsLeft, setSelectedRerollsLeft] = useState(3);
     const [hand, setHand] = useState<Card[]>(STARTING_HAND), [selected, setSelected] = useState<string[]>([]), [inventory, setInventory] = useState<Unit[]>([]), [selectedInventory, setSelectedInventory] = useState<string | null>(null), [towers, setTowers] = useState<Tower[]>([]), [selectedTower, setSelectedTower] = useState<string | null>(null), [saleConfirmId, setSaleConfirmId] = useState<string | null>(null), [enemies, setEnemies] = useState<Enemy[]>([]), [hitFx, setHitFx] = useState<HitFx[]>([]), [attackFx, setAttackFx] = useState<AttackFx[]>([]), [alchemyPools, setAlchemyPools] = useState<AlchemyPool[]>([]), [running, setRunning] = useState(false), [gameOver, setGameOver] = useState(false), [won, setWon] = useState(false), [gold, setGold] = useState(20), [attackLevel, setAttackLevel] = useState(0), [attackSpeedLevel, setAttackSpeedLevel] = useState(0), [wave, setWave] = useState(1), [kills, setKills] = useState(0), [spawned, setSpawned] = useState(0), [cooldown, setCooldown] = useState(0), [saintPity, setSaintPity] = useState(0), [message, setMessage] = useState(T.hint), [waveCue, setWaveCue] = useState<string | null>(null), [tutorialStep, setTutorialStep] = useState(0), [soundOn, setSoundOn] = useState(true), [locale, setLocale] = useState<Locale>("ko"), [languageChosen, setLanguageChosen] = useState(false);
     activeLocale = locale;
     const result = useMemo(() => evaluate(hand), [hand, locale]), attackMultiplier = 1 + attackLevel * .1, attackSpeedMultiplier = 1 + attackSpeedLevel * .05, upgradeCost = (attackLevel + 1) * 5, speedUpgradeCost = (attackSpeedLevel + 1) * 5, initialDealRef = useRef(false), lastFxAt = useRef(0), gameAudioRef = useRef<ReturnType<typeof createGameAudio> | null>(null), alchemyPoolsRef = useRef<AlchemyPool[]>([]), alchemyLastCastRef = useRef<Map<string, number>>(new Map()), lastAttackAtRef = useRef<Map<string, number>>(new Map()), selectedPlaced = towers.find(t => t.id === selectedTower);
     const [gameSpeed, setGameSpeed] = useState<1 | 2 | 3>(1), [playbackPaused, setPlaybackPaused] = useState(false), [bossTimeLeft, setBossTimeLeft] = useState<number | null>(null), [bossWaveHold, setBossWaveHold] = useState(0), gameClockRef = useRef(0), lastTickAtRef = useRef(0), bossDeadlineRef = useRef(0), bossWaveReleaseRef = useRef(0);
-    const copy = UI[locale];
+    const baseCopy = UI[locale], copy = { ...baseCopy, start: wave === 1 && spawned === 0 ? baseCopy.begin : baseCopy.start, selectedReroll: `${baseCopy.selectedReroll} · ${selectedRerollsLeft}/3` };
     const selectedInventoryUnit = inventory.find(unit => unit.id === selectedInventory), activeBoss = enemies.find(enemy => enemy.boss), population = enemies.reduce((total, enemy) => total + (enemy.boss ? 20 : 1), 0);
     const isPriestBuffed = (tower: Tower) => towers.some(priest => priest.category === "fullHouse" && priest.id !== tower.id && Math.hypot(SLOTS[tower.slot].x - SLOTS[priest.slot].x, SLOTS[tower.slot].y - SLOTS[priest.slot].y) <= priest.range);
     const waveTarget = wave % 10 === 0 ? 1 : 60, isBossWave = wave % 10 === 0, monsterKind = monsterKindForWave(isBossWave ? Math.max(1, wave - 1) : wave), monsterBase = MONSTERS[monsterKind];
@@ -497,18 +498,21 @@ export default function Home() {
     function toggle(id: string) { if (cooldown > 0)
         return; setSelected(v => v.includes(id) ? v.filter(x => x !== id) : [...v, id]); }
     function redraw() { if (cooldown > 0)
-        return; if (!selected.length) {
+        return; if (selectedRerollsLeft <= 0) {
+        setMessage("선택 카드 교체 횟수를 모두 사용했습니다. 전체 손패 교체로 충전하세요.");
+        return;
+    } if (!selected.length) {
         setMessage(T.noSelection);
         return;
     } const cost = selected.length * 5; if (gold < cost) {
         setMessage(T.noGold);
         return;
-    } const selectedIndexes = hand.flatMap((card, index) => selected.includes(card.id) ? [index] : []), kept = hand.filter(card => !selected.includes(card.id)), replacements = drawFromDeck(selected.length, kept); let replacementIndex = 0; const next = hand.map(card => selected.includes(card.id) ? replacements[replacementIndex++] : card); setGold(v => v - cost); setHand(next); setSelected(selectedIndexes.map(index => next[index].id)); setMessage(T.rerolled); playSound("reroll"); }
+    } const selectedIndexes = hand.flatMap((card, index) => selected.includes(card.id) ? [index] : []), kept = hand.filter(card => !selected.includes(card.id)), replacements = drawFromDeck(selected.length, kept); let replacementIndex = 0; const next = hand.map(card => selected.includes(card.id) ? replacements[replacementIndex++] : card); setGold(v => v - cost); setHand(next); setSelected(selectedIndexes.map(index => next[index].id)); setSelectedRerollsLeft(v => v - 1); setMessage(T.rerolled); playSound("reroll"); }
     function redrawAll() { if (cooldown > 0)
         return; if (gold < 3) {
         setMessage(T.noGold);
         return;
-    } setGold(v => v - 3); setHand(dealHand(saintPity)); setSelected([]); setMessage("전체 손패를 교체했습니다"); playSound("reroll"); }
+    } setGold(v => v - 3); setHand(dealHand(saintPity)); setSelected([]); setSelectedRerollsLeft(3); setMessage("전체 손패를 교체했습니다. 선택 카드 교체 3회가 충전되었습니다."); playSound("reroll"); }
     function recruit() { if (cooldown > 0)
         return; if (!running && !playbackPaused && !(wave === 1 && spawned === 0 && inventory.length + towers.length === 0)) {
         setMessage("웨이브 진행 중에 다음 유닛을 소환할 수 있습니다");
@@ -595,7 +599,7 @@ export default function Home() {
         setMessage(T.noGold);
         return;
     } setGold(v => v - speedUpgradeCost); setAttackSpeedLevel(v => v + 1); setMessage(`전체 공격속도 LV.${attackSpeedLevel + 1} 강화 완료`); playSound("upgrade"); }
-    function restart() { setHand(dealHand(0)); setSelected([]); setInventory([]); setSelectedInventory(null); setTowers([]); setSelectedTower(null); setSaleConfirmId(null); setEnemies([]); setHitFx([]); setAttackFx([]); setAlchemyPools([]); alchemyPoolsRef.current = []; alchemyLastCastRef.current.clear(); lastAttackAtRef.current.clear(); lastFxAt.current = 0; gameClockRef.current = 0; lastTickAtRef.current = 0; bossDeadlineRef.current = 0; bossWaveReleaseRef.current = 0; setBossTimeLeft(null); setBossWaveHold(0); setGameSpeed(1); setPlaybackPaused(false); setRunning(false); setGameOver(false); setWon(false); setGold(20); setAttackLevel(0); setAttackSpeedLevel(0); setWave(1); setKills(0); setSpawned(0); setCooldown(0); setSaintPity(0); setMessage(T.hint); }
+    function restart() { setHand(dealHand(0)); setSelected([]); setSelectedRerollsLeft(3); setInventory([]); setSelectedInventory(null); setTowers([]); setSelectedTower(null); setSaleConfirmId(null); setEnemies([]); setHitFx([]); setAttackFx([]); setAlchemyPools([]); alchemyPoolsRef.current = []; alchemyLastCastRef.current.clear(); lastAttackAtRef.current.clear(); lastFxAt.current = 0; gameClockRef.current = 0; lastTickAtRef.current = 0; bossDeadlineRef.current = 0; bossWaveReleaseRef.current = 0; setBossTimeLeft(null); setBossWaveHold(0); setGameSpeed(1); setPlaybackPaused(false); setRunning(false); setGameOver(false); setWon(false); setGold(20); setAttackLevel(0); setAttackSpeedLevel(0); setWave(1); setKills(0); setSpawned(0); setCooldown(0); setSaintPity(0); setMessage(T.hint); }
     const guide: [
         [
             Category,
