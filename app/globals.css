@@ -239,9 +239,18 @@ button:focus-visible,summary:focus-visible { outline:2px solid #f0c75e; outline-
 .corner-controls{position:fixed;top:auto;left:auto;right:8px;bottom:calc(env(safe-area-inset-bottom) + 8px);align-items:flex-end;gap:4px}
 .playback-control{position:relative}.playback-control output{position:absolute;right:0;bottom:calc(100% + 4px)}
 .playback-control output.boss-time{display:none}
-.creator-credit{left:8px;right:auto}
+.creator-credit{left:auto;right:8px}
 .brand-copy span,.wave-chip span,.battle-header small,.playback-control output,.spawn-gate::after,.boss-health span,.boss-health strong,.boss-badge,.tier-dot,.command-unit small,.command-unit em,.command-stats small,.command-stats b,.field-unit-actions p,.inventory-list p,.inventory-list button span,.inventory-list button small,.inventory-selection small,.army-upgrade span,.summon-portrait i,.summon-copy>small,.summon-path span,.summon-path b,.summon-stats small,.summon-stats b,.section-title small,.hand-glance span small,.hand-wallet small,.poker-card>em,.guide-grid small,.effect-note,.creator-credit{zoom:1.1}
-@media (min-width:760px){.corner-controls{position:static;grid-column:2;grid-row:4;justify-self:end;align-self:start;margin:8px 12px 0 4px}.playback-control output{top:calc(100% + 4px);bottom:auto}.poker-guide{margin-top:70px}}
+@media (min-width:760px){
+  .corner-controls{position:static;grid-column:2;grid-row:4;justify-self:end;align-self:start;margin:8px 12px 0 4px}.playback-control output{top:calc(100% + 4px);bottom:auto}.poker-guide{margin-top:70px}
+  .brand-copy{gap:4px}.brand-copy span{font-size:10px;line-height:1;letter-spacing:2px;zoom:1}
+  .battle-header>div{min-width:0;display:flex;align-items:center;gap:8px;white-space:nowrap}.battle-header small{font-size:9px;line-height:1;zoom:1}.status-dot{flex:0 0 auto}
+  .spawn-gate{min-width:104px;padding:5px 10px}.spawn-gate::after{font-size:11px;letter-spacing:.3px;zoom:1}
+  .resources{align-items:center;gap:6px}.resources span{padding:6px 9px}.resources .gold-resource{min-width:104px;grid-template-columns:auto auto auto;gap:5px;white-space:nowrap}.gold-resource i{font-size:8px}.resources .gold-resource b{font-size:16px}.gold-resource small{font-size:8px}
+  .section-title .hand-glance{grid-template-columns:34px minmax(0,1fr);padding:4px 10px;gap:8px}.hand-glance img{width:32px;height:32px}.section-title .hand-glance>span{flex-direction:row;align-items:center;gap:8px}.hand-glance span small{flex:0 0 auto;padding:2px 5px;border:1px solid #80652f;font-size:8px;zoom:1}.hand-glance span b{font-size:12px}
+  .section-title .hand-wallet{min-width:98px;min-height:38px;flex-direction:row;align-items:center;justify-content:center;gap:7px;padding:4px 9px;white-space:nowrap}.hand-wallet small{font-size:8px;zoom:1}.hand-wallet b{font-size:14px}
+  .army-upgrade span{font-size:8px;zoom:1}.army-upgrade strong{font-size:10px}.summon-copy>small,.effect-note{font-size:8px;zoom:1}
+}
 @media (max-width:759px){.actions{width:calc(100% - 84px);align-self:flex-start}.corner-controls{top:auto;left:auto;right:6px;bottom:calc(env(safe-area-inset-bottom) + 6px)}.boss-health{width:min(180px,48%);transform:translate(-50%,calc(-100% - 25px));padding:3px 5px}.boss-health::before{font-size:12px;padding:3px 6px}.boss-health span,.boss-health strong{font-size:7px}}
 
 @media (prefers-reduced-motion:reduce) { * { scroll-behavior:auto!important; transition:none!important; } }

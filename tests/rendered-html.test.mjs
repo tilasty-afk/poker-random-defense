@@ -186,10 +186,15 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /\.language-cycle,\.playback-control button\{width:38px;height:38px/);
   assert.match(css, /grid-template-columns:minmax\(0,3fr\) minmax\(260px,1fr\)/);
   assert.match(css, /\.corner-controls\{position:fixed;top:auto;left:auto;right:8px;bottom:calc\(env\(safe-area-inset-bottom\) \+ 8px\)/);
-  assert.match(css, /\.creator-credit\{left:8px;right:auto\}/);
+  assert.match(css, /\.creator-credit\{left:auto;right:8px\}/);
   assert.match(css, /\.brand-copy span,[^\n]+\.creator-credit\{zoom:1\.1\}/);
   assert.match(css, /\.corner-controls\{position:static;grid-column:2;grid-row:4;justify-self:end/);
   assert.match(css, /\.poker-guide\{margin-top:70px\}/);
+  assert.match(css, /\.brand-copy span\{font-size:10px/);
+  assert.match(css, /\.battle-header>div\{min-width:0;display:flex/);
+  assert.match(css, /\.spawn-gate::after\{font-size:11px/);
+  assert.match(css, /\.section-title \.hand-wallet\{min-width:98px/);
+  assert.match(css, /\.section-title \.hand-glance>span\{flex-direction:row/);
   assert.match(css, /\.boss-health::before\{content:"BOSS " var\(--boss-timer-label/);
   assert.match(css, /\.playback-control output\.boss-time\{display:none\}/);
   assert.match(css, /\.spawn-gate::after\{content:var\(--spawn-remaining-label/);
