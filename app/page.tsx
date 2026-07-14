@@ -113,7 +113,7 @@ const JOBS: Record<Category, {
         number
     ];
 }> = {
-    high: { label: T.high, job: T.conscript, image: `${ASSET_BASE}/sprites/units/2.png`, base: [3, 20, 1] }, pair: { label: T.pair, job: T.rogue, image: `${ASSET_BASE}/sprites/units/3.png`, base: [5, 22, 1.35] }, twoPair: { label: T.twoPair, job: T.warrior, image: `${ASSET_BASE}/sprites/units/4.png`, base: [8, 23, 1.05] }, triple: { label: T.triple, job: T.mage, image: `${ASSET_BASE}/sprites/units/10.png`, base: [11, 28, .85] }, straight: { label: T.straight, job: T.elf, image: `${ASSET_BASE}/sprites/units/7.png`, base: [15.6, 40, 1.25] }, flush: { label: T.flush, job: T.alchemist, image: `${ASSET_BASE}/sprites/units/6.png`, base: [12, 31, .72] }, fullHouse: { label: T.fullHouse, job: T.priest, image: `${ASSET_BASE}/sprites/units/Q.png`, base: [15, 35, .95] }, fourKind: { label: T.fourKind, job: T.royal, image: `${ASSET_BASE}/sprites/units/K.png`, base: [58, 30, 1.15] }, straightFlush: { label: T.straightFlush, job: T.dragoon, image: `${ASSET_BASE}/sprites/units/A.png`, base: [114, 34, 1.25] }, royalFlush: { label: T.royalFlush, job: T.fate, image: `${ASSET_BASE}/sprites/units/J.png`, base: [250, 72, .82] }, fiveKind: { label: T.fiveKind, job: T.saintess, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] }, sixKind: { label: T.sixKind, job: T.jackpot, image: `${ASSET_BASE}/sprites/units/Jackpot.png`, base: [0, 0, 0] },
+    high: { label: T.high, job: T.conscript, image: `${ASSET_BASE}/sprites/units/2.png`, base: [3, 20, 1] }, pair: { label: T.pair, job: T.rogue, image: `${ASSET_BASE}/sprites/units/3.png`, base: [5, 22, 1.35] }, twoPair: { label: T.twoPair, job: T.warrior, image: `${ASSET_BASE}/sprites/units/4.png`, base: [8, 23, 1.05] }, triple: { label: T.triple, job: T.mage, image: `${ASSET_BASE}/sprites/units/10.png`, base: [11, 28, .85] }, straight: { label: T.straight, job: T.elf, image: `${ASSET_BASE}/sprites/units/7.png`, base: [15.6, 40, 1.25] }, flush: { label: T.flush, job: T.alchemist, image: `${ASSET_BASE}/sprites/units/6.png`, base: [12, 31, .72] }, fullHouse: { label: T.fullHouse, job: T.priest, image: `${ASSET_BASE}/sprites/units/Q.png`, base: [15, 35, .95] }, fourKind: { label: T.fourKind, job: T.royal, image: `${ASSET_BASE}/sprites/units/K.png`, base: [43.5, 30, 1.15] }, straightFlush: { label: T.straightFlush, job: T.dragoon, image: `${ASSET_BASE}/sprites/units/A.png`, base: [85.5, 34, 1.25] }, royalFlush: { label: T.royalFlush, job: T.fate, image: `${ASSET_BASE}/sprites/units/J.png`, base: [187.5, 72, .82] }, fiveKind: { label: T.fiveKind, job: T.saintess, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] }, sixKind: { label: T.sixKind, job: T.jackpot, image: `${ASSET_BASE}/sprites/units/Jackpot.png`, base: [0, 0, 0] },
 };
 const GRID_SIZE = 12;
 const BALANCE = { baseHp: 100, hpPerWave: .04, hpGrowth: 1.028, earlyEaseEnd: 40, earlyBlendEnd: 55, earlyHpStart: .65, earlyHpEnd: .8, earlySpawnStart: 1.2, earlySpawnEnd: 1.1, hardRampStart: 40, hardRampMax: 1.8, baseSpeed: .76, speedPerWave: .003, maxSpeed: 1.55, damageScale: .24, bossHpUnits: 80, bossMoveScale: .58, spawnInterval: 900, minSpawnInterval: 650 } as const;
@@ -263,7 +263,7 @@ function roleDescription(unit: Result, locale: Locale = activeLocale) { if (loca
     case "straightFlush": return `직선 관통 공격`;
     case "royalFlush": return "초대형 강력한 광역 지속 피해";
     case "fiveKind": return "사용 즉시 전체 적 소멸";
-    case "sixKind": return "소환 즉시 10,000G 획득";
+    case "sixKind": return "소환 즉시 2,000G 획득";
 } }
 export default function Home() {
     const [hand, setHand] = useState<Card[]>(STARTING_HAND), [selected, setSelected] = useState<string[]>([]), [inventory, setInventory] = useState<Unit[]>([]), [selectedInventory, setSelectedInventory] = useState<string | null>(null), [towers, setTowers] = useState<Tower[]>([]), [selectedTower, setSelectedTower] = useState<string | null>(null), [saleConfirmId, setSaleConfirmId] = useState<string | null>(null), [enemies, setEnemies] = useState<Enemy[]>([]), [hitFx, setHitFx] = useState<HitFx[]>([]), [attackFx, setAttackFx] = useState<AttackFx[]>([]), [alchemyPools, setAlchemyPools] = useState<AlchemyPool[]>([]), [running, setRunning] = useState(false), [gameOver, setGameOver] = useState(false), [won, setWon] = useState(false), [gold, setGold] = useState(20), [attackLevel, setAttackLevel] = useState(0), [attackSpeedLevel, setAttackSpeedLevel] = useState(0), [wave, setWave] = useState(1), [kills, setKills] = useState(0), [spawned, setSpawned] = useState(0), [cooldown, setCooldown] = useState(0), [saintPity, setSaintPity] = useState(0), [message, setMessage] = useState(T.hint), [waveCue, setWaveCue] = useState<string | null>(null), [tutorialStep, setTutorialStep] = useState(0), [soundOn, setSoundOn] = useState(true), [locale, setLocale] = useState<Locale>("ko"), [languageChosen, setLanguageChosen] = useState(false);
@@ -513,9 +513,9 @@ export default function Home() {
         setMessage("웨이브 진행 중에 다음 유닛을 소환할 수 있습니다");
         return;
     } if (result.effect === "jackpot") {
-        setGold(v => v + 10000);
+        setGold(v => v + 2000);
         setSaintPity(v => v + 1);
-        setMessage("식스 카드 잭팟 +10,000G");
+        setMessage("식스 카드 잭팟 +2,000G");
         setSelected([]);
         setCooldown(5);
         playSound("jackpot");

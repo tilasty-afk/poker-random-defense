@@ -79,6 +79,10 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /setGold\(v => v - 3\); setHand\(dealHand\(saintPity\)\)/);
   assert.match(page, /radius: 10,\s*expiresAt: now \+ 2000,[^}]+slow: \.5/);
   assert.match(page, /cursedHits\.add\(enemy\.id\)/);
+  assert.match(page, /fourKind:[^\n]+base: \[43\.5, 30, 1\.15\]/);
+  assert.match(page, /straightFlush:[^\n]+base: \[85\.5, 34, 1\.25\]/);
+  assert.match(page, /royalFlush:[^\n]+base: \[187\.5, 72, \.82\]/);
+  assert.match(page, /setGold\(v => v \+ 2000\)/);
   assert.match(page, /isPriestBuffed/);
   assert.match(page, /사제 버프 적용 중/);
   assert.match(page, /범위 35 내 아군 공격 \+20% · 속도 \+20%/);

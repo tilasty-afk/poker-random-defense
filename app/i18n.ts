@@ -90,7 +90,7 @@ export function roleCopy(locale: Locale, category: string, tier: number) {
     flush:[[],"Poison pool + 50% movement slow","毒池 + 移速降低50%","毒沼 + 移動速度50%低下"], fullHouse:[[],"Allies within 35 gain +20% ATK and ASPD","35范围内友军攻击与攻速+20%","範囲35内の味方の攻撃・攻速+20%"],
     fourKind:[[60,90,120],"Powerful single slash + {v}% boss damage","强力单体剑气 + 对Boss伤害{v}%","強力な単体斬撃 + ボス追加ダメージ{v}%"],
     straightFlush:[[],"Piercing line attack","直线贯穿攻击","直線貫通攻撃"], royalFlush:[[],"Huge, powerful area damage over time","超大范围持续伤害","超広範囲の強力な持続ダメージ"],
-    fiveKind:[[],"Instantly removes every enemy","立即消灭所有敌人","すべての敵を即時消滅"], sixKind:[[],"Instantly grants 10,000G","立即获得10,000G","即座に10,000G獲得"],
+    fiveKind:[[],"Instantly removes every enemy","立即消灭所有敌人","すべての敵を即時消滅"], sixKind:[[],"Instantly grants 2,000G","立即获得2,000G","即座に2,000G獲得"],
   };
   if (locale === "ko") return "";
   const item = values[category]; if (!item) return "";
