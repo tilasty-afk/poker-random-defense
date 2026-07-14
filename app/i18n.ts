@@ -45,25 +45,25 @@ export const TUTORIALS: Record<Locale, Array<{title:string;body:string}>> = {
     {title:"1. 세븐포커 소환",body:"7장 중 가장 강한 5장이 자동으로 강조되며 그 족보가 직업을 결정합니다. 흑백·컬러 조커는 와일드 카드입니다."},
     {title:"2. 배치·회수·판매",body:"유닛을 눌러 빈 칸에 배치하세요. 필요 없는 유닛은 회수하거나 판매해 리롤 골드를 마련할 수 있습니다. 희귀 유닛은 판매 버튼을 두 번 눌러야 합니다."},
     {title:"3. 강화와 전투 효과",body:"공격력은 레벨당 10%, 공격속도는 레벨당 5%씩 제한 없이 상승합니다. 빨간 점멸은 직접 타격, 녹색은 연금술 장판, 보라색은 운명술사의 지속 피해입니다."},
-    {title:"4. 200 인구를 막아라",body:"적은 탈출하지 않고 계속 순환합니다. 일반 몬스터는 인구 1, 보스는 인구 20입니다. 보스는 게임 시간 2분 안에 처치해야 합니다."},
+    {title:"4. 200 인구를 막아라",body:"적은 탈출하지 않고 계속 순환합니다. 일반 몬스터는 인구 1, 보스는 인구 20입니다. 보스는 게임 시간 5분 안에 처치해야 합니다."},
   ],
   en:[
     {title:"1. Seven-Card Summoning",body:"The strongest five cards among seven are highlighted automatically, and that poker hand determines the summoned class. Both jokers are wild cards."},
     {title:"2. Deploy, Recall, Sell",body:"Select a unit and tap an empty tile to deploy it. Recall or sell unwanted units to fund rerolls. Rare units require two taps to confirm a sale."},
     {title:"3. Upgrades and Effects",body:"Attack rises 10% per level and attack speed rises 5% per level with no cap. Red flashes are direct hits, green pools are alchemy, and purple damage is Fate Weaver damage over time."},
-    {title:"4. Hold Below 200",body:"Enemies never escape and keep circling the battlefield. Normal enemies use 1 population and bosses use 20. Defeat each boss within two game-time minutes."},
+    {title:"4. Hold Below 200",body:"Enemies never escape and keep circling the battlefield. Normal enemies use 1 population and bosses use 20. Defeat each boss within five game-time minutes."},
   ],
   zh:[
     {title:"1. 七张牌召唤",body:"系统会自动突出7张牌中最强的5张，牌型决定召唤职业。黑白与彩色小丑牌均为万能牌。"},
     {title:"2. 部署、收回与出售",body:"选择单位后点击空位进行部署。可收回或出售多余单位来获得重抽资金。稀有单位需要点击两次确认出售。"},
     {title:"3. 强化与战斗效果",body:"攻击力每级提高10%，攻击速度每级提高5%，没有等级上限。红色闪烁是直接伤害，绿色区域是炼金术，紫色是命运术师的持续伤害。"},
-    {title:"4. 人口保持在200以下",body:"敌人不会逃离，而会持续绕场移动。普通怪物占1人口，Boss占20人口。必须在2分钟游戏时间内击败Boss。"},
+    {title:"4. 人口保持在200以下",body:"敌人不会逃离，而会持续绕场移动。普通怪物占1人口，Boss占20人口。必须在5分钟游戏时间内击败Boss。"},
   ],
   ja:[
     {title:"1. セブンカード召喚",body:"7枚から最も強い5枚が自動で強調され、その役で召喚職業が決まります。白黒・カラーのジョーカーはワイルドカードです。"},
     {title:"2. 配置・回収・売却",body:"ユニットを選び、空きマスをタップして配置します。不要なユニットは回収または売却して引き直し資金にできます。希少ユニットの売却は2回タップで確定します。"},
     {title:"3. 強化と戦闘効果",body:"攻撃力はレベルごとに10%、攻撃速度は5%ずつ上限なく上昇します。赤い点滅は直接攻撃、緑は錬金術の沼、紫は運命術師の持続ダメージです。"},
-    {title:"4. 人口200を防げ",body:"敵は脱出せず戦場を周回し続けます。通常敵は人口1、ボスは人口20です。ボスはゲーム時間2分以内に倒してください。"},
+    {title:"4. 人口200を防げ",body:"敵は脱出せず戦場を周回し続けます。通常敵は人口1、ボスは人口20です。ボスはゲーム時間5分以内に倒してください。"},
   ],
 };
 

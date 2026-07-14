@@ -124,7 +124,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /wave % 10 === 0 \? 1 : 40/);
   assert.match(page, /bossWaveReleaseRef\.current = gameClockRef\.current \+ 60000/);
   assert.match(page, /NEXT \$\{formatTimer\(bossWaveHold\)\}/);
-  assert.match(page, /gameClockRef\.current \+ 120000/);
+  assert.match(page, /gameClockRef\.current \+ 300000/);
   assert.match(page, /BOSS TIME OVER/);
   assert.match(page, /completedBosses = Math\.floor\(\(wave - 1\) \/ 10\)/);
   assert.match(page, /강력한 단일 검기/);

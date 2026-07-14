@@ -281,7 +281,7 @@ export default function Home() {
         setMessage(copy.pausedRecruit); }, [locale, languageChosen, copy.pausedRecruit]);
     useEffect(() => { if (!running || gameOver || spawned >= waveTarget || wave > 100)
         return; const timer = window.setInterval(() => { const bossSpawn = isBossWave && spawned === 0, normalHp = Math.round(baseHpForWave(wave) * monster.hp), hp = bossSpawn ? normalHp * BALANCE.bossHpUnits : normalHp, speed = Math.min(BALANCE.maxSpeed, (BALANCE.baseSpeed + wave * BALANCE.speedPerWave) * monster.speed), reward = goldPerKillForWave(wave) * (bossSpawn ? 20 : 1); if (bossSpawn) {
-        bossDeadlineRef.current = gameClockRef.current + 120000;
+        bossDeadlineRef.current = gameClockRef.current + 300000;
         bossWaveReleaseRef.current = gameClockRef.current + 60000;
         setBossTimeLeft(120);
         setBossWaveHold(60);
