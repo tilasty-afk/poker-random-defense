@@ -116,7 +116,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /radius: 10,\s*expiresAt: now \+ 2000,[^}]+slow: \.5/);
   assert.match(page, /cursedHits\.add\(enemy\.id\)/);
   assert.match(page, /fourKind:[^\n]+base: \[43\.5, RANGE_PER_CELL \* 6, 1\.15\]/);
-  assert.match(page, /straightFlush:[^\n]+base: \[342, RANGE_PER_CELL \* 6, 1\.25\]/);
+  assert.match(page, /straightFlush:[^\n]+base: \[171, RANGE_PER_CELL \* 6, 1\.25\]/);
   assert.match(page, /case "straightFlush": return "매우 강력한 단일 공격"/);
   assert.doesNotMatch(page, /if \(tower\.category === "straightFlush"\)/);
   assert.match(page, /royalFlush:[^\n]+base: \[253\.125, 100, \.82\]/);
