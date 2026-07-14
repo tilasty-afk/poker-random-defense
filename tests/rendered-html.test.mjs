@@ -77,6 +77,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /court-\$\{card\.suit\}/);
   assert.match(page, /className="card-center"/);
   assert.match(page, /const cost = selected\.length \* 5/);
+  assert.match(page, /setSelected\(selectedIndexes\.map\(index => next\[index\]\.id\)\)/);
   assert.match(page, /function redrawAll\(\)/);
   assert.match(page, /setGold\(v => v - 3\); setHand\(dealHand\(saintPity\)\)/);
   assert.match(page, /radius: 10,\s*expiresAt: now \+ 2000,[^}]+slow: \.5/);
@@ -105,7 +106,10 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /\.poker-card:has\(>span\.red-suit\)>b/);
   assert.match(css, /font-size:clamp\(16px,4\.8vw,22px\)/);
   assert.match(css, /--mobile-board:min\(calc\(100vw - 8px\),calc\(100svh/);
-  assert.match(css, /grid-template-rows:38px 38px/);
+  assert.match(css, /grid-template-rows:36px 36px/);
+  assert.match(page, /className="hand-glance"/);
+  assert.match(page, /className="hand-wallet"/);
+  assert.match(page, /className="gold-resource"/);
   assert.match(css, /--desktop-board:min\(700px,calc\(100dvh - 380px\)\)/);
   assert.match(css, /height:calc\(100dvh - 16px\);min-height:0;display:grid/);
   assert.match(css, /height:calc\(100svh - env\(safe-area-inset-top\) - env\(safe-area-inset-bottom\)\);min-height:0;display:flex;flex-direction:column;overflow:hidden/);
