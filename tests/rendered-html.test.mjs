@@ -96,7 +96,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /@keyframes enemy-hit-red/);
   assert.match(css, /@keyframes enemy-alchemy-dot/);
   assert.match(css, /@keyframes enemy-fate-dot/);
-  assert.match(css, /@keyframes fate-neon-pulse/);
+  assert.doesNotMatch(css, /\.tower-slot\.globalDot::after/);
   assert.match(css, /\.attack-royalFlush \.attack-impact\{border:4px double #ff8bea/);
   assert.match(css, /@keyframes tower-fire-kick/);
   assert.match(css, /@keyframes projectile-flight/);
