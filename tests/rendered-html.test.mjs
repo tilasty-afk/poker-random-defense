@@ -168,8 +168,10 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /\.enemy\[title\*="이끼 슬라임"\]/);
   assert.match(css, /\.enemy\.boss-rank-10/);
   assert.match(css, /background-size:500% 400%/);
-  assert.match(css, /\.language-cycle,\.playback-control button\{width:48px;height:48px/);
+  assert.match(css, /\.language-cycle,\.playback-control button\{width:38px;height:38px/);
   assert.match(css, /grid-template-columns:minmax\(0,3fr\) minmax\(260px,1fr\)/);
+  assert.match(css, /\.corner-controls\{top:9px;left:auto;right:220px/);
+  assert.match(css, /top:calc\(env\(safe-area-inset-top\) \+ 52px\); left:auto; right:50px/);
   assert.match(page, /LOCALE_ORDER\.map\(language/);
   assert.match(page, /function cycleLocale\(\)/);
   assert.match(page, /!languageChosen/);
