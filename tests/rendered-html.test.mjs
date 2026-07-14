@@ -49,7 +49,14 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   ]);
 
   assert.match(page, /elf:\s*"\\uAD81\\uC218"/);
-  assert.match(page, /straight:\s*\{[\s\S]*?base:\s*\[15\.6,\s*40,\s*\.5\]/);
+  assert.match(page, /const RANGE_PER_CELL = 100 \/ 12/);
+  assert.match(page, /const PRIEST_BUFF_RANGE = RANGE_PER_CELL \* 2/);
+  assert.match(page, /straight:\s*\{[\s\S]*?base:\s*\[15\.6,\s*RANGE_PER_CELL \* 5,\s*\.5\]/);
+  assert.match(page, /flush:\s*\{[\s\S]*?base:\s*\[17\.28,\s*RANGE_PER_CELL \* 2,\s*\.5\]/);
+  assert.match(page, /fourKind:\s*\{[\s\S]*?base:\s*\[43\.5,\s*RANGE_PER_CELL \* 6,\s*1\.15\]/);
+  assert.match(page, /royalFlush:\s*\{[\s\S]*?base:\s*\[187\.5,\s*100,\s*\.82\]/);
+  assert.doesNotMatch(page, /rangeMult/);
+  assert.match(page, /<= PRIEST_BUFF_RANGE/);
   assert.match(page, /markExpirations\.set\(target\.id,\s*now \+ 2000\)/);
   assert.match(page, /critical = Math\.random\(\) < \.5/);
   assert.match(page, /baseDamage \* \(critical \? 5 : 1\)/);
@@ -68,9 +75,9 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /towerId: tower\.id,\s*expiresAt: now \+ 320/);
   assert.match(page, /attackFx\.some\(fx => fx\.towerId === tower\.id\) \? "attacking"/);
   assert.match(page, /fixedUtility = best\.category === "flush" \|\| best\.category === "fullHouse"/);
-  assert.match(page, /triple:\s*\{[\s\S]*?base:\s*\[15\.6,\s*28,\s*\.6\]/);
-  assert.match(page, /flush:\s*\{[\s\S]*?base:\s*\[17\.28,\s*31,\s*\.5\]/);
-  assert.match(page, /fullHouse:\s*\{[\s\S]*?base:\s*\[21\.92,\s*35,\s*\.65\]/);
+  assert.match(page, /triple:\s*\{[\s\S]*?base:\s*\[15\.6,\s*RANGE_PER_CELL \* 5,\s*\.6\]/);
+  assert.match(page, /flush:\s*\{[\s\S]*?base:\s*\[17\.28,\s*RANGE_PER_CELL \* 2,\s*\.5\]/);
+  assert.match(page, /fullHouse:\s*\{[\s\S]*?base:\s*\[21\.92,\s*RANGE_PER_CELL \* 4,\s*\.65\]/);
   assert.match(page, /className="inventory-selection"/);
   assert.match(page, /\{copy\.sell\} \{sellValue\(selectedInventoryUnit\)\}G/);
   assert.match(page, /className="field-unit-actions"/);
@@ -98,14 +105,14 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /setGold\(v => v - 3\); setHand\(dealHand\(saintPity\)\)/);
   assert.match(page, /radius: 10,\s*expiresAt: now \+ 2000,[^}]+slow: \.5/);
   assert.match(page, /cursedHits\.add\(enemy\.id\)/);
-  assert.match(page, /fourKind:[^\n]+base: \[43\.5, 30, 1\.15\]/);
-  assert.match(page, /straightFlush:[^\n]+base: \[85\.5, 34, 1\.25\]/);
-  assert.match(page, /royalFlush:[^\n]+base: \[187\.5, 72, \.82\]/);
+  assert.match(page, /fourKind:[^\n]+base: \[43\.5, RANGE_PER_CELL \* 6, 1\.15\]/);
+  assert.match(page, /straightFlush:[^\n]+base: \[85\.5, RANGE_PER_CELL \* 6, 1\.25\]/);
+  assert.match(page, /royalFlush:[^\n]+base: \[187\.5, 100, \.82\]/);
   assert.match(page, /setGold\(v => v \+ 2000\)/);
   assert.match(page, /spawnInterval: 432, minSpawnInterval: 312/);
   assert.match(page, /isPriestBuffed/);
   assert.match(page, /사제 버프 적용 중/);
-  assert.match(page, /범위 35 내 아군 공격 \+20% · 속도 \+20%/);
+  assert.match(page, /공격 사거리 4칸 · 버프 범위 2칸 내 아군 공격 \+20% · 속도 \+20%/);
   assert.match(css, /\.alchemy-pool\s*\{/);
   assert.doesNotMatch(css, /\.tower-slot\.alchemy::after/);
   assert.match(css, /\.enemy\.cursed/);

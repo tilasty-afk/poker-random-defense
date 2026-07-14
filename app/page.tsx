@@ -97,6 +97,8 @@ const PIP_POSITIONS: Record<number, Array<[number, number]>> = {
     9: [[1, 1], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 3], [4, 1], [4, 3]],
     10: [[1, 1], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 2], [3, 3], [4, 1], [4, 3]],
 };
+const RANGE_PER_CELL = 100 / 12;
+const PRIEST_BUFF_RANGE = RANGE_PER_CELL * 2;
 function cardCenter(card: Card) { if (card.joker)
     return <img className={`court-art joker-art joker-art-${card.joker}`} src={`${ASSET_BASE}/sprites/royal-jester.png`} alt={card.joker === "color" ? "컬러 광대" : "흑백 광대"}/>; if (card.rank >= 11 && card.rank <= 13) {
     const filename = card.rank === 11 ? "jack" : card.rank === 12 ? "queen" : "king";
@@ -113,7 +115,7 @@ const JOBS: Record<Category, {
         number
     ];
 }> = {
-    high: { label: T.high, job: T.conscript, image: `${ASSET_BASE}/sprites/units/2.png`, base: [3, 20, 1] }, pair: { label: T.pair, job: T.rogue, image: `${ASSET_BASE}/sprites/units/3.png`, base: [5, 22, 1.35] }, twoPair: { label: T.twoPair, job: T.warrior, image: `${ASSET_BASE}/sprites/units/4.png`, base: [8, 23, 1.05] }, triple: { label: T.triple, job: T.mage, image: `${ASSET_BASE}/sprites/units/10.png`, base: [15.6, 28, .6] }, straight: { label: T.straight, job: T.elf, image: `${ASSET_BASE}/sprites/units/7.png`, base: [15.6, 40, .5] }, flush: { label: T.flush, job: T.alchemist, image: `${ASSET_BASE}/sprites/units/6.png`, base: [17.28, 31, .5] }, fullHouse: { label: T.fullHouse, job: T.priest, image: `${ASSET_BASE}/sprites/units/Q.png`, base: [21.92, 35, .65] }, fourKind: { label: T.fourKind, job: T.royal, image: `${ASSET_BASE}/sprites/units/K.png`, base: [43.5, 30, 1.15] }, straightFlush: { label: T.straightFlush, job: T.dragoon, image: `${ASSET_BASE}/sprites/units/A.png`, base: [85.5, 34, 1.25] }, royalFlush: { label: T.royalFlush, job: T.fate, image: `${ASSET_BASE}/sprites/units/J.png`, base: [187.5, 72, .82] }, fiveKind: { label: T.fiveKind, job: T.saintess, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] }, sixKind: { label: T.sixKind, job: T.jackpot, image: `${ASSET_BASE}/sprites/units/Jackpot.png`, base: [0, 0, 0] },
+    high: { label: T.high, job: T.conscript, image: `${ASSET_BASE}/sprites/units/2.png`, base: [3, RANGE_PER_CELL * 3, 1] }, pair: { label: T.pair, job: T.rogue, image: `${ASSET_BASE}/sprites/units/3.png`, base: [5, RANGE_PER_CELL * 3, 1.35] }, twoPair: { label: T.twoPair, job: T.warrior, image: `${ASSET_BASE}/sprites/units/4.png`, base: [8, RANGE_PER_CELL * 3, 1.05] }, triple: { label: T.triple, job: T.mage, image: `${ASSET_BASE}/sprites/units/10.png`, base: [15.6, RANGE_PER_CELL * 5, .6] }, straight: { label: T.straight, job: T.elf, image: `${ASSET_BASE}/sprites/units/7.png`, base: [15.6, RANGE_PER_CELL * 5, .5] }, flush: { label: T.flush, job: T.alchemist, image: `${ASSET_BASE}/sprites/units/6.png`, base: [17.28, RANGE_PER_CELL * 2, .5] }, fullHouse: { label: T.fullHouse, job: T.priest, image: `${ASSET_BASE}/sprites/units/Q.png`, base: [21.92, RANGE_PER_CELL * 4, .65] }, fourKind: { label: T.fourKind, job: T.royal, image: `${ASSET_BASE}/sprites/units/K.png`, base: [43.5, RANGE_PER_CELL * 6, 1.15] }, straightFlush: { label: T.straightFlush, job: T.dragoon, image: `${ASSET_BASE}/sprites/units/A.png`, base: [85.5, RANGE_PER_CELL * 6, 1.25] }, royalFlush: { label: T.royalFlush, job: T.fate, image: `${ASSET_BASE}/sprites/units/J.png`, base: [187.5, 100, .82] }, fiveKind: { label: T.fiveKind, job: T.saintess, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] }, sixKind: { label: T.sixKind, job: T.jackpot, image: `${ASSET_BASE}/sprites/units/Jackpot.png`, base: [0, 0, 0] },
 };
 const GRID_SIZE = 12;
 const MAX_ATTACK_SPEED_LEVEL = 30;
@@ -248,8 +250,8 @@ function evaluate(cards: Card[]): Result {
                 bestCards = subset;
             }
         }
-    const job = JOBS[best.category], tier = tierFor(best.category, best.power), damageMult = tier === 1 ? .85 : tier === 2 ? 1 : tier === 3 ? 1.25 : 1, fixedUtility = best.category === "flush" || best.category === "fullHouse", rangeMult = fixedUtility ? 1 : tier === 1 ? .8 : tier === 2 ? 1 : tier === 3 ? 1.2 : 1, speedMult = fixedUtility ? 1 : tier === 1 ? .9 : tier === 2 ? 1 : tier === 3 ? 1.12 : 1, tierLabel = tier === 1 ? T.beginner : tier === 2 ? T.middle : tier === 3 ? T.elite : T.unique, effect = best.category === "flush" ? "alchemy" : best.category === "royalFlush" ? "globalDot" : best.category === "fiveKind" ? "purge" : best.category === "sixKind" ? "jackpot" : "single";
-    return { category: best.category, label: job.label, job: job.job, image: job.image, tier, tierLabel, powerRank: best.power, damage: Math.max(job.base[0] > 0 ? 1 : 0, Math.round(job.base[0] * damageMult)), range: Math.round(job.base[1] * rangeMult), speed: Number((job.base[2] * speedMult).toFixed(2)), effect, bestCardIds: bestCards.map(card => card.id) };
+    const job = JOBS[best.category], tier = tierFor(best.category, best.power), damageMult = tier === 1 ? .85 : tier === 2 ? 1 : tier === 3 ? 1.25 : 1, fixedUtility = best.category === "flush" || best.category === "fullHouse", speedMult = fixedUtility ? 1 : tier === 1 ? .9 : tier === 2 ? 1 : tier === 3 ? 1.12 : 1, tierLabel = tier === 1 ? T.beginner : tier === 2 ? T.middle : tier === 3 ? T.elite : T.unique, effect = best.category === "flush" ? "alchemy" : best.category === "royalFlush" ? "globalDot" : best.category === "fiveKind" ? "purge" : best.category === "sixKind" ? "jackpot" : "single";
+    return { category: best.category, label: job.label, job: job.job, image: job.image, tier, tierLabel, powerRank: best.power, damage: Math.max(job.base[0] > 0 ? 1 : 0, Math.round(job.base[0] * damageMult)), range: Number(job.base[1].toFixed(2)), speed: Number((job.base[2] * speedMult).toFixed(2)), effect, bestCardIds: bestCards.map(card => card.id) };
 }
 function roleDescription(unit: Result, locale: Locale = activeLocale) { if (locale !== "ko")
     return roleCopy(locale, unit.category, unit.tier || 3); const tier = (unit.tier || 3) - 1; switch (unit.category) {
@@ -259,7 +261,7 @@ function roleDescription(unit: Result, locale: Locale = activeLocale) { if (loca
     case "triple": return `반경 ${[8, 11, 14][tier]} 범위 폭발`;
     case "straight": return "장거리 + 치명타 50% · 피해 5배 + 보스 100% 추가 피해";
     case "flush": return "독 장판 + 이동속도 50% 감소";
-    case "fullHouse": return "범위 35 내 아군 공격 +20% · 속도 +20%";
+    case "fullHouse": return "공격 사거리 4칸 · 버프 범위 2칸 내 아군 공격 +20% · 속도 +20%";
     case "fourKind": return "강력한 단일 검기 + 보스 50% 추가 피해";
     case "straightFlush": return `직선 관통 공격`;
     case "royalFlush": return "초대형 강력한 광역 지속 피해";
@@ -274,7 +276,7 @@ export default function Home() {
     const [gameSpeed, setGameSpeed] = useState<1 | 2 | 3>(1), [playbackPaused, setPlaybackPaused] = useState(false), [bossTimeLeft, setBossTimeLeft] = useState<number | null>(null), [bossWaveHold, setBossWaveHold] = useState(0), gameClockRef = useRef(0), lastTickAtRef = useRef(0), bossDeadlineRef = useRef(0), bossWaveReleaseRef = useRef(0);
     const baseCopy = UI[locale], copy = { ...baseCopy, start: wave === 1 && spawned === 0 ? baseCopy.begin : baseCopy.start, selectedReroll: `${baseCopy.selectedReroll} · ${selectedRerollsLeft}/3` };
     const selectedInventoryUnit = inventory.find(unit => unit.id === selectedInventory), activeBoss = enemies.find(enemy => enemy.boss), population = enemies.reduce((total, enemy) => total + (enemy.boss ? 20 : 1), 0);
-    const isPriestBuffed = (tower: Tower) => towers.some(priest => priest.category === "fullHouse" && priest.id !== tower.id && Math.hypot(SLOTS[tower.slot].x - SLOTS[priest.slot].x, SLOTS[tower.slot].y - SLOTS[priest.slot].y) <= priest.range);
+    const isPriestBuffed = (tower: Tower) => towers.some(priest => priest.category === "fullHouse" && priest.id !== tower.id && Math.hypot(SLOTS[tower.slot].x - SLOTS[priest.slot].x, SLOTS[tower.slot].y - SLOTS[priest.slot].y) <= PRIEST_BUFF_RANGE);
     const waveTarget = wave % 10 === 0 ? 1 : 60, isBossWave = wave % 10 === 0, monsterKind = monsterKindForWave(isBossWave ? Math.max(1, wave - 1) : wave), monsterBase = MONSTERS[monsterKind];
     const monster = useMemo(() => ({ ...monsterBase, 0: MONSTER_NAMES[locale][monsterKind], locale }), [monsterBase, monsterKind, locale]);
     useEffect(() => { if (initialDealRef.current)
@@ -349,7 +351,7 @@ export default function Home() {
                 }
             const priestBuff = (tower: Tower) => { let damage = .0, speed = .0; for (const priest of towers.filter(unit => unit.category === "fullHouse" && unit.id !== tower.id)) {
                 const a = SLOTS[tower.slot], b = SLOTS[priest.slot];
-                if (Math.hypot(a.x - b.x, a.y - b.y) <= priest.range) {
+                if (Math.hypot(a.x - b.x, a.y - b.y) <= PRIEST_BUFF_RANGE) {
                     damage = Math.max(damage, .2);
                     speed = Math.max(speed, .2);
                 }
