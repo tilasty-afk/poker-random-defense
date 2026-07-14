@@ -235,6 +235,11 @@ button:focus-visible,summary:focus-visible { outline:2px solid #f0c75e; outline-
   .unit-dock .hand-result{display:flex}.unit-dock .summon-portrait{flex-basis:50px;height:58px}.unit-dock .summon-portrait img{width:46px;height:46px}.unit-dock .summon-copy .effect-note{display:none}
 }
 
+.corner-controls{position:fixed;top:auto;left:auto;right:8px;bottom:calc(env(safe-area-inset-bottom) + 8px);align-items:flex-end;gap:4px}
+.playback-control{position:relative}.playback-control output{position:absolute;right:0;bottom:calc(100% + 4px)}
+.creator-credit{left:8px;right:auto}
+@media (max-width:759px){.actions{width:calc(100% - 84px);align-self:flex-start}.corner-controls{top:auto;left:auto;right:6px;bottom:calc(env(safe-area-inset-bottom) + 6px)}}
+
 @media (prefers-reduced-motion:reduce) { * { scroll-behavior:auto!important; transition:none!important; } }
 
 .creator-credit { position:fixed; z-index:25; right:8px; bottom:calc(env(safe-area-inset-bottom) + 3px); padding:2px 4px; border-radius:2px; background:#0b0d0bc7; color:#d8c58f; font-size:clamp(8px,2.2vw,11px); line-height:1.2; letter-spacing:.02em; text-shadow:1px 1px #000; pointer-events:none; }
