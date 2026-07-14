@@ -112,6 +112,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /spawnInterval: 432, minSpawnInterval: 312/);
   assert.match(page, /isPriestBuffed/);
   assert.match(page, /사제 버프 적용 중/);
+  assert.match(page, /placeHint: selectedPlaced \? roleDescription\(selectedPlaced, locale\) : baseCopy\.placeHint/);
   assert.match(page, /공격 사거리 4칸 · 버프 범위 2칸 내 아군 공격 \+20% · 속도 \+20%/);
   assert.match(css, /\.alchemy-pool\s*\{/);
   assert.doesNotMatch(css, /\.tower-slot\.alchemy::after/);
@@ -145,6 +146,8 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /\.court-club/);
   assert.match(css, /\.court-spade/);
   assert.match(css, /\.grid-slot\.priest-buffed/);
+  assert.match(css, /priest-buffed:not\(\.priest-aura\)::after\{content:"✦"/);
+  assert.match(css, /@keyframes priest-blessing/);
   assert.match(page, /className="boss-health"/);
   assert.match(page, /function confirmRareSale/);
   assert.match(page, /희귀 유닛입니다/);
