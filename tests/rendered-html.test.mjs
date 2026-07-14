@@ -86,7 +86,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /straightFlush:[^\n]+base: \[85\.5, 34, 1\.25\]/);
   assert.match(page, /royalFlush:[^\n]+base: \[187\.5, 72, \.82\]/);
   assert.match(page, /setGold\(v => v \+ 2000\)/);
-  assert.match(page, /spawnInterval: 720, minSpawnInterval: 520/);
+  assert.match(page, /spawnInterval: 432, minSpawnInterval: 312/);
   assert.match(page, /isPriestBuffed/);
   assert.match(page, /사제 버프 적용 중/);
   assert.match(page, /범위 35 내 아군 공격 \+20% · 속도 \+20%/);
