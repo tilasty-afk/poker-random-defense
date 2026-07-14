@@ -92,6 +92,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /selectedRerollsLeft <= 0/);
   assert.match(page, /setSelectedRerollsLeft\(v => v - 1\)/);
   assert.match(page, /setSelectedRerollsLeft\(3\)/);
+  assert.match(page, /setHand\(dealHand\(saintPity\)\);\s*setSelectedRerollsLeft\(3\);\s*setCooldown\(0\)/);
   assert.match(page, /wave === 1 && spawned === 0 \? baseCopy\.begin : baseCopy\.start/);
   assert.match(page, /if \(!running \|\| gameOver \|\| spawned >= waveTarget/);
   assert.match(page, /setGold\(v => v - 3\); setHand\(dealHand\(saintPity\)\)/);
@@ -161,6 +162,10 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /bossWaveReleaseRef\.current = gameClockRef\.current \+ 60000/);
   assert.match(page, /NEXT \$\{formatTimer\(bossWaveHold\)\}/);
   assert.match(page, /gameClockRef\.current \+ 300000/);
+  assert.match(page, /--boss-timer-label/);
+  assert.match(page, /pointOnPath\(activeBoss\.progress\)/);
+  assert.match(page, /--spawn-remaining-label/);
+  assert.match(page, /Math\.max\(0, waveTarget - spawned\)/);
   assert.match(page, /BOSS TIME OVER/);
   assert.match(page, /completedBosses = Math\.floor\(\(wave - 1\) \/ 10\)/);
   assert.match(page, /강력한 단일 검기/);
@@ -172,6 +177,9 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /grid-template-columns:minmax\(0,3fr\) minmax\(260px,1fr\)/);
   assert.match(css, /\.corner-controls\{position:fixed;top:auto;left:auto;right:8px;bottom:calc\(env\(safe-area-inset-bottom\) \+ 8px\)/);
   assert.match(css, /\.creator-credit\{left:8px;right:auto\}/);
+  assert.match(css, /\.boss-health::before\{content:"BOSS " var\(--boss-timer-label/);
+  assert.match(css, /\.playback-control output\.boss-time\{display:none\}/);
+  assert.match(css, /\.spawn-gate::after\{content:var\(--spawn-remaining-label/);
   assert.match(css, /\.actions\{width:calc\(100% - 84px\);align-self:flex-start\}/);
   assert.match(page, /LOCALE_ORDER\.map\(language/);
   assert.match(page, /function cycleLocale\(\)/);

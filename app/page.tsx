@@ -294,6 +294,10 @@ export default function Home() {
     useEffect(() => { if (!running)
         return; setWaveCue(isBossWave ? `BOSS WAVE ${wave}` : `WAVE ${wave}`); const timer = window.setTimeout(() => setWaveCue(null), 1400 / gameSpeed); return () => window.clearTimeout(timer); }, [wave, running, isBossWave, gameSpeed]);
     useEffect(() => { document.documentElement.style.setProperty("--game-speed", String(gameSpeed)); document.documentElement.style.setProperty("--enemy-atlas", `url("${ASSET_BASE}/sprites/enemies/monster-atlas.png")`); return () => { document.documentElement.style.setProperty("--game-speed", "1"); document.documentElement.style.removeProperty("--enemy-atlas"); }; }, [gameSpeed]);
+    useEffect(() => { const remaining = Math.max(0, waveTarget - spawned), label = locale === "ko" ? `남은 진입 ${remaining}` : locale === "en" ? `${remaining} TO SPAWN` : locale === "zh" ? `剩余进场 ${remaining}` : `残り出現 ${remaining}`; document.documentElement.style.setProperty("--spawn-remaining-label", `"${label}"`); }, [spawned, waveTarget, locale]);
+    useEffect(() => { const root = document.documentElement; if (!activeBoss) {
+        root.style.removeProperty("--boss-x"); root.style.removeProperty("--boss-y"); root.style.removeProperty("--boss-timer-label"); return;
+    } const position = pointOnPath(activeBoss.progress); root.style.setProperty("--boss-x", `${position.x}%`); root.style.setProperty("--boss-y", `${position.y}%`); root.style.setProperty("--boss-timer-label", `"${formatTimer(bossTimeLeft ?? 300)}"`); }, [activeBoss, bossTimeLeft]);
     useEffect(() => { gameAudioRef.current?.setMuted(!soundOn); }, [soundOn]);
     useEffect(() => () => { void gameAudioRef.current?.dispose(); }, []);
     useEffect(() => { if (!running || wave !== 100 || spawned < waveTarget || enemies.length > 0)
@@ -472,6 +476,7 @@ export default function Home() {
     useEffect(() => { if (cooldown <= 0)
         return; const timer = window.setTimeout(() => { if (cooldown === 1) {
         setHand(dealHand(saintPity));
+        setSelectedRerollsLeft(3);
         setCooldown(0);
         setMessage(T.hint);
     }
