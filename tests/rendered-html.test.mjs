@@ -58,7 +58,9 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /towerId: tower\.id,\s*expiresAt: now \+ 320/);
   assert.match(page, /attackFx\.some\(fx => fx\.towerId === tower\.id\) \? "attacking"/);
   assert.match(page, /fixedUtility = best\.category === "flush" \|\| best\.category === "fullHouse"/);
-  assert.match(page, /fullHouse:\s*\{[\s\S]*?base:\s*\[15,\s*35,\s*\.95\]/);
+  assert.match(page, /triple:\s*\{[\s\S]*?base:\s*\[15\.6,\s*28,\s*\.6\]/);
+  assert.match(page, /flush:\s*\{[\s\S]*?base:\s*\[17\.28,\s*31,\s*\.5\]/);
+  assert.match(page, /fullHouse:\s*\{[\s\S]*?base:\s*\[21\.92,\s*35,\s*\.65\]/);
   assert.match(page, /className="inventory-selection"/);
   assert.match(page, /\{copy\.sell\} \{sellValue\(selectedInventoryUnit\)\}G/);
   assert.match(page, /className="field-unit-actions"/);
