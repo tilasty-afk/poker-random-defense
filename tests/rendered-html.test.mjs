@@ -49,10 +49,20 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   ]);
 
   assert.match(page, /elf:\s*"\\uAD81\\uC218"/);
-  assert.match(page, /straight:\s*\{[\s\S]*?base:\s*\[15\.6,\s*40,\s*1\.25\]/);
+  assert.match(page, /straight:\s*\{[\s\S]*?base:\s*\[15\.6,\s*40,\s*\.5\]/);
   assert.match(page, /markExpirations\.set\(target\.id,\s*now \+ 2000\)/);
+  assert.match(page, /critical = Math\.random\(\) < \.5/);
+  assert.match(page, /baseDamage \* \(critical \? 5 : 1\)/);
+  assert.match(page, /case "straight": return "장거리 \+ 치명타 50% · 피해 5배 \+ 보스 100% 추가 피해"/);
+  assert.match(page, /case "pair": return "속사 \+ 2초간 받는 피해 20% 표식"/);
+  assert.match(page, /tower\.category === "pair"[^}]+markExpirations\.set\(target\.id, now \+ 2000\)/);
   assert.match(page, /markedMultiplier = markExpirations\.has\(id\) \? 1\.2 : 1/);
-  assert.match(page, /장거리 \+ 피해 20% 표식/);
+  assert.match(page, /baseDamage \* \(critical \? 5 : 1\) \* \(target\.boss \? 2 : 1\)/);
+  assert.match(page, /baseDamage \* \(target\.boss \? 3 : 1\)/);
+  assert.doesNotMatch(page, /장거리 \+ 피해 20% 표식/);
+  assert.match(page, /const MAX_ATTACK_SPEED_LEVEL = 30/);
+  assert.match(page, /attackSpeedLevel >= MAX_ATTACK_SPEED_LEVEL/);
+  assert.match(page, /전체 공격속도는 LV\.30이 최대입니다/);
   assert.match(page, /lastAttackAtRef = useRef<Map<string, number>>/);
   assert.match(page, /attackInterval = 500 \/ Math\.max/);
   assert.match(page, /towerId: tower\.id,\s*expiresAt: now \+ 320/);

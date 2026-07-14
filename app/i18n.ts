@@ -44,7 +44,7 @@ export const TUTORIALS: Record<Locale, Array<{title:string;body:string}>> = {
   ko:[
     {title:"1. 세븐포커 소환",body:"7장 중 가장 강한 5장이 자동으로 강조되며 그 족보가 직업을 결정합니다. 흑백·컬러 조커는 와일드 카드입니다."},
     {title:"2. 배치·회수·판매",body:"유닛을 눌러 빈 칸에 배치하세요. 필요 없는 유닛은 회수하거나 판매해 리롤 골드를 마련할 수 있습니다. 희귀 유닛은 판매 버튼을 두 번 눌러야 합니다."},
-    {title:"3. 강화와 전투 효과",body:"공격력은 레벨당 10%, 공격속도는 레벨당 5%씩 제한 없이 상승합니다. 빨간 점멸은 직접 타격이며, 짙은 보라색 원은 연금술 장판입니다."},
+    {title:"3. 강화와 전투 효과",body:"공격력은 레벨당 10%씩 제한 없이, 공격속도는 레벨당 5%씩 최대 30레벨까지 상승합니다. 빨간 점멸은 직접 타격이며, 짙은 보라색 원은 연금술 장판입니다."},
     {title:"4. 200 인구를 막아라",body:"적은 탈출하지 않고 계속 순환합니다. 일반 몬스터는 인구 1, 보스는 인구 20입니다. 보스는 게임 시간 5분 안에 처치해야 합니다."},
   ],
   en:[
@@ -84,11 +84,11 @@ export const TRAITS: Record<Locale, Record<string,string>> = {
 export function roleCopy(locale: Locale, category: string, tier: number) {
   const n = Math.max(0, Math.min(2, tier - 1));
   const values: Record<string, [number[], string, string, string]> = {
-    high:[[],"Ranged single-target attack","远程单体攻击","遠距離単体攻撃"], pair:[[8,12,16],"Rapid fire + {v}% damage mark","速射 + {v}%易伤标记","速射 + 被ダメージ{v}%の標的"],
+    high:[[],"Ranged single-target attack","远程单体攻击","遠距離単体攻撃"], pair:[[],"Rapid fire + 20% damage mark for 2 sec","速射 + 2秒内受到伤害提高20%标记","速射 + 2秒間被ダメージ20%標的"],
     twoPair:[[2,3,4],"Throwing axe chains to {v} targets","飞斧连锁{v}个目标","投げ斧が{v}体に連鎖"], triple:[[8,11,14],"Radius {v} area explosion","半径{v}范围爆炸","半径{v}の範囲爆発"],
-    straight:[[15,25,35],"Long range + 20% mark + {v}% crit","长射程 + 20%易伤 + {v}%暴击","長射程 + 20%標的 + 会心{v}%"],
+    straight:[[],"Long range + 50% crit for 5x damage + 100% boss damage","长射程 + 50%暴击造成5倍伤害 + 对Boss额外伤害100%","長射程 + 会心50%・5倍ダメージ + ボス追加ダメージ100%"],
     flush:[[],"Poison pool + 50% movement slow","毒池 + 移速降低50%","毒沼 + 移動速度50%低下"], fullHouse:[[],"Allies within 35 gain +20% ATK and ASPD","35范围内友军攻击与攻速+20%","範囲35内の味方の攻撃・攻速+20%"],
-    fourKind:[[60,90,120],"Powerful single slash + {v}% boss damage","强力单体剑气 + 对Boss伤害{v}%","強力な単体斬撃 + ボス追加ダメージ{v}%"],
+    fourKind:[[],"Powerful single slash + 200% boss damage","强力单体剑气 + 对Boss额外伤害200%","強力な単体斬撃 + ボス追加ダメージ200%"],
     straightFlush:[[],"Piercing line attack","直线贯穿攻击","直線貫通攻撃"], royalFlush:[[],"Huge, powerful area damage over time","超大范围持续伤害","超広範囲の強力な持続ダメージ"],
     fiveKind:[[],"Instantly removes every enemy","立即消灭所有敌人","すべての敵を即時消滅"], sixKind:[[],"Instantly grants 2,000G","立即获得2,000G","即座に2,000G獲得"],
   };
