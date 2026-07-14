@@ -115,7 +115,7 @@ const JOBS: Record<Category, {
         number
     ];
 }> = {
-    high: { label: T.high, job: T.conscript, image: `${ASSET_BASE}/sprites/units/2.png`, base: [3, RANGE_PER_CELL * 3, 1] }, pair: { label: T.pair, job: T.rogue, image: `${ASSET_BASE}/sprites/units/3.png`, base: [5, RANGE_PER_CELL * 3, 1.35] }, twoPair: { label: T.twoPair, job: T.warrior, image: `${ASSET_BASE}/sprites/units/4.png`, base: [8, RANGE_PER_CELL * 3, 1.05] }, triple: { label: T.triple, job: T.mage, image: `${ASSET_BASE}/sprites/units/10.png`, base: [15.6, RANGE_PER_CELL * 5, .6] }, straight: { label: T.straight, job: T.elf, image: `${ASSET_BASE}/sprites/units/7.png`, base: [15.6, RANGE_PER_CELL * 5, .5] }, flush: { label: T.flush, job: T.alchemist, image: `${ASSET_BASE}/sprites/units/6.png`, base: [17.28, RANGE_PER_CELL * 2, .5] }, fullHouse: { label: T.fullHouse, job: T.priest, image: `${ASSET_BASE}/sprites/units/Q.png`, base: [21.92, RANGE_PER_CELL * 4, .65] }, fourKind: { label: T.fourKind, job: T.royal, image: `${ASSET_BASE}/sprites/units/K.png`, base: [43.5, RANGE_PER_CELL * 6, 1.15] }, straightFlush: { label: T.straightFlush, job: T.dragoon, image: `${ASSET_BASE}/sprites/units/A.png`, base: [85.5, RANGE_PER_CELL * 6, 1.25] }, royalFlush: { label: T.royalFlush, job: T.fate, image: `${ASSET_BASE}/sprites/units/J.png`, base: [187.5, 100, .82] }, fiveKind: { label: T.fiveKind, job: T.saintess, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] }, sixKind: { label: T.sixKind, job: T.jackpot, image: `${ASSET_BASE}/sprites/units/Jackpot.png`, base: [0, 0, 0] },
+    high: { label: T.high, job: T.conscript, image: `${ASSET_BASE}/sprites/units/2.png`, base: [3, RANGE_PER_CELL * 3, 1] }, pair: { label: T.pair, job: T.rogue, image: `${ASSET_BASE}/sprites/units/3.png`, base: [5, RANGE_PER_CELL * 3, 1.35] }, twoPair: { label: T.twoPair, job: T.warrior, image: `${ASSET_BASE}/sprites/units/4.png`, base: [8, RANGE_PER_CELL * 3, 1.05] }, triple: { label: T.triple, job: T.mage, image: `${ASSET_BASE}/sprites/units/10.png`, base: [15.6, RANGE_PER_CELL * 5, .6] }, straight: { label: T.straight, job: T.elf, image: `${ASSET_BASE}/sprites/units/7.png`, base: [15.6, RANGE_PER_CELL * 5, .5] }, flush: { label: T.flush, job: T.alchemist, image: `${ASSET_BASE}/sprites/units/6.png`, base: [17.28, RANGE_PER_CELL * 2, .5] }, fullHouse: { label: T.fullHouse, job: T.priest, image: `${ASSET_BASE}/sprites/units/Q.png`, base: [21.92, RANGE_PER_CELL * 4, .65] }, fourKind: { label: T.fourKind, job: T.royal, image: `${ASSET_BASE}/sprites/units/K.png`, base: [43.5, RANGE_PER_CELL * 6, 1.15] }, straightFlush: { label: T.straightFlush, job: T.dragoon, image: `${ASSET_BASE}/sprites/units/A.png`, base: [342, RANGE_PER_CELL * 6, 1.25] }, royalFlush: { label: T.royalFlush, job: T.fate, image: `${ASSET_BASE}/sprites/units/J.png`, base: [187.5, 100, .82] }, fiveKind: { label: T.fiveKind, job: T.saintess, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] }, sixKind: { label: T.sixKind, job: T.jackpot, image: `${ASSET_BASE}/sprites/units/Jackpot.png`, base: [0, 0, 0] },
 };
 const GRID_SIZE = 12;
 const MAX_ATTACK_SPEED_LEVEL = 30;
@@ -260,7 +260,7 @@ function roleDescription(unit: Result, locale: Locale = activeLocale) { if (loca
     case "flush": return "독 장판 + 이동속도 50% 감소";
     case "fullHouse": return "공격 사거리 4칸 · 버프 범위 2칸 내 아군 공격 +20% · 속도 +20%";
     case "fourKind": return "강력한 단일 검기 + 보스 50% 추가 피해";
-    case "straightFlush": return `직선 관통 공격`;
+    case "straightFlush": return "매우 강력한 단일 공격";
     case "royalFlush": return "초대형 강력한 광역 지속 피해";
     case "fiveKind": return "사용 즉시 전체 적 소멸";
     case "sixKind": return "소환 즉시 2,000G 획득";
@@ -377,7 +377,7 @@ export default function Home() {
                     continue;
                 lastAttackAtRef.current.set(tower.id, now);
                 const visual = positions.get(inRange[0].id)!;
-                attackCandidates.push({ id: `attack-${tower.id}-${now}`, towerId: tower.id, expiresAt: now + 320, category: tower.category, x: slot.x, y: slot.y, tx: visual.x, ty: visual.y, radius: tower.category === "flush" ? 12 : tower.category === "triple" ? [8, 11, 14][i] : tower.category === "straightFlush" ? [4, 6, 8][i] : 5 });
+                attackCandidates.push({ id: `attack-${tower.id}-${now}`, towerId: tower.id, expiresAt: now + 320, category: tower.category, x: slot.x, y: slot.y, tx: visual.x, ty: visual.y, radius: tower.category === "flush" ? 12 : tower.category === "triple" ? [8, 11, 14][i] : 5 });
                 if (tower.category === "pair") {
                     const target = inRange[0];
                     markExpirations.set(target.id, now + 2000);
@@ -424,18 +424,6 @@ export default function Home() {
                     const targetPosition = positions.get(target.id)!;
                     attackCandidates[attackCandidates.length - 1] = { ...attackCandidates[attackCandidates.length - 1], tx: targetPosition.x, ty: targetPosition.y };
                     add(target.id, baseDamage * (target.boss ? 1.5 : 1));
-                    continue;
-                }
-                if (tower.category === "straightFlush") {
-                    const target = inRange[0], end = positions.get(target.id)!, dx = end.x - slot.x, dy = end.y - slot.y, lengthSq = dx * dx + dy * dy, width = [4, 6, 8][i];
-                    for (const enemy of current) {
-                        const p = positions.get(enemy.id)!, projection = ((p.x - slot.x) * dx + (p.y - slot.y) * dy) / Math.max(1, lengthSq);
-                        if (projection < 0 || projection > 1.2)
-                            continue;
-                        const cx = slot.x + projection * dx, cy = slot.y + projection * dy;
-                        if (Math.hypot(p.x - cx, p.y - cy) <= width)
-                            add(enemy.id, baseDamage);
-                    }
                     continue;
                 }
                 const target = inRange[0];

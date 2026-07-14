@@ -89,7 +89,7 @@ export function roleCopy(locale: Locale, category: string, tier: number) {
     straight:[[],"Long range + 50% critical chance + 100% bonus boss damage","长射程 + 50%暴击率 + 对Boss额外伤害100%","長射程 + 会心率50% + ボス追加ダメージ100%"],
     flush:[[],"Poison pool + 50% movement slow","毒池 + 移速降低50%","毒沼 + 移動速度50%低下"], fullHouse:[[],"4-tile attack range; allies within 2 tiles gain +20% ATK and ASPD","攻击射程4格；2格内友军攻击与攻速+20%","攻撃射程4マス・2マス内の味方の攻撃と攻速+20%"],
     fourKind:[[],"Powerful single slash + 50% boss damage","强力单体剑气 + 对Boss额外伤害50%","強力な単体斬撃 + ボス追加ダメージ50%"],
-    straightFlush:[[],"Piercing line attack","直线贯穿攻击","直線貫通攻撃"], royalFlush:[[],"Huge, powerful area damage over time","超大范围持续伤害","超広範囲の強力な持続ダメージ"],
+    straightFlush:[[],"Extremely powerful single-target attack","极强的单体攻击","非常に強力な単体攻撃"], royalFlush:[[],"Huge, powerful area damage over time","超大范围持续伤害","超広範囲の強力な持続ダメージ"],
     fiveKind:[[],"Instantly removes every enemy","立即消灭所有敌人","すべての敵を即時消滅"], sixKind:[[],"Instantly grants 2,000G","立即获得2,000G","即座に2,000G獲得"],
   };
   if (locale === "ko") return "";
