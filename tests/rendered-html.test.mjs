@@ -23,7 +23,7 @@ test("포커 랜덤 디펜스의 핵심 게임 화면을 렌더링한다", async
   assert.match(html, /<title>포커 랜덤 디펜스<\/title>/);
   assert.match(html, /FORTRESS OF FATE/);
   assert.match(html, /WAVE/);
-  assert.match(html, /내 유닛 인벤토리/);
+  assert.match(html, /내 유닛/);
   assert.match(html, /전체 공격력/);
   assert.match(html, /전체 공격속도/);
   assert.match(html, /족보 확정 &amp; 소환/);
@@ -62,6 +62,10 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /className="field-unit-actions"/);
   assert.match(page, /function sellTower\(\)/);
   assert.match(page, /className="hand-result summon-preview"/);
+  assert.match(page, /className=\{`unit-dock/);
+  assert.match(page, /className="summon-stats"/);
+  assert.match(page, /setHand\(dealHand\(0\)\)/);
+  assert.match(page, /initialDealRef\.current = true; setHand\(dealHand\(0\)\)/);
   assert.match(page, /radius: 12,\s*expiresAt: now \+ 2000,[^}]+slow: \.5/);
   assert.match(page, /cursedHits\.add\(enemy\.id\)/);
   assert.match(page, /isPriestBuffed/);
