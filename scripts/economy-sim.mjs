@@ -16,7 +16,7 @@ for(let wave=1;wave<=100;wave++){
       wave,
       cumulativeGold:gold,
       killGold:goldPerKill(wave),
-      fullRerolls:Math.floor(gold/5),
+      fullRerolls:Math.floor(gold/3),
       equalAttackAndSpeedLevels:balancedLevels,
       upgradeSpend:totalUpgradeCost(balancedLevels)*2,
     });
@@ -25,8 +25,9 @@ for(let wave=1;wave<=100;wave++){
 
 console.log("\n[누적 경제 기준표: 소비하지 않았을 때]");
 console.table(rows);
-console.log("강화 비용: 다음 레벨 5G, 10G, 15G… / 전체 리롤 5G / 한 장 리롤 3G");
+console.log("강화 비용: 다음 레벨 5G, 10G, 15G… / 전체 리롤 3G / 한 장 리롤 5G");
 
 assert.equal(rows.find(row=>row.wave===40)?.cumulativeGold,1540);
 assert.equal(rows.at(-1)?.cumulativeGold,7620);
 assert.equal(upgradeCost(10),50);
+assert.equal(rows.find(row=>row.wave===1)?.fullRerolls,20);

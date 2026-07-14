@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-const speeds=[1,1.5,2,4];
+const speeds=[1,2,4,8];
 const nextWaveGameSeconds=60;
 const bossDeadlineGameSeconds=120;
 

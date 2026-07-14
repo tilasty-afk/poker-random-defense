@@ -34,6 +34,7 @@ test("7장 손패와 모바일 전투 조작을 제공한다", async () => {
   const pokerCards = html.match(/class="[^"]*poker-card[^"]*"/g) ?? [];
   assert.equal(pokerCards.length, 7);
   assert.match(html, /선택 카드 교체/);
+  assert.match(html, /전체 손패 교체/);
   assert.match(html, /웨이브 시작/);
   assert.match(html, /52 \+ 2J/);
   assert.match(html, /200/);
@@ -47,7 +48,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   ]);
 
   assert.match(page, /elf:\s*"\\uAD81\\uC218"/);
-  assert.match(page, /straight:\s*\{[^}]+base:\s*\[15\.6,\s*40,\s*1\.25\]/);
+  assert.match(page, /straight:\s*\{[\s\S]*?base:\s*\[15\.6,\s*40,\s*1\.25\]/);
   assert.match(page, /markExpirations\.set\(target\.id,\s*now \+ 2000\)/);
   assert.match(page, /markedMultiplier = markExpirations\.has\(id\) \? 1\.2 : 1/);
   assert.match(page, /장거리 \+ 피해 20% 표식/);
@@ -56,7 +57,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /towerId: tower\.id,\s*expiresAt: now \+ 320/);
   assert.match(page, /attackFx\.some\(fx => fx\.towerId === tower\.id\) \? "attacking"/);
   assert.match(page, /fixedUtility = best\.category === "flush" \|\| best\.category === "fullHouse"/);
-  assert.match(page, /fullHouse:\s*\{[^}]+base:\s*\[15,\s*35,\s*\.95\]/);
+  assert.match(page, /fullHouse:\s*\{[\s\S]*?base:\s*\[15,\s*35,\s*\.95\]/);
   assert.match(page, /className="inventory-selection"/);
   assert.match(page, /판매가 \{sellValue\(selectedInventoryUnit\)\}G/);
   assert.match(page, /className="field-unit-actions"/);
@@ -66,6 +67,9 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /className="summon-stats"/);
   assert.match(page, /setHand\(dealHand\(0\)\)/);
   assert.match(page, /initialDealRef\.current = true; setHand\(dealHand\(0\)\)/);
+  assert.match(page, /const cost = selected\.length \* 5/);
+  assert.match(page, /function redrawAll\(\)/);
+  assert.match(page, /setGold\(v => v - 3\); setHand\(dealHand\(saintPity\)\)/);
   assert.match(page, /radius: 12,\s*expiresAt: now \+ 2000,[^}]+slow: \.5/);
   assert.match(page, /cursedHits\.add\(enemy\.id\)/);
   assert.match(page, /isPriestBuffed/);
@@ -82,8 +86,8 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /className="boss-health"/);
   assert.match(page, /function confirmRareSale/);
   assert.match(page, /희귀 유닛입니다/);
-  assert.match(page, /useState<1 \| 1\.5 \| 2 \| 4>\(1\)/);
-  assert.match(page, /\(\[1, 1\.5, 2, 4\] as const\)\.map/);
+  assert.match(page, /useState<1 \| 2 \| 4 \| 8>\(1\)/);
+  assert.match(page, /\(\[1, 2, 4, 8\] as const\)\.map/);
   assert.match(page, /className="speed-controls"/);
   assert.match(page, /elapsed \* gameSpeed/);
   assert.match(page, /enemy\.boss \? 20 : 1/);
