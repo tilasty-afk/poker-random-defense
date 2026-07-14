@@ -77,7 +77,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /const cost = selected\.length \* 5/);
   assert.match(page, /function redrawAll\(\)/);
   assert.match(page, /setGold\(v => v - 3\); setHand\(dealHand\(saintPity\)\)/);
-  assert.match(page, /radius: 12,\s*expiresAt: now \+ 2000,[^}]+slow: \.5/);
+  assert.match(page, /radius: 10,\s*expiresAt: now \+ 2000,[^}]+slow: \.5/);
   assert.match(page, /cursedHits\.add\(enemy\.id\)/);
   assert.match(page, /isPriestBuffed/);
   assert.match(page, /사제 버프 적용 중/);

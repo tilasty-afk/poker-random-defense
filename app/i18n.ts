@@ -44,13 +44,13 @@ export const TUTORIALS: Record<Locale, Array<{title:string;body:string}>> = {
   ko:[
     {title:"1. 세븐포커 소환",body:"7장 중 가장 강한 5장이 자동으로 강조되며 그 족보가 직업을 결정합니다. 흑백·컬러 조커는 와일드 카드입니다."},
     {title:"2. 배치·회수·판매",body:"유닛을 눌러 빈 칸에 배치하세요. 필요 없는 유닛은 회수하거나 판매해 리롤 골드를 마련할 수 있습니다. 희귀 유닛은 판매 버튼을 두 번 눌러야 합니다."},
-    {title:"3. 강화와 전투 효과",body:"공격력은 레벨당 10%, 공격속도는 레벨당 5%씩 제한 없이 상승합니다. 빨간 점멸은 직접 타격, 녹색은 연금술 장판, 보라색은 운명술사의 지속 피해입니다."},
+    {title:"3. 강화와 전투 효과",body:"공격력은 레벨당 10%, 공격속도는 레벨당 5%씩 제한 없이 상승합니다. 빨간 점멸은 직접 타격이며, 짙은 보라색 원은 연금술 장판입니다."},
     {title:"4. 200 인구를 막아라",body:"적은 탈출하지 않고 계속 순환합니다. 일반 몬스터는 인구 1, 보스는 인구 20입니다. 보스는 게임 시간 5분 안에 처치해야 합니다."},
   ],
   en:[
     {title:"1. Seven-Card Summoning",body:"The strongest five cards among seven are highlighted automatically, and that poker hand determines the summoned class. Both jokers are wild cards."},
     {title:"2. Deploy, Recall, Sell",body:"Select a unit and tap an empty tile to deploy it. Recall or sell unwanted units to fund rerolls. Rare units require two taps to confirm a sale."},
-    {title:"3. Upgrades and Effects",body:"Attack rises 10% per level and attack speed rises 5% per level with no cap. Red flashes are direct hits, green pools are alchemy, and purple damage is Fate Weaver damage over time."},
+    {title:"3. Upgrades and Effects",body:"Attack rises 10% per level and attack speed rises 5% per level with no cap. Red flashes are direct hits, and dark violet circles are Alchemist pools."},
     {title:"4. Hold Below 200",body:"Enemies never escape and keep circling the battlefield. Normal enemies use 1 population and bosses use 20. Defeat each boss within five game-time minutes."},
   ],
   zh:[

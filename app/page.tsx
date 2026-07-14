@@ -409,7 +409,7 @@ export default function Home() {
                 if (tower.category === "flush") {
                     const target = inRange[0], center = positions.get(target.id)!;
                     add(target.id, baseDamage * .45);
-                    const pool: AlchemyPool = { id: `pool-${tower.id}-${now}`, x: center.x, y: center.y, radius: 12, expiresAt: now + 2000, damage: baseDamage * attackRate * BALANCE.damageScale * .14, slow: .5 }, nextPools = [...alchemyPoolsRef.current, pool];
+                    const pool: AlchemyPool = { id: `pool-${tower.id}-${now}`, x: center.x, y: center.y, radius: 10, expiresAt: now + 2000, damage: baseDamage * attackRate * BALANCE.damageScale * .14, slow: .5 }, nextPools = [...alchemyPoolsRef.current, pool];
                     alchemyPoolsRef.current = nextPools;
                     setAlchemyPools(nextPools);
                     continue;
