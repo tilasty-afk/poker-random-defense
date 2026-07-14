@@ -260,7 +260,7 @@ function roleDescription(unit: Result, locale: Locale = activeLocale) { if (loca
     case "straight": return "장거리 + 치명타 50% · 피해 5배 + 보스 100% 추가 피해";
     case "flush": return "독 장판 + 이동속도 50% 감소";
     case "fullHouse": return "범위 35 내 아군 공격 +20% · 속도 +20%";
-    case "fourKind": return "강력한 단일 검기 + 보스 200% 추가 피해";
+    case "fourKind": return "강력한 단일 검기 + 보스 50% 추가 피해";
     case "straightFlush": return `직선 관통 공격`;
     case "royalFlush": return "초대형 강력한 광역 지속 피해";
     case "fiveKind": return "사용 즉시 전체 적 소멸";
@@ -419,7 +419,7 @@ export default function Home() {
                     const target = inRange.slice().sort((a, b) => Number(b.boss) - Number(a.boss) || b.hp - a.hp)[0];
                     const targetPosition = positions.get(target.id)!;
                     attackCandidates[attackCandidates.length - 1] = { ...attackCandidates[attackCandidates.length - 1], tx: targetPosition.x, ty: targetPosition.y };
-                    add(target.id, baseDamage * (target.boss ? 3 : 1));
+                    add(target.id, baseDamage * (target.boss ? 1.5 : 1));
                     continue;
                 }
                 if (tower.category === "straightFlush") {

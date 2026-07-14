@@ -58,7 +58,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /tower\.category === "pair"[^}]+markExpirations\.set\(target\.id, now \+ 2000\)/);
   assert.match(page, /markedMultiplier = markExpirations\.has\(id\) \? 1\.2 : 1/);
   assert.match(page, /baseDamage \* \(critical \? 5 : 1\) \* \(target\.boss \? 2 : 1\)/);
-  assert.match(page, /baseDamage \* \(target\.boss \? 3 : 1\)/);
+  assert.match(page, /baseDamage \* \(target\.boss \? 1\.5 : 1\)/);
   assert.doesNotMatch(page, /장거리 \+ 피해 20% 표식/);
   assert.match(page, /const MAX_ATTACK_SPEED_LEVEL = 30/);
   assert.match(page, /attackSpeedLevel >= MAX_ATTACK_SPEED_LEVEL/);
