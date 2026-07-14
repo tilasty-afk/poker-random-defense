@@ -117,7 +117,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /royalFlush:[^\n]+base: \[187\.5, 100, \.82\]/);
   assert.match(page, /setGold\(v => v \+ 2000\)/);
   assert.match(page, /spawnInterval: 432, minSpawnInterval: 312/);
-  assert.match(page, /baseHp: 100, hpScale: 2\.1/);
+  assert.match(page, /baseHp: 100, hpScale: 1\.9/);
   assert.match(page, /HP_DIFFICULTY_CURVE = \[\[1, \.65\], \[20, \.75\], \[40, 1\.1\], \[60, 1\.55\], \[80, 1\.9\], \[100, 2\.25\]\]/);
   assert.match(page, /SPAWN_PRESSURE_CURVE = \[\[1, 1\.2\], \[20, 1\.08\], \[40, \.95\], \[60, \.92\], \[80, \.96\], \[100, 1\]\]/);
   assert.match(page, /curveValue\(wave, HP_DIFFICULTY_CURVE\)/);

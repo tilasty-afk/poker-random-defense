@@ -119,7 +119,7 @@ const JOBS: Record<Category, {
 };
 const GRID_SIZE = 12;
 const MAX_ATTACK_SPEED_LEVEL = 30;
-const BALANCE = { baseHp: 100, hpScale: 2.1, hpPerWave: .04, hpGrowth: 1.028, baseSpeed: .76, speedPerWave: .003, maxSpeed: 1.55, damageScale: .24, bossHpUnits: 80, bossMoveScale: .58, spawnInterval: 432, minSpawnInterval: 312 } as const;
+const BALANCE = { baseHp: 100, hpScale: 1.9, hpPerWave: .04, hpGrowth: 1.028, baseSpeed: .76, speedPerWave: .003, maxSpeed: 1.55, damageScale: .24, bossHpUnits: 80, bossMoveScale: .58, spawnInterval: 432, minSpawnInterval: 312 } as const;
 const HP_DIFFICULTY_CURVE = [[1, .65], [20, .75], [40, 1.1], [60, 1.55], [80, 1.9], [100, 2.25]] as const;
 const SPAWN_PRESSURE_CURVE = [[1, 1.2], [20, 1.08], [40, .95], [60, .92], [80, .96], [100, 1]] as const;
 const SLOTS = Array.from({ length: GRID_SIZE * GRID_SIZE }, (_, index) => ({ x: ((index % GRID_SIZE) + .5) / GRID_SIZE * 100, y: (Math.floor(index / GRID_SIZE) + .5) / GRID_SIZE * 100 }));
