@@ -89,6 +89,10 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /@keyframes enemy-fate-dot/);
   assert.match(css, /@keyframes tower-fire-kick/);
   assert.match(css, /@keyframes projectile-flight/);
+  assert.match(css, /\.attack-fx\{inset:0;overflow:visible\}/);
+  assert.match(css, /\.attack-straight \.attack-trace::after/);
+  assert.match(css, /\.attack-triple \.attack-trace::after/);
+  assert.match(css, /\.attack-fourKind \.attack-trace::after/);
   assert.match(css, /\.poker-card:has\(>span\.red-suit\)>b/);
   assert.match(css, /font-size:clamp\(15px,4\.6vw,20px\)/);
   assert.match(css, /\.pip-layout/);
