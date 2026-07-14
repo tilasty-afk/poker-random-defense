@@ -85,6 +85,7 @@ const T = {
 };
 const SUITS: Suit[] = ["spade", "heart", "diamond", "club"];
 const SYMBOL: Record<Suit, string> = { spade: "\u2660", heart: "\u2665", diamond: "\u2666", club: "\u2663" };
+const ASSET_BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const JOBS: Record<Category, {
     label: string;
     job: string;
@@ -95,7 +96,7 @@ const JOBS: Record<Category, {
         number
     ];
 }> = {
-    high: { label: T.high, job: T.conscript, image: "/sprites/units/2.png", base: [3, 20, 1] }, pair: { label: T.pair, job: T.rogue, image: "/sprites/units/3.png", base: [5, 22, 1.35] }, twoPair: { label: T.twoPair, job: T.warrior, image: "/sprites/units/4.png", base: [8, 23, 1.05] }, triple: { label: T.triple, job: T.mage, image: "/sprites/units/10.png", base: [11, 28, .85] }, straight: { label: T.straight, job: T.elf, image: "/sprites/units/7.png", base: [15.6, 40, 1.25] }, flush: { label: T.flush, job: T.alchemist, image: "/sprites/units/6.png", base: [12, 31, .72] }, fullHouse: { label: T.fullHouse, job: T.priest, image: "/sprites/units/Q.png", base: [15, 35, .95] }, fourKind: { label: T.fourKind, job: T.royal, image: "/sprites/units/K.png", base: [58, 30, 1.15] }, straightFlush: { label: T.straightFlush, job: T.dragoon, image: "/sprites/units/A.png", base: [114, 34, 1.25] }, royalFlush: { label: T.royalFlush, job: T.fate, image: "/sprites/units/J.png", base: [250, 72, .82] }, fiveKind: { label: T.fiveKind, job: T.saintess, image: "/sprites/units/Joker.png", base: [0, 0, 0] }, sixKind: { label: T.sixKind, job: T.jackpot, image: "/sprites/units/Jackpot.png", base: [0, 0, 0] },
+    high: { label: T.high, job: T.conscript, image: `${ASSET_BASE}/sprites/units/2.png`, base: [3, 20, 1] }, pair: { label: T.pair, job: T.rogue, image: `${ASSET_BASE}/sprites/units/3.png`, base: [5, 22, 1.35] }, twoPair: { label: T.twoPair, job: T.warrior, image: `${ASSET_BASE}/sprites/units/4.png`, base: [8, 23, 1.05] }, triple: { label: T.triple, job: T.mage, image: `${ASSET_BASE}/sprites/units/10.png`, base: [11, 28, .85] }, straight: { label: T.straight, job: T.elf, image: `${ASSET_BASE}/sprites/units/7.png`, base: [15.6, 40, 1.25] }, flush: { label: T.flush, job: T.alchemist, image: `${ASSET_BASE}/sprites/units/6.png`, base: [12, 31, .72] }, fullHouse: { label: T.fullHouse, job: T.priest, image: `${ASSET_BASE}/sprites/units/Q.png`, base: [15, 35, .95] }, fourKind: { label: T.fourKind, job: T.royal, image: `${ASSET_BASE}/sprites/units/K.png`, base: [58, 30, 1.15] }, straightFlush: { label: T.straightFlush, job: T.dragoon, image: `${ASSET_BASE}/sprites/units/A.png`, base: [114, 34, 1.25] }, royalFlush: { label: T.royalFlush, job: T.fate, image: `${ASSET_BASE}/sprites/units/J.png`, base: [250, 72, .82] }, fiveKind: { label: T.fiveKind, job: T.saintess, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] }, sixKind: { label: T.sixKind, job: T.jackpot, image: `${ASSET_BASE}/sprites/units/Jackpot.png`, base: [0, 0, 0] },
 };
 const GRID_SIZE = 12;
 const BALANCE = { baseHp: 100, hpPerWave: .04, hpGrowth: 1.028, hardRampStart: 40, hardRampMax: 1.8, baseSpeed: .76, speedPerWave: .003, maxSpeed: 1.55, damageScale: .24, bossHpUnits: 80, bossMoveScale: .58, spawnInterval: 900, minSpawnInterval: 650 } as const;
@@ -261,7 +262,7 @@ export default function Home() {
         return; setWave(v => v + 1); setSpawned(0); setMessage(`WAVE ${wave + 1}`); }, [running, spawned, wave, waveTarget, isBossWave, bossWaveHold]);
     useEffect(() => { if (!running)
         return; setWaveCue(isBossWave ? `BOSS WAVE ${wave}` : `WAVE ${wave}`); const timer = window.setTimeout(() => setWaveCue(null), 1400 / gameSpeed); return () => window.clearTimeout(timer); }, [wave, running, isBossWave, gameSpeed]);
-    useEffect(() => { document.documentElement.style.setProperty("--game-speed", String(gameSpeed)); return () => document.documentElement.style.setProperty("--game-speed", "1"); }, [gameSpeed]);
+    useEffect(() => { document.documentElement.style.setProperty("--game-speed", String(gameSpeed)); document.documentElement.style.setProperty("--enemy-atlas", `url("${ASSET_BASE}/sprites/enemies/monster-atlas.png")`); return () => { document.documentElement.style.setProperty("--game-speed", "1"); document.documentElement.style.removeProperty("--enemy-atlas"); }; }, [gameSpeed]);
     useEffect(() => { gameAudioRef.current?.setMuted(!soundOn); }, [soundOn]);
     useEffect(() => () => { void gameAudioRef.current?.dispose(); }, []);
     useEffect(() => { if (!running || wave !== 100 || spawned < waveTarget || enemies.length > 0)
@@ -571,5 +572,6 @@ export default function Home() {
     {tutorialStep < tutorials.length && <div className="tutorial-overlay"><div className="tutorial-card"><small>QUICK GUIDE · {tutorialStep + 1}/{tutorials.length}</small><strong>{tutorials[tutorialStep].title}</strong><p>{tutorials[tutorialStep].body}</p><div><button onClick={() => setTutorialStep(tutorials.length)}>건너뛰기</button><button className="next" onClick={() => setTutorialStep(v => v + 1)}>{tutorialStep === tutorials.length - 1 ? "게임 시작" : "다음"}</button></div></div></div>}
     {gameOver && <div className="game-over"><div><span>{T.gameOver}</span><strong>WAVE {wave}</strong><p>{kills}{T.enemies}</p><button onClick={restart}>{T.retry}</button></div></div>}
     {won && <div className="game-over victory"><div><span>FORTRESS SAVED</span><strong>100 WAVE CLEAR</strong><p>{kills}{T.enemies}</p><button onClick={restart}>{T.retry}</button></div></div>}
+    <footer className="creator-credit">Made by Arlandstrm with AI</footer>
   </section></main>;
 }
