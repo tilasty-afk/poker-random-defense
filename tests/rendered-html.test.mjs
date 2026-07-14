@@ -99,8 +99,10 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /function redrawAll\(\)/);
   assert.match(page, /selectedRerollsLeft <= 0/);
   assert.match(page, /setSelectedRerollsLeft\(v => v - 1\)/);
-  assert.match(page, /setSelectedRerollsLeft\(3\)/);
-  assert.match(page, /setHand\(dealHand\(saintPity\)\);\s*setSelectedRerollsLeft\(3\);\s*setCooldown\(0\)/);
+  assert.match(page, /selectedRerollsLeft[^\n]+useState\(1\)/);
+  assert.match(page, /setSelectedRerollsLeft\(1\)/);
+  assert.match(page, /setHand\(dealHand\(saintPity\)\);\s*setSelectedRerollsLeft\(1\);\s*setCooldown\(0\)/);
+  assert.match(page, /selectedRerollsLeft\}\/1/);
   assert.match(page, /wave === 1 && spawned === 0 \? baseCopy\.begin : baseCopy\.start/);
   assert.match(page, /if \(!running \|\| gameOver \|\| spawned >= waveTarget/);
   assert.match(page, /setGold\(v => v - 3\); setHand\(dealHand\(saintPity\)\)/);
