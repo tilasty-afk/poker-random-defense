@@ -41,10 +41,11 @@ test("7장 손패와 모바일 전투 조작을 제공한다", async () => {
 });
 
 test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
-  const [page, css, audio] = await Promise.all([
+  const [page, css, audio, i18n] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../app/game-audio.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/i18n.ts", import.meta.url), "utf8"),
   ]);
 
   assert.match(page, /elf:\s*"\\uAD81\\uC218"/);
@@ -59,7 +60,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /fixedUtility = best\.category === "flush" \|\| best\.category === "fullHouse"/);
   assert.match(page, /fullHouse:\s*\{[\s\S]*?base:\s*\[15,\s*35,\s*\.95\]/);
   assert.match(page, /className="inventory-selection"/);
-  assert.match(page, /판매가 \{sellValue\(selectedInventoryUnit\)\}G/);
+  assert.match(page, /\{copy\.sell\} \{sellValue\(selectedInventoryUnit\)\}G/);
   assert.match(page, /className="field-unit-actions"/);
   assert.match(page, /function sellTower\(\)/);
   assert.match(page, /className="hand-result summon-preview"/);
@@ -127,8 +128,18 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /\.enemy\[title\*="이끼 슬라임"\]/);
   assert.match(css, /\.enemy\.boss-rank-10/);
   assert.match(css, /background-size:500% 400%/);
-  assert.match(css, /\.playback-control button\{width:42px;height:42px/);
+  assert.match(css, /\.language-cycle,\.playback-control button\{width:42px;height:42px/);
   assert.match(css, /grid-template-columns:minmax\(0,3fr\) minmax\(260px,1fr\)/);
+  assert.match(page, /LOCALE_ORDER\.map\(language/);
+  assert.match(page, /function cycleLocale\(\)/);
+  assert.match(page, /!languageChosen/);
+  assert.match(i18n, /ko:\[/);
+  assert.match(i18n, /en:\[/);
+  assert.match(i18n, /zh:\[/);
+  assert.match(i18n, /ja:\[/);
+  assert.match(i18n, /Seven-Card Summoning/);
+  assert.match(i18n, /七张牌召唤/);
+  assert.match(i18n, /セブンカード召喚/);
   assert.match(page, /createGameAudio/);
   assert.match(page, /playSound\("reroll"\)/);
   assert.match(page, /playSound\("upgrade"\)/);
