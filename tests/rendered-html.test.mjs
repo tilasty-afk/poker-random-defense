@@ -94,7 +94,9 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /\.attack-triple \.attack-trace::after/);
   assert.match(css, /\.attack-fourKind \.attack-trace::after/);
   assert.match(css, /\.poker-card:has\(>span\.red-suit\)>b/);
-  assert.match(css, /font-size:clamp\(15px,4\.6vw,20px\)/);
+  assert.match(css, /font-size:clamp\(17px,5vw,23px\)/);
+  assert.match(css, /width:calc\(100vw - 8px\)/);
+  assert.match(css, /grid-template-rows:44px 44px/);
   assert.match(css, /\.pip-layout/);
   assert.match(css, /\.joker-art-black/);
   assert.match(css, /\.joker-art-color/);
@@ -132,7 +134,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /\.enemy\[title\*="이끼 슬라임"\]/);
   assert.match(css, /\.enemy\.boss-rank-10/);
   assert.match(css, /background-size:500% 400%/);
-  assert.match(css, /\.language-cycle,\.playback-control button\{width:42px;height:42px/);
+  assert.match(css, /\.language-cycle,\.playback-control button\{width:48px;height:48px/);
   assert.match(css, /grid-template-columns:minmax\(0,3fr\) minmax\(260px,1fr\)/);
   assert.match(page, /LOCALE_ORDER\.map\(language/);
   assert.match(page, /function cycleLocale\(\)/);
