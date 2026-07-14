@@ -240,6 +240,7 @@ button:focus-visible,summary:focus-visible { outline:2px solid #f0c75e; outline-
 .playback-control{position:relative}.playback-control output{position:absolute;right:0;bottom:calc(100% + 4px)}
 .playback-control output.boss-time{display:none}
 .creator-credit{left:8px;right:auto}
+.brand-copy span,.wave-chip span,.battle-header small,.playback-control output,.spawn-gate::after,.boss-health span,.boss-health strong,.boss-badge,.tier-dot,.command-unit small,.command-unit em,.command-stats small,.command-stats b,.field-unit-actions p,.inventory-list p,.inventory-list button span,.inventory-list button small,.inventory-selection small,.army-upgrade span,.summon-portrait i,.summon-copy>small,.summon-path span,.summon-path b,.summon-stats small,.summon-stats b,.section-title small,.hand-glance span small,.hand-wallet small,.poker-card>em,.guide-grid small,.effect-note,.creator-credit{zoom:1.1}
 @media (min-width:760px){.corner-controls{position:static;grid-column:2;grid-row:4;justify-self:end;align-self:start;margin:8px 12px 0 4px}.playback-control output{top:calc(100% + 4px);bottom:auto}.poker-guide{margin-top:70px}}
 @media (max-width:759px){.actions{width:calc(100% - 84px);align-self:flex-start}.corner-controls{top:auto;left:auto;right:6px;bottom:calc(env(safe-area-inset-bottom) + 6px)}.boss-health{width:min(180px,48%);transform:translate(-50%,calc(-100% - 25px));padding:3px 5px}.boss-health::before{font-size:12px;padding:3px 6px}.boss-health span,.boss-health strong{font-size:7px}}
 

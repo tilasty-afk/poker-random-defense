@@ -187,6 +187,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /grid-template-columns:minmax\(0,3fr\) minmax\(260px,1fr\)/);
   assert.match(css, /\.corner-controls\{position:fixed;top:auto;left:auto;right:8px;bottom:calc\(env\(safe-area-inset-bottom\) \+ 8px\)/);
   assert.match(css, /\.creator-credit\{left:8px;right:auto\}/);
+  assert.match(css, /\.brand-copy span,[^\n]+\.creator-credit\{zoom:1\.1\}/);
   assert.match(css, /\.corner-controls\{position:static;grid-column:2;grid-row:4;justify-self:end/);
   assert.match(css, /\.poker-guide\{margin-top:70px\}/);
   assert.match(css, /\.boss-health::before\{content:"BOSS " var\(--boss-timer-label/);
