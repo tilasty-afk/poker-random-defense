@@ -317,22 +317,6 @@ function renderFrame(ctx: CanvasRenderingContext2D, time: number, art: HTMLImage
   if (title > 0) {
     ctx.fillStyle = `rgba(3,7,6,${title * .88})`;
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    ctx.globalAlpha = title * .28;
-    const sevenHalo = ctx.createRadialGradient(180, 320, 10, 180, 320, 230);
-    sevenHalo.addColorStop(0, "rgba(255,247,195,.38)");
-    sevenHalo.addColorStop(.35, "rgba(255,193,48,.2)");
-    sevenHalo.addColorStop(1, "rgba(255,193,48,0)");
-    ctx.fillStyle = sevenHalo;
-    ctx.fillRect(-50, 90, 460, 460);
-    ctx.globalAlpha = title * .18;
-    ctx.fillStyle = "#ffe29a";
-    ctx.shadowColor = "#ffc744";
-    ctx.shadowBlur = 42;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.font = "bold 460px Georgia, serif";
-    ctx.fillText("7", 180, 320);
-    ctx.shadowBlur = 0;
     ctx.globalAlpha = title;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";

@@ -13,10 +13,8 @@ test("세븐 카드 히든 엔딩 Canvas 시퀀스를 제공한다", () => {
   assert.doesNotMatch(page, /FATE CONQUERED/);
   assert.match(page, /fillText\("ABSOLUTELY", 180, 368\)/);
   assert.match(page, /fillText\("EXCELLENT", 180, 397\)/);
-  assert.match(page, /font = "bold 460px Georgia, serif"/);
-  assert.match(page, /createRadialGradient\(180, 320, 10, 180, 320, 230\)/);
-  assert.match(page, /fillRect\(-50, 90, 460, 460\)/);
-  assert.match(page, /fillText\("7", 180, 320\)/);
+  assert.doesNotMatch(page, /font = "bold 460px Georgia, serif"/);
+  assert.doesNotMatch(page, /fillText\("7"/);
   assert.match(page, /URLSearchParams\(window\.location\.search\)/);
   assert.match(page, /styles\.embedded/);
   assert.doesNotMatch(page, /THE FORTRESS ENDURES BEYOND DESTINY/);
