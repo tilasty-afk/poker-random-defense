@@ -116,7 +116,7 @@ const JOBS: Record<Category, {
         number
     ];
 }> = {
-    high: { label: T.high, job: T.conscript, image: `${ASSET_BASE}/sprites/units/2.png`, base: [3, RANGE_PER_CELL * 3, 1] }, pair: { label: T.pair, job: T.rogue, image: `${ASSET_BASE}/sprites/units/3.png`, base: [5, RANGE_PER_CELL * 3, 1.35] }, twoPair: { label: T.twoPair, job: T.warrior, image: `${ASSET_BASE}/sprites/units/4.png`, base: [8, RANGE_PER_CELL * 3, 1.05] }, triple: { label: T.triple, job: T.mage, image: `${ASSET_BASE}/sprites/units/10.png`, base: [15.6, RANGE_PER_CELL * 5, .6] }, straight: { label: T.straight, job: T.elf, image: `${ASSET_BASE}/sprites/units/7.png`, base: [15.6, RANGE_PER_CELL * 5, .5] }, flush: { label: T.flush, job: T.alchemist, image: `${ASSET_BASE}/sprites/units/6.png`, base: [17.28, RANGE_PER_CELL * 2, .5] }, fullHouse: { label: T.fullHouse, job: T.priest, image: `${ASSET_BASE}/sprites/units/Q.png`, base: [21.92, RANGE_PER_CELL * 4, .65] }, fourKind: { label: T.fourKind, job: T.royal, image: `${ASSET_BASE}/sprites/units/K.png`, base: [43.5, RANGE_PER_CELL * 6, 1.15] }, straightFlush: { label: T.straightFlush, job: T.dragoon, image: `${ASSET_BASE}/sprites/units/A.png`, base: [342, RANGE_PER_CELL * 6, 1.25] }, royalFlush: { label: T.royalFlush, job: T.fate, image: `${ASSET_BASE}/sprites/units/J.png`, base: [253.125, 100, .82] }, fiveKind: { label: T.fiveKind, job: T.saintess, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] }, sixKind: { label: T.sixKind, job: T.jackpot, image: `${ASSET_BASE}/sprites/units/Jackpot.png`, base: [0, 0, 0] },
+    high: { label: T.high, job: T.conscript, image: `${ASSET_BASE}/sprites/units/2.png`, base: [3, RANGE_PER_CELL * 3, 1] }, pair: { label: T.pair, job: T.rogue, image: `${ASSET_BASE}/sprites/units/3.png`, base: [5, RANGE_PER_CELL * 3, 1.35] }, twoPair: { label: T.twoPair, job: T.warrior, image: `${ASSET_BASE}/sprites/units/4.png`, base: [8, RANGE_PER_CELL * 3, 1.05] }, triple: { label: T.triple, job: T.mage, image: `${ASSET_BASE}/sprites/units/10.png`, base: [33, RANGE_PER_CELL * 5, .6] }, straight: { label: T.straight, job: T.elf, image: `${ASSET_BASE}/sprites/units/7.png`, base: [15.6, RANGE_PER_CELL * 5, .5] }, flush: { label: T.flush, job: T.alchemist, image: `${ASSET_BASE}/sprites/units/6.png`, base: [110, RANGE_PER_CELL * 2, .5] }, fullHouse: { label: T.fullHouse, job: T.priest, image: `${ASSET_BASE}/sprites/units/Q.png`, base: [21.92, RANGE_PER_CELL * 4, .65] }, fourKind: { label: T.fourKind, job: T.royal, image: `${ASSET_BASE}/sprites/units/K.png`, base: [43.5, RANGE_PER_CELL * 6, 1.15] }, straightFlush: { label: T.straightFlush, job: T.dragoon, image: `${ASSET_BASE}/sprites/units/A.png`, base: [342, RANGE_PER_CELL * 6, 1.25] }, royalFlush: { label: T.royalFlush, job: T.fate, image: `${ASSET_BASE}/sprites/units/J.png`, base: [253.125, 100, .82] }, fiveKind: { label: T.fiveKind, job: T.saintess, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] }, sixKind: { label: T.sixKind, job: T.jackpot, image: `${ASSET_BASE}/sprites/units/Jackpot.png`, base: [0, 0, 0] },
 };
 const GRID_SIZE = 12;
 const MAX_ATTACK_SPEED_LEVEL = 30;
@@ -258,7 +258,7 @@ function roleDescription(unit: Result, locale: Locale = activeLocale) { if (loca
     case "straight": return "장거리 + 치명타확률 50% + 보스 추가피해 100%";
     case "flush": return "독 장판 + 이동속도 50% 감소";
     case "fullHouse": return "공격 사거리 4칸 · 버프 범위 2칸 내 아군 공격 +20% · 속도 +20%";
-    case "fourKind": return "강력한 단일 검기 + 보스 50% 추가 피해";
+    case "fourKind": return "강력한 단일 검기 + 보스 120% 추가 피해";
     case "straightFlush": return "매우 강력한 단일 공격";
     case "royalFlush": return "초대형 강력한 광역 지속 피해";
     case "fiveKind": return "사용 즉시 전체 적 소멸";
@@ -412,7 +412,7 @@ export default function Home() {
                     const target = inRange.slice().sort((a, b) => Number(b.boss) - Number(a.boss) || b.hp - a.hp)[0];
                     const targetPosition = positions.get(target.id)!;
                     attackCandidates[attackCandidates.length - 1] = { ...attackCandidates[attackCandidates.length - 1], tx: targetPosition.x, ty: targetPosition.y };
-                    add(target.id, baseDamage * (target.boss ? 1.5 : 1));
+                    add(target.id, baseDamage * (target.boss ? 2.2 : 1));
                     continue;
                 }
                 const target = inRange[0];

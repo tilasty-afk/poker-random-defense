@@ -53,7 +53,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /const RANGE_PER_CELL = 100 \/ 12/);
   assert.match(page, /const PRIEST_BUFF_RANGE = RANGE_PER_CELL \* 2/);
   assert.match(page, /straight:\s*\{[\s\S]*?base:\s*\[15\.6,\s*RANGE_PER_CELL \* 5,\s*\.5\]/);
-  assert.match(page, /flush:\s*\{[\s\S]*?base:\s*\[17\.28,\s*RANGE_PER_CELL \* 2,\s*\.5\]/);
+  assert.match(page, /flush:\s*\{[\s\S]*?base:\s*\[110,\s*RANGE_PER_CELL \* 2,\s*\.5\]/);
   assert.match(page, /fourKind:\s*\{[\s\S]*?base:\s*\[43\.5,\s*RANGE_PER_CELL \* 6,\s*1\.15\]/);
   assert.match(page, /royalFlush:\s*\{[\s\S]*?base:\s*\[253\.125,\s*100,\s*\.82\]/);
   assert.doesNotMatch(page, /rangeMult/);
@@ -66,7 +66,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /tower\.category === "pair"[^}]+markExpirations\.set\(target\.id, now \+ 2000\)/);
   assert.match(page, /markedMultiplier = markExpirations\.has\(id\) \? 1\.2 : 1/);
   assert.match(page, /baseDamage \* \(critical \? 5 : 1\) \* \(target\.boss \? 2 : 1\)/);
-  assert.match(page, /baseDamage \* \(target\.boss \? 1\.5 : 1\)/);
+  assert.match(page, /baseDamage \* \(target\.boss \? 2\.2 : 1\)/);
   assert.doesNotMatch(page, /장거리 \+ 피해 20% 표식/);
   assert.match(page, /const MAX_ATTACK_SPEED_LEVEL = 30/);
   assert.match(page, /attackMultiplier = 1 \+ attackLevel \* \.025/);
@@ -80,8 +80,8 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /towerId: tower\.id,\s*expiresAt: now \+ 320/);
   assert.match(page, /attackFx\.some\(fx => fx\.towerId === tower\.id\) \? "attacking"/);
   assert.match(page, /fixedUtility = best\.category === "flush" \|\| best\.category === "fullHouse"/);
-  assert.match(page, /triple:\s*\{[\s\S]*?base:\s*\[15\.6,\s*RANGE_PER_CELL \* 5,\s*\.6\]/);
-  assert.match(page, /flush:\s*\{[\s\S]*?base:\s*\[17\.28,\s*RANGE_PER_CELL \* 2,\s*\.5\]/);
+  assert.match(page, /triple:\s*\{[\s\S]*?base:\s*\[33,\s*RANGE_PER_CELL \* 5,\s*\.6\]/);
+  assert.match(page, /flush:\s*\{[\s\S]*?base:\s*\[110,\s*RANGE_PER_CELL \* 2,\s*\.5\]/);
   assert.match(page, /fullHouse:\s*\{[\s\S]*?base:\s*\[21\.92,\s*RANGE_PER_CELL \* 4,\s*\.65\]/);
   assert.match(page, /className="inventory-selection"/);
   assert.match(page, /\{copy\.sell\} \{sellValue\(selectedInventoryUnit\)\}G/);
@@ -197,7 +197,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /Math\.max\(0, waveTarget - spawned\)/);
   assert.match(page, /BOSS TIME OVER/);
   assert.match(page, /completedBosses = Math\.floor\(\(wave - 1\) \/ 10\)/);
-  assert.match(page, /강력한 단일 검기/);
+  assert.match(page, /강력한 단일 검기 \+ 보스 120% 추가 피해/);
   assert.match(css, /@keyframes alchemy-ground/);
   assert.match(css, /\.enemy\[title\*="이끼 슬라임"\]/);
   assert.match(css, /\.enemy\.boss-rank-10/);
