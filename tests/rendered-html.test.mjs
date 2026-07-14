@@ -91,6 +91,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /사제 버프 적용 중/);
   assert.match(page, /범위 35 내 아군 공격 \+20% · 속도 \+20%/);
   assert.match(css, /\.alchemy-pool\s*\{/);
+  assert.doesNotMatch(css, /\.tower-slot\.alchemy::after/);
   assert.match(css, /\.enemy\.cursed/);
   assert.match(css, /@keyframes enemy-hit-red/);
   assert.match(css, /@keyframes enemy-alchemy-dot/);
