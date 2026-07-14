@@ -55,7 +55,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /straight:\s*\{[\s\S]*?base:\s*\[15\.6,\s*RANGE_PER_CELL \* 5,\s*\.5\]/);
   assert.match(page, /flush:\s*\{[\s\S]*?base:\s*\[110,\s*RANGE_PER_CELL \* 2,\s*\.5\]/);
   assert.match(page, /fourKind:\s*\{[\s\S]*?base:\s*\[43\.5,\s*RANGE_PER_CELL \* 6,\s*1\.15\]/);
-  assert.match(page, /royalFlush:\s*\{[\s\S]*?base:\s*\[253\.125,\s*100,\s*\.82\]/);
+  assert.match(page, /royalFlush:\s*\{[\s\S]*?base:\s*\[208,\s*100,\s*\.82\]/);
   assert.doesNotMatch(page, /rangeMult/);
   assert.match(page, /<= PRIEST_BUFF_RANGE/);
   assert.match(page, /markExpirations\.set\(target\.id,\s*now \+ 2000\)/);
@@ -116,10 +116,11 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /radius: 10,\s*expiresAt: now \+ 2000,[^}]+slow: \.5/);
   assert.match(page, /cursedHits\.add\(enemy\.id\)/);
   assert.match(page, /fourKind:[^\n]+base: \[43\.5, RANGE_PER_CELL \* 6, 1\.15\]/);
-  assert.match(page, /straightFlush:[^\n]+base: \[171, RANGE_PER_CELL \* 6, 1\.25\]/);
+  assert.match(page, /straightFlush:[^\n]+base: \[114, RANGE_PER_CELL \* 6, 1\.25\]/);
+  assert.match(page, /category === "fourKind" \|\| category === "straightFlush"\)\s*return 3/);
   assert.match(page, /case "straightFlush": return "매우 강력한 단일 공격"/);
   assert.doesNotMatch(page, /if \(tower\.category === "straightFlush"\)/);
-  assert.match(page, /royalFlush:[^\n]+base: \[253\.125, 100, \.82\]/);
+  assert.match(page, /royalFlush:[^\n]+base: \[208, 100, \.82\]/);
   assert.match(page, /setGold\(v => v \+ 2000\)/);
   assert.match(page, /spawnInterval: 600/);
   assert.match(page, /baseHp: 100, hpScale: 2\.28, normalWaveHpCompensation: 40 \/ 30/);
