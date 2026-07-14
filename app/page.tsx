@@ -120,9 +120,8 @@ const JOBS: Record<Category, {
 };
 const GRID_SIZE = 12;
 const MAX_ATTACK_SPEED_LEVEL = 30;
-const BALANCE = { baseHp: 100, hpScale: 1.9, hpPerWave: .04, hpGrowth: 1.028, baseSpeed: .76, speedPerWave: .003, maxSpeed: 1.55, damageScale: .24, bossHpUnits: 80, bossMoveScale: .58, spawnInterval: 432, minSpawnInterval: 312 } as const;
+const BALANCE = { baseHp: 100, hpScale: 1.9, hpPerWave: .04, hpGrowth: 1.028, baseSpeed: .76, speedPerWave: .003, maxSpeed: 1.55, damageScale: .24, bossHpUnits: 80, bossMoveScale: .58, spawnInterval: 600 } as const;
 const HP_DIFFICULTY_CURVE = [[1, .65], [20, .75], [40, 1.1], [60, 1.55], [80, 1.9], [100, 2.25]] as const;
-const SPAWN_PRESSURE_CURVE = [[1, 1.2], [20, 1.08], [40, .95], [60, .92], [80, .96], [100, 1]] as const;
 const SLOTS = Array.from({ length: GRID_SIZE * GRID_SIZE }, (_, index) => ({ x: ((index % GRID_SIZE) + .5) / GRID_SIZE * 100, y: (Math.floor(index / GRID_SIZE) + .5) / GRID_SIZE * 100 }));
 const PATH = [{ x: 50, y: 12.5 }, { x: 87.5, y: 12.5 }, { x: 87.5, y: 87.5 }, { x: 12.5, y: 87.5 }, { x: 12.5, y: 12.5 }, { x: 50, y: 12.5 }];
 function isPathSlot(index: number) { const row = Math.floor(index / GRID_SIZE), col = index % GRID_SIZE; return (row === 1 || row === 10) && col >= 1 && col <= 10 || (col === 1 || col === 10) && row >= 1 && row <= 10; }
@@ -136,7 +135,7 @@ function monsterKindForWave(wave: number) { const completedBosses = Math.floor((
 function monsterTrait(monster: (typeof MONSTERS)[number] & { locale?: Locale }) { const traits = TRAITS[monster.locale || "ko"]; return monster.hp >= 1.6 ? traits.heavy : monster.speed >= 1.18 ? traits.fast : monster.hp >= 1.3 ? traits.tough : monster.speed <= .7 ? traits.slow : traits.balanced; }
 function curveValue(wave: number, curve: readonly (readonly [number, number])[]) { const clamped = Math.max(curve[0][0], Math.min(curve[curve.length - 1][0], wave)); for (let index = 1; index < curve.length; index++) { const [endWave, endValue] = curve[index], [startWave, startValue] = curve[index - 1]; if (clamped <= endWave) { const progress = (clamped - startWave) / (endWave - startWave); return startValue + (endValue - startValue) * progress; } } return curve[curve.length - 1][1]; }
 function baseHpForWave(wave: number) { return BALANCE.baseHp * BALANCE.hpScale * (1 + wave * BALANCE.hpPerWave) * Math.pow(BALANCE.hpGrowth, wave - 1) * curveValue(wave, HP_DIFFICULTY_CURVE); }
-function spawnIntervalForWave(wave: number) { const progress = (wave - 1) / 99, baseInterval = BALANCE.spawnInterval - (BALANCE.spawnInterval - BALANCE.minSpawnInterval) * progress; return Math.round(baseInterval * curveValue(wave, SPAWN_PRESSURE_CURVE)); }
+function spawnIntervalForWave(_wave: number) { return BALANCE.spawnInterval; }
 function goldPerKillForWave(_wave: number) { return 1; }
 function formatTimer(seconds: number) { return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`; }
 const SELL_VALUES: Record<Category, [
