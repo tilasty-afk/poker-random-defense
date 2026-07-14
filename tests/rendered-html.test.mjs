@@ -61,7 +61,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /markExpirations\.set\(target\.id,\s*now \+ 2000\)/);
   assert.match(page, /critical = Math\.random\(\) < \.5/);
   assert.match(page, /baseDamage \* \(critical \? 5 : 1\)/);
-  assert.match(page, /case "straight": return "장거리 \+ 치명타 50% · 피해 5배 \+ 보스 100% 추가 피해"/);
+  assert.match(page, /case "straight": return "장거리 \+ 치명타확률 50% \+ 보스 추가피해 100%"/);
   assert.match(page, /case "pair": return "속사 \+ 2초간 받는 피해 20% 표식"/);
   assert.match(page, /tower\.category === "pair"[^}]+markExpirations\.set\(target\.id, now \+ 2000\)/);
   assert.match(page, /markedMultiplier = markExpirations\.has\(id\) \? 1\.2 : 1/);

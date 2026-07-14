@@ -256,7 +256,7 @@ function roleDescription(unit: Result, locale: Locale = activeLocale) { if (loca
     case "pair": return "속사 + 2초간 받는 피해 20% 표식";
     case "twoPair": return `투척 도끼 ${[2, 3, 4][tier]}명 연쇄`;
     case "triple": return `반경 ${[8, 11, 14][tier]} 범위 폭발`;
-    case "straight": return "장거리 + 치명타 50% · 피해 5배 + 보스 100% 추가 피해";
+    case "straight": return "장거리 + 치명타확률 50% + 보스 추가피해 100%";
     case "flush": return "독 장판 + 이동속도 50% 감소";
     case "fullHouse": return "공격 사거리 4칸 · 버프 범위 2칸 내 아군 공격 +20% · 속도 +20%";
     case "fourKind": return "강력한 단일 검기 + 보스 50% 추가 피해";
