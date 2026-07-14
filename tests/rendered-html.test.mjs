@@ -195,6 +195,9 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /\.spawn-gate::after\{font-size:11px/);
   assert.match(css, /\.section-title \.hand-wallet\{min-width:98px/);
   assert.match(css, /\.section-title \.hand-glance>span\{flex-direction:row/);
+  assert.match(css, /\.hand-glance span small::after\{content:" \/"/);
+  assert.match(css, /\.hand-glance span small\{[^\n]+font-size:13px/);
+  assert.match(css, /left:auto!important; right:8px!important/);
   assert.match(css, /\.boss-health::before\{content:"BOSS " var\(--boss-timer-label/);
   assert.match(css, /\.playback-control output\.boss-time\{display:none\}/);
   assert.match(css, /\.spawn-gate::after\{content:var\(--spawn-remaining-label/);
