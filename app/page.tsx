@@ -3,13 +3,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createGameAudio, type AttackSound, type GameSound } from "./game-audio";
 import { LOCALE_LABEL, LOCALE_ORDER, MONSTER_NAMES, TRAITS, TUTORIALS, UI, roleCopy, term, type Locale } from "./i18n";
 type Suit = "spade" | "heart" | "diamond" | "club";
-type Category = "high" | "pair" | "twoPair" | "triple" | "straight" | "flush" | "fullHouse" | "fourKind" | "straightFlush" | "royalFlush" | "fiveKind" | "sixKind";
+type Category = "high" | "pair" | "twoPair" | "triple" | "straight" | "flush" | "fullHouse" | "fourKind" | "straightFlush" | "royalFlush" | "fiveKind" | "sixKind" | "sevenKind";
 type Tier = 1 | 2 | 3;
 type Card = {
     id: string;
     rank: number;
     suit: Suit;
-    joker?: "black" | "color";
+    joker?: "black" | "color" | "invert";
 };
 type Result = {
     category: Category;
@@ -22,7 +22,7 @@ type Result = {
     damage: number;
     range: number;
     speed: number;
-    effect: "single" | "alchemy" | "globalDot" | "purge" | "jackpot";
+    effect: "single" | "alchemy" | "globalDot" | "purge" | "jackpot" | "ending";
     bestCardIds: string[];
 };
 type Unit = Result & {
@@ -79,9 +79,9 @@ type AlchemyPool = {
     slow: number;
 };
 const T_BASE = {
-    brand: "\uD3EC\uCEE4 \uB79C\uB364 \uB514\uD39C\uC2A4", high: "\uD558\uC774 \uCE74\uB4DC", pair: "\uC6D0 \uD398\uC5B4", twoPair: "\uD22C \uD398\uC5B4", triple: "\uD2B8\uB9AC\uD50C", straight: "\uC2A4\uD2B8\uB808\uC774\uD2B8", flush: "\uD50C\uB7EC\uC2DC", fullHouse: "\uD480\uD558\uC6B0\uC2A4", fourKind: "\uD3EC\uCE74\uB4DC", straightFlush: "\uC2A4\uD2B8\uB808\uC774\uD2B8 \uD50C\uB7EC\uC2DC", royalFlush: "\uB85C\uC5F4 \uD50C\uB7EC\uC2DC", fiveKind: "\uD30C\uC774\uBE0C \uCE74\uB4DC", sixKind: "식스 카드",
+    brand: "\uD3EC\uCEE4 \uB79C\uB364 \uB514\uD39C\uC2A4", high: "\uD558\uC774 \uCE74\uB4DC", pair: "\uC6D0 \uD398\uC5B4", twoPair: "\uD22C \uD398\uC5B4", triple: "\uD2B8\uB9AC\uD50C", straight: "\uC2A4\uD2B8\uB808\uC774\uD2B8", flush: "\uD50C\uB7EC\uC2DC", fullHouse: "\uD480\uD558\uC6B0\uC2A4", fourKind: "\uD3EC\uCE74\uB4DC", straightFlush: "\uC2A4\uD2B8\uB808\uC774\uD2B8 \uD50C\uB7EC\uC2DC", royalFlush: "\uB85C\uC5F4 \uD50C\uB7EC\uC2DC", fiveKind: "\uD30C\uC774\uBE0C \uCE74\uB4DC", sixKind: "식스 카드", sevenKind: "세븐 카드",
     beginner: "\uCD08\uAE09", middle: "\uC911\uAE09", elite: "\uC815\uC608", unique: "\uC804\uC124",
-    conscript: "\uC9D5\uC9D1\uBCD1", rogue: "\uB3C4\uC801", warrior: "\uC804\uC0AC", mage: "\uB9C8\uB3C4\uC0AC", elf: "\uAD81\uC218", priest: "\uC0AC\uC81C", alchemist: "\uC5F0\uAE08\uC220\uC0AC", royal: "\uC655\uC2E4 \uAE30\uC0AC", dragoon: "\uC6A9\uAE30\uC0AC", fate: "\uC6B4\uBA85\uC220\uC0AC", saintess: "\uC131\uB140", jackpot: "황금 잭팟",
+    conscript: "\uC9D5\uC9D1\uBCD1", rogue: "\uB3C4\uC801", warrior: "\uC804\uC0AC", mage: "\uB9C8\uB3C4\uC0AC", elf: "\uAD81\uC218", priest: "\uC0AC\uC81C", alchemist: "\uC5F0\uAE08\uC220\uC0AC", royal: "\uC655\uC2E4 \uAE30\uC0AC", dragoon: "\uC6A9\uAE30\uC0AC", fate: "\uC6B4\uBA85\uC220\uC0AC", saintess: "\uC131\uB140", jackpot: "황금 잭팟", mystery: "???",
     hand: "\uC6B4\uBA85\uC758 \uC190\uD328", hint: "\uAD50\uCCB4\uD560 \uCE74\uB4DC\uB97C \uC120\uD0DD\uD558\uC138\uC694", recruit: "\uC871\uBCF4 \uD655\uC815 & \uC18C\uD658", redraw: "\uC120\uD0DD \uCE74\uB4DC \uAD50\uCCB4", start: "\uC6E8\uC774\uBE0C \uC2DC\uC791", pause: "\uC77C\uC2DC \uC815\uC9C0", noSelection: "\uAD50\uCCB4\uD560 \uCE74\uB4DC\uB97C \uC120\uD0DD\uD558\uC138\uC694", noGold: "\uACE8\uB4DC\uAC00 \uBD80\uC871\uD569\uB2C8\uB2E4", full: "\uC804\uC7A5\uC774 \uAC00\uB4DD \uCC3C\uC2B5\uB2C8\uB2E4", summoned: " \uC18C\uD658 \uC644\uB8CC", rerolled: "\uC120\uD0DD\uD55C \uCE74\uB4DC\uB97C \uAD50\uCCB4\uD588\uC2B5\uB2C8\uB2E4",
     next: "\uB2E4\uC74C \uC2B5\uACA9 \uB300\uAE30 \uC911", raiding: "\uD574\uACE8 \uC57D\uD0C8\uB300 \uC9C4\uACA9 \uC911", kills: "\uCC98\uCE58", attack: "\uACF5\uACA9", range: "\uBC94\uC704", speed: "\uC18D\uB3C4", alchemyEffect: "\uBC94\uC704 \uACF5\uACA9 + \uAC15\uB825\uD55C \uC2AC\uB85C\uC6B0 + \uC7A5\uD310 \uC9C0\uC18D \uD53C\uD574", fateEffect: "\uB9F5 \uC804\uCCB4 \uC9C0\uC18D \uD53C\uD574", purgeEffect: "\uC18C\uD658 \uC989\uC2DC \uBAA8\uB4E0 \uC801 \uC18C\uBA78", guide: "\uC871\uBCF4\uBCC4 \uC18C\uD658 \uC9C1\uC5C5", open: "\uD3BC\uCCD0 \uBCF4\uAE30", gameOver: "\uC131\uCC44 \uD568\uB77D", retry: "\uB2E4\uC2DC \uBC29\uC5B4\uD558\uAE30", enemies: "\uBA85\uC758 \uC57D\uD0C8\uC790\uB97C \uCC98\uCE58\uD588\uC2B5\uB2C8\uB2E4.",
 };
@@ -101,7 +101,7 @@ const PIP_POSITIONS: Record<number, Array<[number, number]>> = {
 const RANGE_PER_CELL = 100 / 12;
 const PRIEST_BUFF_RANGE = RANGE_PER_CELL * 2;
 function cardCenter(card: Card) { if (card.joker)
-    return <img className={`court-art joker-art joker-art-${card.joker}`} src={`${ASSET_BASE}/sprites/royal-jester.png`} alt={card.joker === "color" ? "컬러 광대" : "흑백 광대"}/>; if (card.rank >= 11 && card.rank <= 13) {
+    return <img className={`court-art joker-art joker-art-${card.joker}`} src={`${ASSET_BASE}/sprites/royal-jester.png`} alt={card.joker === "color" ? "컬러 광대" : card.joker === "invert" ? "반전 광대" : "흑백 광대"}/>; if (card.rank >= 11 && card.rank <= 13) {
     const filename = card.rank === 11 ? "jack" : card.rank === 12 ? "queen" : "king";
     const courtName = card.rank === 11 ? "Jack" : card.rank === 12 ? "Queen" : "King";
     return <img className={`court-art court-${card.suit}`} src={`${ASSET_BASE}/sprites/cards/${filename}.png`} alt={`${SYMBOL[card.suit]} ${courtName}`}/>;
@@ -116,11 +116,11 @@ const JOBS: Record<Category, {
         number
     ];
 }> = {
-    high: { label: T.high, job: T.conscript, image: `${ASSET_BASE}/sprites/units/2.png`, base: [3, RANGE_PER_CELL * 3, 1] }, pair: { label: T.pair, job: T.rogue, image: `${ASSET_BASE}/sprites/units/3.png`, base: [5, RANGE_PER_CELL * 3, 1.35] }, twoPair: { label: T.twoPair, job: T.warrior, image: `${ASSET_BASE}/sprites/units/4.png`, base: [8, RANGE_PER_CELL * 3, 1.05] }, triple: { label: T.triple, job: T.mage, image: `${ASSET_BASE}/sprites/units/10.png`, base: [33, RANGE_PER_CELL * 5, .6] }, straight: { label: T.straight, job: T.elf, image: `${ASSET_BASE}/sprites/units/7.png`, base: [15.6, RANGE_PER_CELL * 5, .5] }, flush: { label: T.flush, job: T.alchemist, image: `${ASSET_BASE}/sprites/units/6.png`, base: [110, RANGE_PER_CELL * 2, .5] }, fullHouse: { label: T.fullHouse, job: T.priest, image: `${ASSET_BASE}/sprites/units/Q.png`, base: [21.92, RANGE_PER_CELL * 4, .65] }, fourKind: { label: T.fourKind, job: T.royal, image: `${ASSET_BASE}/sprites/units/K.png`, base: [43.5, RANGE_PER_CELL * 6, 1.15] }, straightFlush: { label: T.straightFlush, job: T.dragoon, image: `${ASSET_BASE}/sprites/units/A.png`, base: [114, RANGE_PER_CELL * 6, 1.25] }, royalFlush: { label: T.royalFlush, job: T.fate, image: `${ASSET_BASE}/sprites/units/J.png`, base: [208, 100, .82] }, fiveKind: { label: T.fiveKind, job: T.saintess, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] }, sixKind: { label: T.sixKind, job: T.jackpot, image: `${ASSET_BASE}/sprites/units/Jackpot.png`, base: [0, 0, 0] },
+    high: { label: T.high, job: T.conscript, image: `${ASSET_BASE}/sprites/units/2.png`, base: [3, RANGE_PER_CELL * 3, 1] }, pair: { label: T.pair, job: T.rogue, image: `${ASSET_BASE}/sprites/units/3.png`, base: [5, RANGE_PER_CELL * 3, 1.35] }, twoPair: { label: T.twoPair, job: T.warrior, image: `${ASSET_BASE}/sprites/units/4.png`, base: [8, RANGE_PER_CELL * 3, 1.05] }, triple: { label: T.triple, job: T.mage, image: `${ASSET_BASE}/sprites/units/10.png`, base: [33, RANGE_PER_CELL * 5, .6] }, straight: { label: T.straight, job: T.elf, image: `${ASSET_BASE}/sprites/units/7.png`, base: [15.6, RANGE_PER_CELL * 5, .5] }, flush: { label: T.flush, job: T.alchemist, image: `${ASSET_BASE}/sprites/units/6.png`, base: [110, RANGE_PER_CELL * 2, .5] }, fullHouse: { label: T.fullHouse, job: T.priest, image: `${ASSET_BASE}/sprites/units/Q.png`, base: [21.92, RANGE_PER_CELL * 4, .65] }, fourKind: { label: T.fourKind, job: T.royal, image: `${ASSET_BASE}/sprites/units/K.png`, base: [43.5, RANGE_PER_CELL * 6, 1.15] }, straightFlush: { label: T.straightFlush, job: T.dragoon, image: `${ASSET_BASE}/sprites/units/A.png`, base: [195.2, RANGE_PER_CELL * 6, .732] }, royalFlush: { label: T.royalFlush, job: T.fate, image: `${ASSET_BASE}/sprites/units/J.png`, base: [122, 100, 1.4] }, fiveKind: { label: T.fiveKind, job: T.saintess, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] }, sixKind: { label: T.sixKind, job: T.jackpot, image: `${ASSET_BASE}/sprites/units/Jackpot.png`, base: [0, 0, 0] }, sevenKind: { label: T.sevenKind, job: T.mystery, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] },
 };
 const GRID_SIZE = 12;
 const MAX_ATTACK_SPEED_LEVEL = 30;
-const BALANCE = { baseHp: 100, hpScale: 2.28, normalWaveHpCompensation: 40 / 30, hpPerWave: .04, hpGrowth: 1.028, baseSpeed: .76, speedPerWave: .003, maxSpeed: 1.55, damageScale: .24, bossHpUnits: 80, bossMoveScale: .58, spawnInterval: 600 } as const;
+const BALANCE = { baseHp: 100, hpScale: 3.078, normalWaveHpCompensation: 40 / 30, hpPerWave: .04, hpGrowth: 1.028, baseSpeed: .76, speedPerWave: .003, maxSpeed: 1.55, damageScale: .24, bossHpUnits: 80, bossMoveScale: .58, spawnInterval: 600 } as const;
 const HP_DIFFICULTY_CURVE = [[1, .65], [20, .75], [40, 1.1], [60, 1.55], [80, 1.9], [100, 2.25]] as const;
 const SLOTS = Array.from({ length: GRID_SIZE * GRID_SIZE }, (_, index) => ({ x: ((index % GRID_SIZE) + .5) / GRID_SIZE * 100, y: (Math.floor(index / GRID_SIZE) + .5) / GRID_SIZE * 100 }));
 const PATH = [{ x: 50, y: 12.5 }, { x: 87.5, y: 12.5 }, { x: 87.5, y: 87.5 }, { x: 12.5, y: 87.5 }, { x: 12.5, y: 12.5 }, { x: 50, y: 12.5 }];
@@ -142,7 +142,7 @@ const SELL_VALUES: Record<Category, [
     number,
     number,
     number
-] | number> = { high: [1, 1, 2], pair: [1, 1, 2], twoPair: [1, 2, 3], triple: [2, 3, 5], straight: [3, 4, 6], flush: [4, 6, 9], fullHouse: [5, 8, 12], fourKind: [10, 15, 22], straightFlush: [20, 30, 45], royalFlush: 80, fiveKind: 120, sixKind: 0 };
+] | number> = { high: [1, 1, 2], pair: [1, 1, 2], twoPair: [1, 2, 3], triple: [2, 3, 5], straight: [3, 4, 6], flush: [4, 6, 9], fullHouse: [5, 8, 12], fourKind: [10, 15, 22], straightFlush: [20, 30, 45], royalFlush: 80, fiveKind: 120, sixKind: 0, sevenKind: 0 };
 function sellValue(unit: Result) { const value = SELL_VALUES[unit.category]; return typeof value === "number" ? value : value[(unit.tier || 1) - 1]; }
 const STARTING_HAND: Card[] = [{ id: "s1", rank: 2, suit: "spade" }, { id: "s2", rank: 2, suit: "heart" }, { id: "s3", rank: 5, suit: "diamond" }, { id: "s4", rank: 5, suit: "club" }, { id: "s5", rank: 9, suit: "spade" }, { id: "s6", rank: 11, suit: "diamond" }, { id: "s7", rank: 13, suit: "club" }];
 function rankLabel(rank: number) { return rank === 15 ? "JOKER" : rank === 14 ? "A" : rank === 13 ? "K" : rank === 12 ? "Q" : rank === 11 ? "J" : String(rank); }
@@ -150,11 +150,11 @@ function shuffled<T>(items: T[]) { const result = [...items]; for (let index = r
 function cardKey(card: Card) { return card.rank === 15 ? `joker-${card.joker}` : `${card.rank}-${card.suit}`; }
 function buildDeck(prefix = "deck") { const deck: Card[] = []; for (let rank = 2; rank <= 14; rank++)
     for (const suit of SUITS)
-        deck.push({ id: `${prefix}-${rank}-${suit}`, rank, suit }); deck.push({ id: `${prefix}-joker-black`, rank: 15, suit: "spade", joker: "black" }, { id: `${prefix}-joker-color`, rank: 15, suit: "heart", joker: "color" }); return deck; }
+        deck.push({ id: `${prefix}-${rank}-${suit}`, rank, suit }); deck.push({ id: `${prefix}-joker-black`, rank: 15, suit: "spade", joker: "black" }, { id: `${prefix}-joker-color`, rank: 15, suit: "heart", joker: "color" }, { id: `${prefix}-joker-invert`, rank: 15, suit: "diamond", joker: "invert" }); return deck; }
 function dealHand(): Card[] { return shuffled(buildDeck(`deal-${Date.now()}`)).slice(0, 7).map((card, index) => ({ ...card, id: `${card.id}-${index}-${Math.random().toString(36).slice(2)}` })); }
 function drawFromDeck(count: number, kept: Card[]) { const excluded = new Set(kept.map(cardKey)); return shuffled(buildDeck(`draw-${Date.now()}`).filter(card => !excluded.has(cardKey(card)))).slice(0, count).map((card, index) => ({ ...card, id: `${card.id}-${index}-${Math.random().toString(36).slice(2)}` })); }
 function pointOnPath(progress: number) { const loop = ((progress % 1) + 1) % 1, p = loop * (PATH.length - 1), i = Math.min(PATH.length - 2, Math.floor(p)), t = p - i; return { x: PATH[i].x + (PATH[i + 1].x - PATH[i].x) * t, y: PATH[i].y + (PATH[i + 1].y - PATH[i].y) * t }; }
-function tierFor(category: Category, power: number): Tier | null { if (category === "royalFlush" || category === "fiveKind" || category === "sixKind")
+function tierFor(category: Category, power: number): Tier | null { if (category === "royalFlush" || category === "fiveKind" || category === "sixKind" || category === "sevenKind")
     return null; if (category === "fourKind" || category === "straightFlush")
     return 3; const first = category === "high" ? 8 : 6, second = category === "high" ? 11 : 10; return power <= first ? 1 : power <= second ? 2 : 3; }
 function baseEvaluation(cards: Card[]): {
@@ -206,7 +206,16 @@ function baseEvaluation(cards: Card[]): {
     return { category, power, score: weight * 1000000 + power * 10000 + ranks.reduce((s, r) => s + r, 0) };
 }
 function evaluateFive(cards: Card[]) { const jokers = cards.filter(card => card.rank === 15), normal = cards.filter(card => card.rank !== 15), counts = normal.reduce<Record<number, number>>((map, card) => ({ ...map, [card.rank]: (map[card.rank] || 0) + 1 }), {}), fiveRank = Object.entries(counts).find(([, count]) => count + jokers.length >= 5); if (fiveRank)
-    return { category: "fiveKind" as Category, power: Number(fiveRank[0]), score: 10000000 + Number(fiveRank[0]) }; if (!jokers.length)
+    return { category: "fiveKind" as Category, power: Number(fiveRank[0]), score: 10000000 + Number(fiveRank[0]) }; if (jokers.length === 3) {
+    const sameSuit = normal.length > 0 && normal.every(card => card.suit === normal[0].suit), ranks = new Set(normal.map(card => card.rank)), royal = [10, 11, 12, 13, 14];
+    if (sameSuit && [...ranks].every(rank => royal.includes(rank)))
+        return { category: "royalFlush" as Category, power: 14, score: 9014000 };
+    const windows = [[14, 2, 3, 4, 5], ...Array.from({ length: 9 }, (_, start) => Array.from({ length: 5 }, (__, offset) => start + offset + 2))], straightHigh = sameSuit ? windows.map((window, index) => ({ window, high: index === 0 ? 5 : window[4] })).filter(({ window }) => [...ranks].every(rank => window.includes(rank))).sort((a, b) => b.high - a.high)[0]?.high : undefined;
+    if (straightHigh)
+        return { category: "straightFlush" as Category, power: straightHigh, score: 8000000 + straightHigh * 10000 };
+    const power = Math.max(...normal.map(card => card.rank));
+    return { category: "fourKind" as Category, power, score: 7000000 + power * 10000 };
+} if (!jokers.length)
     return baseEvaluation(cards); let best: {
     category: Category;
     power: number;
@@ -228,13 +237,17 @@ function fiveCardSets(cards: Card[]) { const sets: Card[][] = []; for (let a = 0
                 for (let e = d + 1; e < cards.length; e++)
                     sets.push([cards[a], cards[b], cards[c], cards[d], cards[e]]); return sets; }
 function evaluate(cards: Card[]): Result {
-    const jokers = cards.filter(card => card.rank === 15), rankCounts = cards.filter(card => card.rank !== 15).reduce<Record<number, number>>((map, card) => ({ ...map, [card.rank]: (map[card.rank] || 0) + 1 }), {}), sixEntry = jokers.length === 2 ? Object.entries(rankCounts).find(([, count]) => count === 4) : undefined;
+    const jokers = cards.filter(card => card.rank === 15), rankCounts = cards.filter(card => card.rank !== 15).reduce<Record<number, number>>((map, card) => ({ ...map, [card.rank]: (map[card.rank] || 0) + 1 }), {}), sevenEntry = jokers.length === 3 ? Object.entries(rankCounts).find(([, count]) => count === 4) : undefined, sixEntry = sevenEntry ? undefined : Object.entries(rankCounts).find(([, count]) => count + jokers.length >= 6);
     let best: {
         category: Category;
         power: number;
         score: number;
     } = { category: "high", power: 2, score: 0 }, bestCards = cards.slice(0, 5);
-    if (sixEntry) {
+    if (sevenEntry) {
+        best = { category: "sevenKind", power: Number(sevenEntry[0]), score: 12000000 + Number(sevenEntry[0]) };
+        bestCards = cards.filter(card => card.rank === 15 || card.rank === best.power);
+    }
+    else if (sixEntry) {
         best = { category: "sixKind", power: Number(sixEntry[0]), score: 11000000 + Number(sixEntry[0]) };
         bestCards = cards.filter(card => card.rank === 15 || card.rank === best.power);
     }
@@ -246,7 +259,7 @@ function evaluate(cards: Card[]): Result {
                 bestCards = subset;
             }
         }
-    const job = JOBS[best.category], tier = tierFor(best.category, best.power), damageMult = tier === 1 ? .85 : tier === 2 ? 1 : tier === 3 ? 1.25 : 1, fixedUtility = best.category === "flush" || best.category === "fullHouse", speedMult = fixedUtility ? 1 : tier === 1 ? .9 : tier === 2 ? 1 : tier === 3 ? 1.12 : 1, tierLabel = tier === 1 ? T.beginner : tier === 2 ? T.middle : tier === 3 ? T.elite : T.unique, effect = best.category === "flush" ? "alchemy" : best.category === "royalFlush" ? "globalDot" : best.category === "fiveKind" ? "purge" : best.category === "sixKind" ? "jackpot" : "single";
+    const job = JOBS[best.category], tier = tierFor(best.category, best.power), damageMult = tier === 1 ? .85 : tier === 2 ? 1 : tier === 3 ? 1.25 : 1, fixedUtility = best.category === "flush" || best.category === "fullHouse", speedMult = fixedUtility ? 1 : tier === 1 ? .9 : tier === 2 ? 1 : tier === 3 ? 1.12 : 1, tierLabel = tier === 1 ? T.beginner : tier === 2 ? T.middle : tier === 3 ? T.elite : T.unique, effect = best.category === "flush" ? "alchemy" : best.category === "royalFlush" ? "globalDot" : best.category === "fiveKind" ? "purge" : best.category === "sixKind" ? "jackpot" : best.category === "sevenKind" ? "ending" : "single";
     return { category: best.category, label: job.label, job: job.job, image: job.image, tier, tierLabel, powerRank: best.power, damage: Math.max(job.base[0] > 0 ? 1 : 0, Math.round(job.base[0] * damageMult)), range: Number(job.base[1].toFixed(2)), speed: Number((job.base[2] * speedMult).toFixed(2)), effect, bestCardIds: bestCards.map(card => card.id) };
 }
 function roleDescription(unit: Result, locale: Locale = activeLocale) { if (locale !== "ko")
@@ -257,22 +270,24 @@ function roleDescription(unit: Result, locale: Locale = activeLocale) { if (loca
     case "triple": return `반경 ${[8, 11, 14][tier]} 범위 폭발`;
     case "straight": return "장거리 + 치명타확률 50% + 보스 추가피해 100%";
     case "flush": return "독 장판 + 이동속도 50% 감소";
-    case "fullHouse": return "공격 사거리 4칸 · 버프 범위 2칸 내 아군 공격 +20% · 속도 +20%";
+    case "fullHouse": return "공격 사거리 4칸 · 버프 범위 2칸 내 사제 외 아군 공격력 +50% · 중복 적용 불가";
     case "fourKind": return "강력한 단일 검기 + 보스 120% 추가 피해";
     case "straightFlush": return "매우 강력한 단일 공격";
     case "royalFlush": return "초대형 강력한 광역 지속 피해";
     case "fiveKind": return "사용 즉시 전체 적 소멸";
     case "sixKind": return "소환 즉시 2,000G 획득";
+    case "sevenKind": return "???";
 } }
 export default function Home() {
     const [selectedRerollCount, setSelectedRerollCount] = useState(0);
     const [hand, setHand] = useState<Card[]>(STARTING_HAND), [selected, setSelected] = useState<string[]>([]), [inventory, setInventory] = useState<Unit[]>([]), [selectedInventory, setSelectedInventory] = useState<string | null>(null), [towers, setTowers] = useState<Tower[]>([]), [selectedTower, setSelectedTower] = useState<string | null>(null), [saleConfirmId, setSaleConfirmId] = useState<string | null>(null), [enemies, setEnemies] = useState<Enemy[]>([]), [hitFx, setHitFx] = useState<HitFx[]>([]), [attackFx, setAttackFx] = useState<AttackFx[]>([]), [alchemyPools, setAlchemyPools] = useState<AlchemyPool[]>([]), [running, setRunning] = useState(false), [gameOver, setGameOver] = useState(false), [won, setWon] = useState(false), [gold, setGold] = useState(20), [attackLevel, setAttackLevel] = useState(0), [attackSpeedLevel, setAttackSpeedLevel] = useState(0), [wave, setWave] = useState(1), [kills, setKills] = useState(0), [spawned, setSpawned] = useState(0), [cooldown, setCooldown] = useState(0), [message, setMessage] = useState(T.hint), [waveCue, setWaveCue] = useState<string | null>(null), [tutorialStep, setTutorialStep] = useState(0), [soundOn, setSoundOn] = useState(true), [locale, setLocale] = useState<Locale>("ko"), [languageChosen, setLanguageChosen] = useState(false);
+    const [endingActive, setEndingActive] = useState(false);
     activeLocale = locale;
     const result = useMemo(() => evaluate(hand), [hand, locale]), attackMultiplier = 1 + attackLevel * .025, attackSpeedMultiplier = 1 + attackSpeedLevel * .025, upgradeCost = (attackLevel + 1) * 5, speedUpgradeCost = (attackSpeedLevel + 1) * 5, initialDealRef = useRef(false), lastFxAt = useRef(0), gameAudioRef = useRef<ReturnType<typeof createGameAudio> | null>(null), alchemyPoolsRef = useRef<AlchemyPool[]>([]), alchemyLastCastRef = useRef<Map<string, number>>(new Map()), lastAttackAtRef = useRef<Map<string, number>>(new Map()), selectedPlaced = towers.find(t => t.id === selectedTower);
     const [gameSpeed, setGameSpeed] = useState<1 | 2 | 3>(1), [playbackPaused, setPlaybackPaused] = useState(false), [bossWaveHold, setBossWaveHold] = useState(0), gameClockRef = useRef(0), lastTickAtRef = useRef(0), bossWaveReleaseRef = useRef(0);
     const baseCopy = UI[locale], copy = { ...baseCopy, start: wave === 1 && spawned === 0 ? baseCopy.begin : baseCopy.start, selectedReroll: `${baseCopy.selectedReroll} · ×${selectedRerollCount + 1}`, placeHint: selectedPlaced ? roleDescription(selectedPlaced, locale) : baseCopy.placeHint };
     const selectedInventoryUnit = inventory.find(unit => unit.id === selectedInventory), activeBosses = enemies.filter(enemy => enemy.boss), population = enemies.reduce((total, enemy) => total + (enemy.boss ? 20 : 1), 0);
-    const isPriestBuffed = (tower: Tower) => towers.some(priest => priest.category === "fullHouse" && priest.id !== tower.id && Math.hypot(SLOTS[tower.slot].x - SLOTS[priest.slot].x, SLOTS[tower.slot].y - SLOTS[priest.slot].y) <= PRIEST_BUFF_RANGE);
+    const isPriestBuffed = (tower: Tower) => tower.category !== "fullHouse" && towers.some(priest => priest.category === "fullHouse" && Math.hypot(SLOTS[tower.slot].x - SLOTS[priest.slot].x, SLOTS[tower.slot].y - SLOTS[priest.slot].y) <= PRIEST_BUFF_RANGE);
     const waveTarget = wave % 10 === 0 ? 1 : 30, isBossWave = wave % 10 === 0, monsterKind = monsterKindForWave(isBossWave ? Math.max(1, wave - 1) : wave), monsterBase = MONSTERS[monsterKind];
     const monster = useMemo(() => ({ ...monsterBase, 0: MONSTER_NAMES[locale][monsterKind], locale }), [monsterBase, monsterKind, locale]);
     useEffect(() => { if (initialDealRef.current)
@@ -284,7 +299,7 @@ export default function Home() {
         bossWaveReleaseRef.current = gameClockRef.current + 60000;
         setBossWaveHold(60);
         gameAudioRef.current?.play("boss");
-    } setEnemies(v => [...v, { id: Date.now(), progress: 0, hp, maxHp: hp, boss: bossSpawn, bossRank: bossSpawn ? wave / 10 : undefined, bossDeadline: bossSpawn ? gameClockRef.current + 300000 : undefined, kind: monsterKind, name: monster.name, color: "transparent", speed, reward }]); setSpawned(v => v + 1); }, spawnIntervalForWave(wave) / gameSpeed); return () => window.clearInterval(timer); }, [running, wave, gameOver, spawned, waveTarget, isBossWave, monster, monsterKind, gameSpeed]);
+    } setEnemies(v => [...v, { id: Date.now(), progress: 0, hp, maxHp: hp, boss: bossSpawn, bossRank: bossSpawn ? wave / 10 : undefined, bossDeadline: bossSpawn ? gameClockRef.current + 180000 : undefined, kind: monsterKind, name: monster.name, color: "transparent", speed, reward }]); setSpawned(v => v + 1); }, spawnIntervalForWave(wave) / gameSpeed); return () => window.clearInterval(timer); }, [running, wave, gameOver, spawned, waveTarget, isBossWave, monster, monsterKind, gameSpeed]);
     useEffect(() => { if (!running || spawned < waveTarget || wave >= 100 || (isBossWave && bossWaveHold > 0))
         return; setWave(v => v + 1); setSpawned(0); setMessage(`WAVE ${wave + 1}`); }, [running, spawned, wave, waveTarget, isBossWave, bossWaveHold]);
     useEffect(() => { if (!running)
@@ -335,13 +350,17 @@ export default function Home() {
                         slowMap.set(enemy.id, Math.min(slowMap.get(enemy.id) || 1, pool.slow));
                     }
                 }
-            const priestBuff = (tower: Tower) => { let damage = .0, speed = .0; for (const priest of towers.filter(unit => unit.category === "fullHouse" && unit.id !== tower.id)) {
-                const a = SLOTS[tower.slot], b = SLOTS[priest.slot];
-                if (Math.hypot(a.x - b.x, a.y - b.y) <= PRIEST_BUFF_RANGE) {
-                    damage = Math.max(damage, .2);
-                    speed = Math.max(speed, .2);
-                }
-            } return { damage, speed }; };
+            const priestBuff = (tower: Tower) => {
+                if (tower.category === "fullHouse")
+                    return { damage: 0, speed: 0 };
+                const a = SLOTS[tower.slot], inBuffRange = towers.some(priest => {
+                    if (priest.category !== "fullHouse")
+                        return false;
+                    const b = SLOTS[priest.slot];
+                    return Math.hypot(a.x - b.x, a.y - b.y) <= PRIEST_BUFF_RANGE;
+                });
+                return { damage: inBuffRange ? .5 : 0, speed: 0 };
+            };
             const activeTowerIds = new Set(towers.map(tower => tower.id));
             for (const id of lastAttackAtRef.current.keys())
                 if (!activeTowerIds.has(id))
@@ -493,18 +512,27 @@ export default function Home() {
         return; if (!running && !playbackPaused && !(wave === 1 && spawned === 0 && inventory.length + towers.length === 0)) {
         setMessage("웨이브 진행 중에 다음 유닛을 소환할 수 있습니다");
         return;
+    } if (result.effect === "ending") {
+        setSelected([]);
+        setRunning(false);
+        setPlaybackPaused(true);
+        setWon(true);
+        setEndingActive(true);
+        setMessage("???");
+        playSound("jackpot");
+        return;
     } if (result.effect === "jackpot") {
         setGold(v => v + 2000);
         setMessage("식스 카드 잭팟 +2,000G");
         setSelected([]);
-        setCooldown(5);
+        setCooldown(10);
         playSound("jackpot");
         return;
-    } const unit: Unit = { ...result, id: `unit-${Date.now()}` }; setInventory(v => [...v, unit]); setMessage(`${result.tierLabel} ${result.job} 인벤토리 보관`); setSelected([]); setCooldown(5); playSound(result.effect === "purge" ? "saintess" : "summon"); }
+    } const unit: Unit = { ...result, id: `unit-${Date.now()}` }; setInventory(v => [...v, unit]); setMessage(`${term(locale, result.tierLabel)} ${term(locale, result.job)} 인벤토리 보관`); setSelected([]); setCooldown(10); playSound(result.effect === "purge" ? "saintess" : "summon"); }
     function chooseInventory(id: string) { setSelectedInventory(v => v === id ? null : id); setSelectedTower(null); setSaleConfirmId(null); }
     function confirmRareSale(unit: Unit | Tower) { const protectedUnit = ["fourKind", "straightFlush", "royalFlush", "fiveKind"].includes(unit.category); if (protectedUnit && saleConfirmId !== unit.id) {
         setSaleConfirmId(unit.id);
-        setMessage(`${unit.job}은 희귀 유닛입니다. 판매 버튼을 다시 누르면 판매됩니다`);
+        setMessage(`${term(locale, unit.job)}은 희귀 유닛입니다. 판매 버튼을 다시 누르면 판매됩니다`);
         return false;
     } setSaleConfirmId(null); return true; }
     function sellInventoryUnit() { if (!selectedInventoryUnit)
@@ -512,7 +540,7 @@ export default function Home() {
         setMessage("첫 웨이브를 시작한 뒤 유닛을 판매할 수 있습니다");
         return;
     } if (!confirmRareSale(selectedInventoryUnit))
-        return; const value = sellValue(selectedInventoryUnit); setInventory(v => v.filter(unit => unit.id !== selectedInventoryUnit.id)); setSelectedInventory(null); setGold(v => v + value); setMessage(`${selectedInventoryUnit.job} 판매 +${value}G`); playSound("sell"); }
+        return; const value = sellValue(selectedInventoryUnit); setInventory(v => v.filter(unit => unit.id !== selectedInventoryUnit.id)); setSelectedInventory(null); setGold(v => v + value); setMessage(`${term(locale, selectedInventoryUnit.job)} ${copy.sell} +${value}G`); playSound("sell"); }
     function useSlot(slot: number) { if (isPathSlot(slot))
         return; const target = towers.find(t => t.slot === slot); if (selectedInventory) {
         const unit = inventory.find(u => u.id === selectedInventory);
@@ -529,19 +557,19 @@ export default function Home() {
             setGold(v => v + reward);
             setInventory(v => v.filter(u => u.id !== unit.id));
             setSelectedInventory(null);
-            setMessage(`${unit.job}: ${T.purgeEffect} +${reward}G`);
+            setMessage(`${term(locale, unit.job)}: ${term(locale, T.purgeEffect)} +${reward}G`);
             playSound("saintess");
             return;
         }
         setTowers(v => [...v.filter(t => t.id !== target?.id), { ...unit, slot }]);
         setInventory(v => [...v.filter(u => u.id !== unit.id), ...(target ? [(({ slot: _, ...stored }) => stored)(target)] : [])]);
         setSelectedInventory(null);
-        setMessage(`${unit.job} 배치 완료`);
+        setMessage(`${term(locale, unit.job)} 배치 완료`);
         return;
     } if (!selectedTower) {
         if (target) {
             setSelectedTower(target.id);
-            setMessage(`${target.job} 선택 · 이동할 칸을 고르세요`);
+            setMessage(`${term(locale, target.job)} 선택 · 이동할 칸을 고르세요`);
         }
         return;
     } const moving = towers.find(t => t.id === selectedTower); if (!moving) {
@@ -549,17 +577,17 @@ export default function Home() {
         return;
     } if (target?.id === moving.id) {
         setSelectedTower(null);
-        setMessage(`${moving.job} 선택 해제`);
+        setMessage(`${term(locale, moving.job)} 선택 해제`);
         return;
-    } setTowers(v => v.map(t => t.id === moving.id ? { ...t, slot } : target && t.id === target.id ? { ...t, slot: moving.slot } : t)); setSelectedTower(null); setMessage(target ? `${moving.job} ↔ ${target.job} 위치 교체` : `${moving.job} 배치 이동`); }
+    } setTowers(v => v.map(t => t.id === moving.id ? { ...t, slot } : target && t.id === target.id ? { ...t, slot: moving.slot } : t)); setSelectedTower(null); setMessage(target ? `${term(locale, moving.job)} ↔ ${term(locale, target.job)} 위치 교체` : `${term(locale, moving.job)} 배치 이동`); }
     function recallTower() { const tower = towers.find(t => t.id === selectedTower); if (!tower)
-        return; const { slot: _, ...unit } = tower; setTowers(v => v.filter(t => t.id !== tower.id)); setInventory(v => [...v, unit]); setSelectedTower(null); setMessage(`${tower.job} 인벤토리 회수`); }
+        return; const { slot: _, ...unit } = tower; setTowers(v => v.filter(t => t.id !== tower.id)); setInventory(v => [...v, unit]); setSelectedTower(null); setMessage(`${term(locale, tower.job)} ${copy.recall}`); }
     function sellTower() { const tower = towers.find(t => t.id === selectedTower); if (!tower)
         return; if (!running && wave === 1 && spawned === 0) {
         setMessage("첫 웨이브를 시작한 뒤 유닛을 판매할 수 있습니다");
         return;
     } if (!confirmRareSale(tower))
-        return; const value = sellValue(tower); setTowers(v => v.filter(t => t.id !== tower.id)); setSelectedTower(null); setGold(v => v + value); setMessage(`${tower.job} 판매 +${value}G`); playSound("sell"); }
+        return; const value = sellValue(tower); setTowers(v => v.filter(t => t.id !== tower.id)); setSelectedTower(null); setGold(v => v + value); setMessage(`${term(locale, tower.job)} ${copy.sell} +${value}G`); playSound("sell"); }
     function upgradeAttack() { if (gold < upgradeCost) {
         setMessage(T.noGold);
         return;
@@ -571,7 +599,7 @@ export default function Home() {
         setMessage(T.noGold);
         return;
     } setGold(v => v - speedUpgradeCost); setAttackSpeedLevel(v => v + 1); setMessage(`전체 공격속도 LV.${attackSpeedLevel + 1} 강화 완료`); playSound("upgrade"); }
-    function restart() { setHand(dealHand()); setSelected([]); setSelectedRerollCount(0); setInventory([]); setSelectedInventory(null); setTowers([]); setSelectedTower(null); setSaleConfirmId(null); setEnemies([]); setHitFx([]); setAttackFx([]); setAlchemyPools([]); alchemyPoolsRef.current = []; alchemyLastCastRef.current.clear(); lastAttackAtRef.current.clear(); lastFxAt.current = 0; gameClockRef.current = 0; lastTickAtRef.current = 0; bossWaveReleaseRef.current = 0; setBossWaveHold(0); setGameSpeed(1); setPlaybackPaused(false); setRunning(false); setGameOver(false); setWon(false); setGold(20); setAttackLevel(0); setAttackSpeedLevel(0); setWave(1); setKills(0); setSpawned(0); setCooldown(0); setMessage(T.hint); }
+    function restart() { setHand(dealHand()); setSelected([]); setSelectedRerollCount(0); setInventory([]); setSelectedInventory(null); setTowers([]); setSelectedTower(null); setSaleConfirmId(null); setEnemies([]); setHitFx([]); setAttackFx([]); setAlchemyPools([]); alchemyPoolsRef.current = []; alchemyLastCastRef.current.clear(); lastAttackAtRef.current.clear(); lastFxAt.current = 0; gameClockRef.current = 0; lastTickAtRef.current = 0; bossWaveReleaseRef.current = 0; setBossWaveHold(0); setGameSpeed(1); setPlaybackPaused(false); setRunning(false); setGameOver(false); setWon(false); setEndingActive(false); setGold(20); setAttackLevel(0); setAttackSpeedLevel(0); setWave(1); setKills(0); setSpawned(0); setCooldown(0); setMessage(T.hint); }
     const guide: [
         [
             Category,
@@ -581,19 +609,20 @@ export default function Home() {
             Category,
             string
         ]>
-    ] = [["high", T.conscript], ["pair", T.rogue], ["twoPair", T.warrior], ["triple", T.mage], ["straight", T.elf], ["flush", T.alchemist], ["fullHouse", T.priest], ["fourKind", T.royal], ["straightFlush", T.dragoon], ["royalFlush", T.fate], ["fiveKind", T.saintess], ["sixKind", T.jackpot]];
+    ] = [["high", T.conscript], ["pair", T.rogue], ["twoPair", T.warrior], ["triple", T.mage], ["straight", T.elf], ["flush", T.alchemist], ["fullHouse", T.priest], ["fourKind", T.royal], ["straightFlush", T.dragoon], ["royalFlush", T.fate], ["fiveKind", T.saintess], ["sixKind", T.jackpot], ["sevenKind", T.mystery]];
     const tutorials = TUTORIALS[locale];
     return <main className="game-shell"><section className="game-frame" aria-label={term(locale, T.brand)}><header className="topbar"><div className="brand-mark">{SYMBOL.spade}</div><div className="brand-copy"><strong>{term(locale, T.brand)}</strong><span>POKER RANDOM DEFENSE</span></div><div className="wave-chip"><span>WAVE</span><strong>{String(wave).padStart(3, "0")} / 100</strong></div><div className="resources"><span className="population-resource">{"\u2620"} <b>{population}/200</b></span><span className="gold-resource"><i>GOLD</i><b>{gold.toLocaleString()}</b><small>G</small></span><button className="sound-toggle" aria-label={soundOn ? "Sound off" : "Sound on"} onClick={toggleSound}>{soundOn ? "♪" : "×"}</button></div></header>
     <div className="corner-controls"><button className="language-cycle" aria-label={copy.language} onClick={cycleLocale}>{LOCALE_LABEL[locale]}</button><div className="playback-control"><button className={playbackPaused ? "paused" : ""} aria-label={copy.playback} onClick={cyclePlayback}>{playbackPaused ? "Ⅱ" : `${gameSpeed}×`}</button><output aria-live="polite" className={activeBosses.length || bossWaveHold > 0 ? "boss-time" : ""}>{activeBosses.length ? `BOSS ×${activeBosses.length}${bossWaveHold > 0 ? ` · NEXT ${formatTimer(bossWaveHold)}` : ""}` : bossWaveHold > 0 ? `NEXT ${formatTimer(bossWaveHold)}` : `${spawned}/${waveTarget} · ${population}/200`}</output></div></div>
     <div className="battle-wrap"><div className="battle-header"><div><span className="status-dot"/> {isBossWave ? "BOSS WAVE" : monster[0]} <small>{isBossWave ? `RANK ${wave / 10}` : monsterTrait(monster)}</small></div><strong>{spawned}/{waveTarget} · {population}/200</strong></div><div className="battlefield"><div className="forest-noise"/><div className="loop-segment loop-top"/><div className="loop-segment loop-right"/><div className="loop-segment loop-bottom"/><div className="loop-segment loop-left"/><div className="inner-ground"><span>DEFENSE<br />ZONE</span></div><div className="spawn-gate">SPAWN</div>{activeBosses.map(boss => { const p = pointOnPath(boss.progress), secondsLeft = Math.max(0, Math.ceil(((boss.bossDeadline ?? gameClockRef.current) - gameClockRef.current) / 1000)); return <div key={`boss-hud-${boss.id}`} className="boss-health" style={{ left: `${p.x}%`, top: `${p.y}%` }}><em className="boss-timer">BOSS {formatTimer(secondsLeft)}</em><span>RANK {boss.bossRank} · {boss.name}</span><i><b style={{ width: `${Math.max(0, boss.hp / boss.maxHp) * 100}%` }}/></i><strong>{Math.ceil(boss.hp).toLocaleString()}</strong></div>; })}{SLOTS.map((slot, index) => { const tower = towers.find(t => t.slot === index), blocked = isPathSlot(index), targetState = !blocked && (selectedInventory || selectedTower) && tower?.id !== selectedTower ? (tower ? "swap-target" : "move-target") : ""; return <button type="button" key={index} disabled={blocked} aria-label={blocked ? "몬스터 이동로" : tower ? `${tower.job} 배치칸` : `${index + 1}번 빈 배치칸`} onClick={() => useSlot(index)} className={`grid-slot ${blocked ? "blocked" : ""} ${tower ? "tower-slot occupied" : ""} ${tower?.effect || ""} ${tower?.category === "fullHouse" ? "priest-aura" : ""} ${tower && isPriestBuffed(tower) ? "priest-buffed" : ""} ${tower?.id === selectedTower ? "selected" : ""} ${tower && attackFx.some(fx => fx.towerId === tower.id) ? "attacking" : ""} ${targetState}`} style={{ left: `${slot.x}%`, top: `${slot.y}%` }}>{tower ? <><img src={attackFx.some(fx => fx.towerId === tower.id) ? tower.image.replace("/units/", "/units/attack/") : `${tower.image}?idle=1`} alt=""/><span className={`tier-dot tier-${tower.tier || 3}`}>{term(locale, tower.tierLabel)}</span></> : !blocked && <span className="slot-plus">+</span>}</button>; })}{selectedPlaced && <div className="range-preview" style={{ left: `${SLOTS[selectedPlaced.slot].x}%`, top: `${SLOTS[selectedPlaced.slot].y}%`, width: `${selectedPlaced.range * 2}%` }}/>}{alchemyPools.map(pool => <span key={pool.id} className="alchemy-pool" style={{ left: `${pool.x}%`, top: `${pool.y}%`, width: `${pool.radius * 2}%` }}/>)}{attackFx.map(fx => { const dx = fx.tx - fx.x, dy = fx.ty - fx.y, length = Math.hypot(dx, dy), angle = Math.atan2(dy, dx) * 180 / Math.PI; return <span key={fx.id} className={`attack-fx attack-${fx.category}`}><i className="attack-trace" style={{ left: `${fx.x}%`, top: `${fx.y}%`, width: `${length}%`, transform: `rotate(${angle}deg)` }}/><b className="attack-impact" style={{ left: `${fx.tx}%`, top: `${fx.ty}%`, width: `${fx.radius * 2}%` }}/></span>; })}{enemies.map(e => { const p = pointOnPath(e.progress); return <div key={e.id} title={`${e.boss ? "보스 · " : ""}${e.name} · HP ${Math.ceil(e.hp)}`} className={`enemy ${e.boss ? `boss boss-rank-${e.bossRank}` : ""} ${e.marked ? "marked" : ""} ${e.slowed ? "slowed" : ""} ${e.cursed ? "cursed" : ""} ${e.hitPulse ? "hit-flash-a" : "hit-flash-b"}`} style={{ left: `${p.x}%`, top: `${p.y}%`, backgroundColor: e.color }}><span className="enemy-face">{e.boss ? "B" : String(e.kind + 1).padStart(2, "0")}</span>{e.boss && <b className="boss-badge">BOSS</b>}{e.marked && <b className="status-mark">!</b>}{e.slowed && <b className="status-slow">*</b>}{e.cursed && <b className="status-curse">◆</b>}<i style={{ width: `${Math.max(0, e.hp / e.maxHp) * 100}%` }}/></div>; })}{hitFx.map(fx => <span key={fx.id} className={`hit-number ${fx.critical ? "critical" : ""}`} style={{ left: `${fx.x}%`, top: `${fx.y}%` }}>{fx.critical ? "CRIT " : "-"}{fx.amount}</span>)}{waveCue && <div className={`wave-cue ${isBossWave ? "boss-cue" : ""}`}>{waveCue}<small>{isBossWave ? "강적 1체 · 일반 몬스터 80마리분" : "30 ENEMIES INCOMING"}</small></div>}{!selectedPlaced && <div className="battle-message" aria-live="polite">{cooldown > 0 ? `NEXT HAND ${cooldown}s` : selectedInventory ? "배치할 칸을 선택하세요" : message}</div>}{selectedPlaced && <aside className="field-unit-actions" aria-label={`${selectedPlaced.job} 조작창`}><button className="command-close" onClick={() => setSelectedTower(null)} aria-label="유닛 선택 해제">×</button><div className="command-unit"><img src={selectedPlaced.image} alt=""/><span><small>{term(locale, selectedPlaced.tierLabel)} · #{selectedPlaced.slot + 1}</small><strong>{term(locale, selectedPlaced.job)}</strong>{isPriestBuffed(selectedPlaced) && <em>사제 버프 적용 중</em>}</span></div><div className="command-stats"><span><small>{copy.attack}</small><b>{Math.round(selectedPlaced.damage * attackMultiplier * 10) / 10}</b></span><span><small>{copy.range}</small><b>{selectedPlaced.range}</b></span><span><small>{copy.speed}</small><b>{(selectedPlaced.speed * attackSpeedMultiplier).toFixed(2)}</b></span></div><p>{copy.placeHint}</p><div className="command-actions"><button onClick={recallTower}>{copy.recall}</button><button className="sell" onClick={sellTower}>{copy.sell} <b>+{sellValue(selectedPlaced)}G</b></button></div></aside>}</div></div>
     <div className={`unit-dock ${selectedInventoryUnit ? "has-selection" : ""}`}><section className={`unit-inventory ${selectedInventoryUnit ? "has-selection" : ""}`}><div className="inventory-title"><strong>{copy.inventory}</strong><span>{inventory.length}</span></div><div className="inventory-list">{inventory.length === 0 ? <p>{copy.emptyInventory}</p> : inventory.map(unit => <button key={unit.id} onClick={() => chooseInventory(unit.id)} className={selectedInventory === unit.id ? "active" : ""}><img src={unit.image} alt=""/><span>{term(locale, unit.job)}</span><small>{unit.effect === "purge" ? copy.use : term(locale, unit.tierLabel)}</small></button>)}</div>{selectedInventoryUnit && <div className="inventory-selection"><img src={selectedInventoryUnit.image} alt=""/><div><strong>{term(locale, selectedInventoryUnit.job)}</strong><small>{term(locale, selectedInventoryUnit.tierLabel)} · {copy.sell} {sellValue(selectedInventoryUnit)}G</small></div><span>{copy.placeHint}</span><button onClick={sellInventoryUnit} aria-label={`${selectedInventoryUnit.job} ${sellValue(selectedInventoryUnit)}골드에 판매`}>{copy.sell} <b>+{sellValue(selectedInventoryUnit)}G</b></button></div>}<div className="army-upgrade"><div className="upgrade-row"><div><span>{copy.totalAttack}</span><strong>LV.{attackLevel} · +{attackLevel * 2.5}%</strong></div><button disabled={gold < upgradeCost} onClick={upgradeAttack} >{copy.attackUp} <b>{upgradeCost}G</b></button></div><div className="upgrade-row speed-row"><div><span>{copy.totalSpeed}</span><strong>LV.{attackSpeedLevel} · +{attackSpeedLevel * 2.5}%</strong></div><button disabled={attackSpeedLevel >= MAX_ATTACK_SPEED_LEVEL || gold < speedUpgradeCost} onClick={upgradeAttackSpeed}>{copy.speedUp} <b>{attackSpeedLevel >= MAX_ATTACK_SPEED_LEVEL ? "MAX" : `${speedUpgradeCost}G`}</b></button></div></div></section>
-    <section className="hand-result summon-preview"><div className="summon-portrait"><img src={result.image} alt=""/><i>소환 예정</i></div><div className="summon-copy"><div className="summon-path"><span>현재 족보</span><b>{result.label}</b></div><strong><i className={`tier-badge tier-${result.tier || 3}`}>{result.tierLabel}</i> {result.job}</strong><div className="summon-stats"><span><small>공격</small><b>{result.damage}</b></span><span><small>사거리</small><b>{result.range}</b></span><span><small>공속</small><b>{result.speed}</b></span></div><small className="effect-note">{roleDescription(result)}</small></div></section></div>
-    <section className="hand-panel"><div className="section-title"><div className="hand-heading"><span>{T.hand}</span><small>{cooldown > 0 ? `NEXT HAND ${cooldown}s` : copy.handHint}</small></div><div className="hand-glance"><img src={result.image} alt=""/><span><small>{term(locale, result.label)}</small><b>{term(locale, result.job)}</b></span></div><div className="hand-wallet"><small>GOLD</small><b>{gold.toLocaleString()}G</b></div></div><div className={`cards ${cooldown > 0 ? "cooling" : ""}`}>{hand.map(card => <button key={card.id} disabled={cooldown > 0} onClick={() => toggle(card.id)} className={`poker-card ${result.bestCardIds.includes(card.id) ? "best" : ""} ${selected.includes(card.id) ? "active" : ""}`} aria-pressed={selected.includes(card.id)} aria-label={card.rank === 15 ? `${card.joker === "color" ? "컬러" : "흑백"} 조커` : undefined}><span className={`${card.suit === "heart" || card.suit === "diamond" ? "red-suit" : ""} ${card.joker ? `joker-${card.joker}` : ""}`}>{card.rank === 15 ? (card.joker === "color" ? "C-J" : "B-J") : rankLabel(card.rank)}<small>{card.rank === 15 ? "★" : SYMBOL[card.suit]}</small></span><b className="card-center">{cardCenter(card)}</b><em>{selected.includes(card.id) ? copy.change : result.bestCardIds.includes(card.id) ? copy.best : copy.keep}</em></button>)}</div><div className="actions"><button className="primary-action" disabled={cooldown > 0} onClick={recruit}>{cooldown > 0 ? `${cooldown}s` : T.recruit} <b>FREE</b></button><button disabled={cooldown > 0 || selected.length === 0} onClick={redraw}>↻ 선택 카드 교체 ({selected.length}장 · {selectedRerollCount + 1}회차) <b>{selected.length * 5 * (selectedRerollCount + 1)}</b></button><button disabled={cooldown > 0} onClick={redrawAll}>{"↻"} 전체 손패 교체 <b>3</b></button><button className={running ? "pause" : "start"} onClick={toggleRunning}>{running ? `II ${copy.pause}` : `\u25B6 ${copy.start}`}</button></div></section>
-    <details className="poker-guide"><summary>{T.guide}<span>{T.open}</span></summary><div className="guide-grid job-guide">{guide.map(([category, job]) => <span key={category}><b>{term(locale, JOBS[category].label)}</b><small>{term(locale, job)}{category === "fourKind" || category === "straightFlush" ? ` / ${T.elite}` : category !== "royalFlush" && category !== "fiveKind" && category !== "sixKind" ? ` / ${T.beginner} ${T.middle} ${T.elite}` : ""}</small></span>)}</div><button className="tutorial-reopen" onClick={() => setTutorialStep(0)}>{copy.tutorialAgain}</button></details>
+    <section className="hand-result summon-preview"><div className="summon-portrait"><img src={result.image} alt=""/><i>{copy.summonNext}</i></div><div className="summon-copy"><div className="summon-path"><span>{copy.currentHand}</span><b>{term(locale, result.label)}</b></div><strong><i className={`tier-badge tier-${result.tier || 3}`}>{term(locale, result.tierLabel)}</i> {term(locale, result.job)}</strong><div className="summon-stats"><span><small>{copy.attack}</small><b>{result.damage}</b></span><span><small>{copy.range}</small><b>{result.range}</b></span><span><small>{copy.speed}</small><b>{result.speed}</b></span></div><small className="effect-note">{roleDescription(result, locale)}</small></div></section></div>
+    <section className="hand-panel"><div className="section-title"><div className="hand-heading"><span>{copy.hand}</span><small>{cooldown > 0 ? `NEXT HAND ${cooldown}s` : copy.handHint}</small></div><div className="hand-glance"><img src={result.image} alt=""/><span><small>{term(locale, result.label)}</small><b>{term(locale, result.job)}</b></span></div><div className="hand-wallet"><small>GOLD</small><b>{gold.toLocaleString()}G</b></div></div><div className={`cards ${cooldown > 0 ? "cooling" : ""}`}>{hand.map(card => <button key={card.id} disabled={cooldown > 0} onClick={() => toggle(card.id)} className={`poker-card ${result.bestCardIds.includes(card.id) ? "best" : ""} ${selected.includes(card.id) ? "active" : ""}`} aria-pressed={selected.includes(card.id)} aria-label={card.rank === 15 ? `${card.joker === "color" ? "컬러" : card.joker === "invert" ? "반전" : "흑백"} 조커` : undefined}><span className={`${card.suit === "heart" || card.suit === "diamond" ? "red-suit" : ""} ${card.joker ? `joker-${card.joker}` : ""}`}>{card.rank === 15 ? (card.joker === "color" ? "C-J" : card.joker === "invert" ? "I-J" : "B-J") : rankLabel(card.rank)}<small>{card.rank === 15 ? "★" : SYMBOL[card.suit]}</small></span><b className="card-center">{cardCenter(card)}</b><em>{selected.includes(card.id) ? copy.change : result.bestCardIds.includes(card.id) ? copy.best : copy.keep}</em></button>)}</div><div className="actions"><button className="primary-action" disabled={cooldown > 0} onClick={recruit}>{cooldown > 0 ? `${cooldown}s` : copy.recruit} <b>FREE</b></button><button disabled={cooldown > 0 || selected.length === 0} onClick={redraw}>↻ {copy.selectedReroll} ({selected.length} · {selectedRerollCount + 1}) <b>{selected.length * 5 * (selectedRerollCount + 1)}</b></button><button disabled={cooldown > 0} onClick={redrawAll}>{"↻"} {copy.fullReroll} <b>3</b></button><button className={running ? "pause" : "start"} onClick={toggleRunning}>{running ? `II ${copy.pause}` : `\u25B6 ${copy.start}`}</button></div></section>
+    <details className="poker-guide"><summary>{copy.guide}<span>{copy.open}</span></summary><div className="guide-grid job-guide">{guide.map(([category, job]) => <span key={category}><b>{term(locale, JOBS[category].label)}</b><small>{term(locale, job)}{category === "fourKind" || category === "straightFlush" ? ` / ${term(locale, T.elite)}` : category !== "royalFlush" && category !== "fiveKind" && category !== "sixKind" && category !== "sevenKind" ? ` / ${term(locale, T.beginner)} ${term(locale, T.middle)} ${term(locale, T.elite)}` : ""}</small></span>)}</div><button className="tutorial-reopen" onClick={() => setTutorialStep(0)}>{copy.tutorialAgain}</button></details>
     {!languageChosen && <div className="language-start"><div><small>SELECT LANGUAGE · 언어 선택</small><strong>Choose your language</strong><p>언어를 선택하면 해당 언어로 튜토리얼이 시작됩니다.</p><div>{LOCALE_ORDER.map(language => <button key={language} onClick={() => { setLocale(language); setLanguageChosen(true); setTutorialStep(0); }}>{LOCALE_LABEL[language]}<small>{language === "ko" ? "한국어" : language === "en" ? "English" : language === "zh" ? "中文" : "日本語"}</small></button>)}</div></div></div>}
     {languageChosen && tutorialStep < tutorials.length && <div className="tutorial-overlay"><div className="tutorial-card"><small>QUICK GUIDE · {tutorialStep + 1}/{tutorials.length}</small><strong>{tutorials[tutorialStep].title}</strong><p>{tutorials[tutorialStep].body}</p><div><button onClick={() => setTutorialStep(tutorials.length)}>{copy.skip}</button><button className="next" onClick={() => setTutorialStep(v => v + 1)}>{tutorialStep === tutorials.length - 1 ? copy.begin : copy.next}</button></div></div></div>}
     {gameOver && <div className="game-over"><div><span>{T.gameOver}</span><strong>WAVE {wave}</strong><p>{kills}{copy.defeated}</p><button onClick={restart}>{T.retry}</button></div></div>}
-    {won && <div className="game-over victory"><div><span>{copy.victory}</span><strong>{copy.clear}</strong><p>{kills}{copy.defeated}</p><button onClick={restart}>{T.retry}</button></div></div>}
+    {won && !endingActive && <div className="game-over victory"><div><span>{copy.victory}</span><strong>{copy.clear}</strong><p>{kills}{copy.defeated}</p><button onClick={restart}>{T.retry}</button></div></div>}
+    {endingActive && <div className="seven-card-ending-overlay"><iframe title="Seven Card Hidden Ending" src={`${ASSET_BASE}/seven-card-preview/?embedded=1`}/><button type="button" onClick={restart}>{copy.endingReplay}</button></div>}
     <footer className="creator-credit">Made by Arlandstrm with AI</footer>
   </section></main>;
 }

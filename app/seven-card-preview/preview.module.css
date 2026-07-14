@@ -1,0 +1,15 @@
+.previewPage{min-height:100dvh;display:grid;grid-template-columns:minmax(260px,360px) minmax(220px,320px);place-content:center;gap:22px;padding:20px;color:#f2dfaa;background:radial-gradient(circle at 50% 30%,#173429,#050806 65%);font-family:"Courier New",monospace}
+.stage{position:relative;width:min(360px,calc(100vw - 32px));aspect-ratio:9/16;overflow:hidden;border:3px solid #b68a3d;box-shadow:0 0 0 2px #262015,0 0 34px #d8a84433,8px 8px #000;background:#030706}
+.stage canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+.scanlines{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#0000 0 3px,#0003 4px);mix-blend-mode:multiply}
+.controls{align-self:center;padding:18px;color:#cfc29d;background:#111712e8;border:2px solid #5e573f;box-shadow:6px 6px #000}
+.controls span{display:block;color:#6ed8cc;font-size:10px;letter-spacing:1.5px}
+.controls strong{display:block;margin:9px 0;color:#ffe29a;font-family:Georgia,serif;font-size:24px}
+.controls p{min-height:54px;margin:0 0 16px;color:#9e967e;font-size:11px;line-height:1.7}
+.controls button{width:100%;min-height:46px;color:#21170b;background:linear-gradient(#f0c66d,#bd782c);border:2px solid #ffe0a0;box-shadow:3px 3px #000;font:900 13px "Courier New",monospace;cursor:pointer}
+.controls button:active{transform:translate(2px,2px);box-shadow:1px 1px #000}
+.embedded{min-height:100dvh;display:grid;grid-template-columns:1fr;place-items:center;padding:0;background:#020403}
+.embedded .stage{width:min(100vw,56.25dvh);height:min(100dvh,177.78vw);max-width:none;border:0;box-shadow:none}
+@media(max-width:720px){.previewPage{grid-template-columns:1fr;place-content:start center;gap:10px;padding:10px}.stage{height:min(76dvh,640px);width:auto;max-width:calc(100vw - 20px)}.controls{width:min(360px,calc(100vw - 20px));padding:10px 12px}.controls strong{display:inline;margin-right:8px;font-size:17px}.controls p{min-height:0;margin:5px 0 9px;font-size:9px}.controls button{min-height:40px}}
+@media(max-width:720px){.embedded{place-content:center;padding:0}.embedded .stage{width:min(100vw,56.25dvh);height:min(100dvh,177.78vw);max-width:none}}
+@media(prefers-reduced-motion:reduce){.scanlines{display:none}}
