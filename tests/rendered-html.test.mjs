@@ -94,9 +94,12 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /\.attack-triple \.attack-trace::after/);
   assert.match(css, /\.attack-fourKind \.attack-trace::after/);
   assert.match(css, /\.poker-card:has\(>span\.red-suit\)>b/);
-  assert.match(css, /font-size:clamp\(17px,5vw,23px\)/);
-  assert.match(css, /width:calc\(100vw - 8px\)/);
-  assert.match(css, /grid-template-rows:44px 44px/);
+  assert.match(css, /font-size:clamp\(16px,4\.8vw,22px\)/);
+  assert.match(css, /--mobile-board:min\(calc\(100vw - 8px\),calc\(100svh/);
+  assert.match(css, /grid-template-rows:38px 38px/);
+  assert.match(css, /--desktop-board:min\(700px,calc\(100dvh - 380px\)\)/);
+  assert.match(css, /height:calc\(100dvh - 16px\);min-height:0;display:grid/);
+  assert.match(css, /height:calc\(100svh - env\(safe-area-inset-top\) - env\(safe-area-inset-bottom\)\);min-height:0;display:flex;flex-direction:column;overflow:hidden/);
   assert.match(css, /\.pip-layout/);
   assert.match(css, /\.joker-art-black/);
   assert.match(css, /\.joker-art-color/);
