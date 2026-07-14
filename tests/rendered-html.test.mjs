@@ -21,7 +21,6 @@ test("포커 랜덤 디펜스의 핵심 게임 화면을 렌더링한다", async
 
   const html = await response.text();
   assert.match(html, /<title>포커 랜덤 디펜스<\/title>/);
-  assert.match(html, /FORTRESS OF FATE/);
   assert.match(html, /WAVE/);
   assert.match(html, /내 유닛/);
   assert.match(html, /전체 공격력/);
@@ -48,6 +47,8 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
     readFile(new URL("../app/i18n.ts", import.meta.url), "utf8"),
   ]);
 
+  assert.match(page, /POKER RANDOM DEFENSE/);
+  assert.doesNotMatch(page, /FORTRESS OF FATE/);
   assert.match(page, /elf:\s*"\\uAD81\\uC218"/);
   assert.match(page, /const RANGE_PER_CELL = 100 \/ 12/);
   assert.match(page, /const PRIEST_BUFF_RANGE = RANGE_PER_CELL \* 2/);
