@@ -83,6 +83,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /straightFlush:[^\n]+base: \[85\.5, 34, 1\.25\]/);
   assert.match(page, /royalFlush:[^\n]+base: \[187\.5, 72, \.82\]/);
   assert.match(page, /setGold\(v => v \+ 2000\)/);
+  assert.match(page, /spawnInterval: 720, minSpawnInterval: 520/);
   assert.match(page, /isPriestBuffed/);
   assert.match(page, /사제 버프 적용 중/);
   assert.match(page, /범위 35 내 아군 공격 \+20% · 속도 \+20%/);
@@ -117,9 +118,10 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /className="boss-health"/);
   assert.match(page, /function confirmRareSale/);
   assert.match(page, /희귀 유닛입니다/);
-  assert.match(page, /useState<1 \| 2 \| 4 \| 8>\(1\)/);
+  assert.match(page, /useState<1 \| 2 \| 3>\(1\)/);
   assert.match(page, /function cyclePlayback\(\)/);
-  assert.match(page, /gameSpeed === 1 \? 2 : gameSpeed === 2 \? 4 : 8/);
+  assert.match(page, /gameSpeed === 1 \? 2 : 3/);
+  assert.match(page, /gameSpeed === 3/);
   assert.match(page, /setPlaybackPaused\(true\); setRunning\(false\)/);
   assert.match(page, /className="playback-control"/);
   assert.match(page, /playbackPaused \? "Ⅱ" : `\$\{gameSpeed\}×`/);
@@ -132,7 +134,8 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /hardRamp \* earlyHpMultiplier\(wave\)/);
   assert.match(page, /baseInterval \* earlySpawnMultiplier\(wave\)/);
   assert.match(page, /enemy\.boss \? 20 : 1/);
-  assert.match(page, /wave % 10 === 0 \? 1 : 40/);
+  assert.match(page, /wave % 10 === 0 \? 1 : 60/);
+  assert.match(page, /60 ENEMIES INCOMING/);
   assert.match(page, /bossWaveReleaseRef\.current = gameClockRef\.current \+ 60000/);
   assert.match(page, /NEXT \$\{formatTimer\(bossWaveHold\)\}/);
   assert.match(page, /gameClockRef\.current \+ 300000/);

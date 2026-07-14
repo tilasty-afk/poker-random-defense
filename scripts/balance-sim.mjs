@@ -1,6 +1,6 @@
 const choose=(n,k)=>{let value=1;for(let i=1;i<=k;i++)value=value*(n-k+i)/i;return value};
 
-const BALANCE={baseHp:100,hpPerWave:.04,hpGrowth:1.028,earlyEaseEnd:40,earlyBlendEnd:55,earlyHpStart:.65,earlyHpEnd:.8,earlySpawnStart:1.2,earlySpawnEnd:1.1,hardRampStart:40,hardRampMax:1.8,baseSpeed:.76,speedPerWave:.003,maxSpeed:1.55,spawnInterval:900,minSpawnInterval:650};
+const BALANCE={baseHp:100,hpPerWave:.04,hpGrowth:1.028,earlyEaseEnd:40,earlyBlendEnd:55,earlyHpStart:.65,earlyHpEnd:.8,earlySpawnStart:1.2,earlySpawnEnd:1.1,hardRampStart:40,hardRampMax:1.8,baseSpeed:.76,speedPerWave:.003,maxSpeed:1.55,spawnInterval:720,minSpawnInterval:520};
 const sampledWaves=[1,10,20,40,60,80,90,100];
 const earlyHpMultiplier=wave=>wave<=40?.65+(.8-.65)*(wave-1)/39:wave<55?.8+.2*(wave-40)/15:1;
 const earlySpawnMultiplier=wave=>wave<=40?1.2+(1.1-1.2)*(wave-1)/39:wave<55?1.1+(1-1.1)*(wave-40)/15:1;
