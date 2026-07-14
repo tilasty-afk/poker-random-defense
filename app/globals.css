@@ -165,6 +165,7 @@ button:focus-visible,summary:focus-visible { outline:2px solid #f0c75e; outline-
 .actions button { min-height:46px; padding:7px 8px; color:#e9d9ad; text-align:left; background:#282a25; border:2px solid #655b47; box-shadow:3px 3px #050605; font-size:10px; font-weight:bold; }
 .actions button b { float:right; color:#e7b957; }.actions .primary-action { color:#25170d; background:linear-gradient(#e88b2e,#b85421); border-color:#f5bb58; font-size:12px; }.actions .primary-action b { color:#311b0e; }
 .actions .start { color:#d9edbd; border-color:#6f8d4d; }.actions .pause { color:#f0c49d; border-color:#a05a3c; }
+.actions .reroll-exhausted{position:relative;overflow:hidden;color:#a58d86;background:#211919;border-color:#743b3b;cursor:not-allowed}.actions .reroll-exhausted::after{content:"✕";position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);color:#e44c4cb8;font-size:30px;line-height:1;text-shadow:2px 2px #240606;pointer-events:none}.actions .reroll-exhausted b{color:#d87373}
 .actions button:active,.field-bond button:active { transform:translate(2px,2px); box-shadow:1px 1px #050605; }
 
 .poker-guide { margin:0 8px 14px; background:#1c201c; border:1px solid #5c5747; }

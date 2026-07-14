@@ -103,6 +103,9 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /setSelectedRerollsLeft\(1\)/);
   assert.match(page, /setHand\(dealHand\(saintPity\)\);\s*setSelectedRerollsLeft\(1\);\s*setCooldown\(0\)/);
   assert.match(page, /selectedRerollsLeft\}\/1/);
+  assert.match(page, /className=\{selectedRerollsLeft <= 0 \? "reroll-exhausted" : ""\}/);
+  assert.match(page, /selected\.length === 0 \|\| selectedRerollsLeft <= 0/);
+  assert.match(page, /✕ 선택 카드 교체 불가/);
   assert.match(page, /wave === 1 && spawned === 0 \? baseCopy\.begin : baseCopy\.start/);
   assert.match(page, /if \(!running \|\| gameOver \|\| spawned >= waveTarget/);
   assert.match(page, /setGold\(v => v - 3\); setHand\(dealHand\(saintPity\)\)/);
@@ -171,6 +174,8 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.doesNotMatch(page, /earlyHpMultiplier|earlySpawnMultiplier|hardRamp/);
   assert.match(page, /enemy\.boss \? 20 : 1/);
   assert.match(page, /wave % 10 === 0 \? 1 : 40/);
+  assert.match(page, /function goldPerKillForWave\(_wave: number\) \{ return 1; \}/);
+  assert.match(page, /bossSpawn \? 20 : 1/);
   assert.match(page, /40 ENEMIES INCOMING/);
   assert.match(page, /bossWaveReleaseRef\.current = gameClockRef\.current \+ 60000/);
   assert.match(page, /NEXT \$\{formatTimer\(bossWaveHold\)\}/);
@@ -205,6 +210,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /\.playback-control output\.boss-time\{display:none\}/);
   assert.match(css, /\.spawn-gate::after\{content:var\(--spawn-remaining-label/);
   assert.match(css, /\.actions\{width:calc\(100% - 84px\);align-self:flex-start\}/);
+  assert.match(css, /\.actions \.reroll-exhausted::after\{content:"✕"/);
   assert.match(page, /LOCALE_ORDER\.map\(language/);
   assert.match(page, /function cycleLocale\(\)/);
   assert.match(page, /!languageChosen/);
