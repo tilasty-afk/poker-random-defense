@@ -240,6 +240,7 @@ button:focus-visible,summary:focus-visible { outline:2px solid #f0c75e; outline-
 .playback-control{position:relative}.playback-control output{position:absolute;right:0;bottom:calc(100% + 4px)}
 .playback-control output.boss-time{display:none}
 .creator-credit{left:8px;right:auto}
+@media (min-width:760px){.corner-controls{position:static;grid-column:2;grid-row:4;justify-self:end;align-self:start;margin:8px 12px 0 4px}.playback-control output{top:calc(100% + 4px);bottom:auto}.poker-guide{margin-top:70px}}
 @media (max-width:759px){.actions{width:calc(100% - 84px);align-self:flex-start}.corner-controls{top:auto;left:auto;right:6px;bottom:calc(env(safe-area-inset-bottom) + 6px)}.boss-health{width:min(180px,48%);transform:translate(-50%,calc(-100% - 25px));padding:3px 5px}.boss-health::before{font-size:12px;padding:3px 6px}.boss-health span,.boss-health strong{font-size:7px}}
 
 @media (prefers-reduced-motion:reduce) { * { scroll-behavior:auto!important; transition:none!important; } }
