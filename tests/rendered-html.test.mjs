@@ -102,8 +102,12 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /function confirmRareSale/);
   assert.match(page, /희귀 유닛입니다/);
   assert.match(page, /useState<1 \| 2 \| 4 \| 8>\(1\)/);
-  assert.match(page, /\(\[1, 2, 4, 8\] as const\)\.map/);
-  assert.match(page, /className="speed-controls"/);
+  assert.match(page, /function cyclePlayback\(\)/);
+  assert.match(page, /gameSpeed === 1 \? 2 : gameSpeed === 2 \? 4 : 8/);
+  assert.match(page, /setPlaybackPaused\(true\); setRunning\(false\)/);
+  assert.match(page, /className="playback-control"/);
+  assert.match(page, /playbackPaused \? "Ⅱ" : `\$\{gameSpeed\}×`/);
+  assert.match(page, /!running && !playbackPaused/);
   assert.match(page, /elapsed \* gameSpeed/);
   assert.match(page, /earlyHpStart:\s*\.65/);
   assert.match(page, /earlyHpEnd:\s*\.8/);
@@ -123,7 +127,8 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /\.enemy\[title\*="이끼 슬라임"\]/);
   assert.match(css, /\.enemy\.boss-rank-10/);
   assert.match(css, /background-size:500% 400%/);
-  assert.match(css, /grid-template-columns:repeat\(4,40px\) 64px/);
+  assert.match(css, /\.playback-control button\{width:42px;height:42px/);
+  assert.match(css, /grid-template-columns:minmax\(0,3fr\) minmax\(260px,1fr\)/);
   assert.match(page, /createGameAudio/);
   assert.match(page, /playSound\("reroll"\)/);
   assert.match(page, /playSound\("upgrade"\)/);
