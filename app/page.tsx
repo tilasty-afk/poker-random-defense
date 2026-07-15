@@ -130,8 +130,9 @@ const MAX_WAVE = HIDDEN_WAVE;
 const HIDDEN_BOSS_HP = 5000000;
 const HIDDEN_BOSS_IMAGE = `${ASSET_BASE}/sprites/enemies/hidden-demon-lord.png`;
 const MAX_MONSTER_HP_MULTIPLIER = 2;
+const NORMAL_MONSTER_HP_MULTIPLIER = 1.5;
 const MAX_ATTACK_SPEED_LEVEL = 30;
-const APP_VERSION = "v0.2004";
+const APP_VERSION = "v0.2005";
 const BALANCE = { baseHp: 100, hpPerWave: .04, hpGrowth: 1.028, baseSpeed: .76, speedPerWave: .003, maxSpeed: 1.55, damageScale: .24, bossMoveScale: .58, spawnInterval: 600 } as const;
 const NORMAL_HP_DIFFICULTY_STEPS = [[10, 1.3983], [20, 1.601], [30, 1.9387], [40, 2.4891], [50, 3.2002], [60, 3.7484], [70, 4.1104], [80, 4.2995], [90, 4.2814], [100, 4.1578], [110, 4.9272], [120, 5.0028], [130, 5.0434], [140, 5.0998], [150, 5.1259], [160, 5.1645], [170, 5.1768], [180, 5.1671], [190, 5.0801], [200, 4.9316]] as const;
 const BOSS_HP_BY_WAVE: Record<number, number> = { 10: 27000, 20: 48000, 30: 85000, 40: 145000, 50: 233000, 60: 336000, 70: 440000, 80: 556000, 90: 708000, 100: 996000, 110: 1080000, 120: 1160000, 130: 1250000, 140: 1370000, 150: 1500000, 160: 1600000, 170: 1700000, 180: 1800000, 190: 1900000, 200: 2000000 };
@@ -161,7 +162,9 @@ function monsterTrait(monster: (typeof MONSTERS)[number] & { locale?: Locale }) 
 function hpDifficultyForWave(wave: number) { const upperIndex = NORMAL_HP_DIFFICULTY_STEPS.findIndex(([endWave]) => wave <= endWave); if (upperIndex < 0) return NORMAL_HP_DIFFICULTY_STEPS[NORMAL_HP_DIFFICULTY_STEPS.length - 1][1]; if (upperIndex === 0) return NORMAL_HP_DIFFICULTY_STEPS[0][1]; const [lowerWave, lowerMultiplier] = NORMAL_HP_DIFFICULTY_STEPS[upperIndex - 1], [upperWave, upperMultiplier] = NORMAL_HP_DIFFICULTY_STEPS[upperIndex]; const progress = (wave - lowerWave) / (upperWave - lowerWave); return lowerMultiplier + (upperMultiplier - lowerMultiplier) * progress; }
 function baseHpForWave(wave: number) { const earlyGrowthWaves = Math.min(wave, 100) - 1, lateGrowthWaves = Math.max(0, wave - 100); return BALANCE.baseHp * (1 + wave * BALANCE.hpPerWave) * Math.pow(BALANCE.hpGrowth, earlyGrowthWaves) * Math.pow(1.005, lateGrowthWaves) * hpDifficultyForWave(wave); }
 function normalMonsterHpScaleForWave(wave: number) { return wave >= 90 ? .9 : 1; }
-function bossHpForWave(wave: number) { return wave === HIDDEN_WAVE ? HIDDEN_BOSS_HP : BOSS_HP_BY_WAVE[wave] ?? BOSS_HP_BY_WAVE[VISIBLE_MAX_WAVE]; }
+function lateNormalMonsterHpScaleForWave(wave: number) { return wave <= 101 ? 1 : 1 + 1.5 * Math.min(1, (wave - 101) / (199 - 101)); }
+function bossHpScaleForWave(wave: number) { return wave < 50 ? 1 : 1 + 2 * Math.min(1, (wave - 50) / (HIDDEN_WAVE - 50)); }
+function bossHpForWave(wave: number) { const baseHp = wave === HIDDEN_WAVE ? HIDDEN_BOSS_HP : BOSS_HP_BY_WAVE[wave] ?? BOSS_HP_BY_WAVE[VISIBLE_MAX_WAVE]; return Math.round(baseHp * bossHpScaleForWave(wave)); }
 function spawnIntervalForWave(_wave: number) { return BALANCE.spawnInterval; }
 function goldPerKillForWave(_wave: number) { return 1; }
 function formatTimer(seconds: number) { return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`; }
@@ -291,7 +294,7 @@ function evaluate(cards: Card[]): Result {
 }
 function roleDescription(unit: Result, locale: Locale = activeLocale) { if (locale !== "ko")
     return roleCopy(locale, unit.category, unit.tier || 3); switch (unit.category) {
-    case "high": return "적 처치 시 추가 골드 · 많을수록 강해짐";
+    case "high": return "적 처치 시 1G 추가 · 많을수록 강해짐";
     case "pair": return "2초간 받는 피해 100% 추가 표식을 남긴다";
     case "twoPair": return "사거리 내 체력이 가장 낮은 적 우선 공격";
     case "triple": return "5초마다 강력한 공격 · 사거리 4칸 · 2.5칸 범위 폭발";
@@ -322,7 +325,7 @@ export default function Home() {
     useEffect(() => { document.documentElement.lang = locale; if (languageChosen)
         setMessage(copy.pausedRecruit); }, [locale, languageChosen, copy.pausedRecruit]);
     useEffect(() => { if (!running || gameOver || spawned >= waveTarget || wave > MAX_WAVE)
-        return; const timer = window.setInterval(() => { const bossSpawn = isBossWave && spawned === 0, hiddenSpawn = isHiddenWave && bossSpawn, baseMonsterHp = Math.round(baseHpForWave(wave) * Math.min(monster.hp, MAX_MONSTER_HP_MULTIPLIER) * normalMonsterHpScaleForWave(wave)), hp = bossSpawn ? bossHpForWave(wave) : baseMonsterHp, speed = Math.min(BALANCE.maxSpeed, (BALANCE.baseSpeed + wave * BALANCE.speedPerWave) * monster.speed), reward = goldPerKillForWave(wave) * (bossSpawn ? 20 : 1); if (bossSpawn) {
+        return; const timer = window.setInterval(() => { const bossSpawn = isBossWave && spawned === 0, hiddenSpawn = isHiddenWave && bossSpawn, baseMonsterHp = Math.round(baseHpForWave(wave) * Math.min(monster.hp, MAX_MONSTER_HP_MULTIPLIER) * normalMonsterHpScaleForWave(wave) * NORMAL_MONSTER_HP_MULTIPLIER * lateNormalMonsterHpScaleForWave(wave)), hp = bossSpawn ? bossHpForWave(wave) : baseMonsterHp, speed = Math.min(BALANCE.maxSpeed, (BALANCE.baseSpeed + wave * BALANCE.speedPerWave) * monster.speed), reward = goldPerKillForWave(wave) * (bossSpawn ? 20 : 1); if (bossSpawn) {
         bossWaveReleaseRef.current = gameClockRef.current + 60000;
         setBossWaveHold(60);
         gameAudioRef.current?.play("boss");
@@ -379,7 +382,7 @@ export default function Home() {
             }
             let defeated = 0, bossDefeated = 0, earnedGold = 0, bossGold = 0;
             const damageMap = new Map<number, number>(), hitKinds = new Map<number, "direct" | "alchemyDot" | "fateDot">(), slowMap = new Map<number, number>(), criticalHits = new Set<number>(), cursedHits = new Set<number>(), positions = new Map(current.map(enemy => [enemy.id, pointOnPath(enemy.progress)])), enemyHp = new Map(current.map(enemy => [enemy.id, enemy.hp])), conscriptKillBonuses = new Map<number, number>(), markExpirations = new Map(current.filter(enemy => (enemy.markExpiresAt || 0) > now).map(enemy => [enemy.id, enemy.markExpiresAt!])), attackCandidates: AttackFx[] = [];
-            const add = (id: number, damage: number, kind: "direct" | "alchemyDot" | "fateDot" = "direct", ownMultiplier = 1, source?: Category) => { const markedMultiplier = markExpirations.has(id) ? 2 : 1, previousDamage = damageMap.get(id) || 0, appliedDamage = damage * markedMultiplier * ownMultiplier; damageMap.set(id, previousDamage + appliedDamage); if (source === "high" && previousDamage < (enemyHp.get(id) || 0) && previousDamage + appliedDamage >= (enemyHp.get(id) || 0)) conscriptKillBonuses.set(id, 5); if (kind === "direct" || !hitKinds.has(id))
+            const add = (id: number, damage: number, kind: "direct" | "alchemyDot" | "fateDot" = "direct", ownMultiplier = 1, source?: Category) => { const markedMultiplier = markExpirations.has(id) ? 2 : 1, previousDamage = damageMap.get(id) || 0, appliedDamage = damage * markedMultiplier * ownMultiplier; damageMap.set(id, previousDamage + appliedDamage); if (source === "high" && previousDamage < (enemyHp.get(id) || 0) && previousDamage + appliedDamage >= (enemyHp.get(id) || 0)) conscriptKillBonuses.set(id, 1); if (kind === "direct" || !hitKinds.has(id))
                 hitKinds.set(id, kind); };
             for (const pool of activePools)
                 for (const enemy of current) {
@@ -536,10 +539,10 @@ export default function Home() {
         return;
     } const selectedIndexes = hand.flatMap((card, index) => selected.includes(card.id) ? [index] : []), kept = hand.filter(card => !selected.includes(card.id)), replacements = drawFromDeck(selected.length, kept); let replacementIndex = 0; const next = hand.map(card => selected.includes(card.id) ? replacements[replacementIndex++] : card); setGold(v => v - cost); setHand(next); setSelected(selectedIndexes.map(index => next[index].id)); setSelectedRerollCount(v => v + 1); setMessage(T.rerolled); playSound("reroll"); }
     function redrawAll() { if (!gameStarted || cooldown > 0)
-        return; if (gold < 3) {
+        return; if (gold < 10) {
         setMessage(T.noGold);
         return;
-    } setGold(v => v - 3); setHand(dealHand()); setSelected([]); setSelectedRerollCount(0); setMessage("전체 손패를 교체했습니다. 선택 카드 교체 비용이 1회차로 초기화되었습니다."); playSound("reroll"); }
+    } setGold(v => v - 10); setHand(dealHand()); setSelected([]); setSelectedRerollCount(0); setMessage("전체 손패를 교체했습니다. 선택 카드 교체 비용이 1회차로 초기화되었습니다."); playSound("reroll"); }
     function recruit() { if (!gameStarted || cooldown > 0)
         return; if (!running && !playbackPaused) {
         setMessage("웨이브 진행 중에 다음 유닛을 소환할 수 있습니다");
@@ -664,7 +667,7 @@ export default function Home() {
       <div className="actions">
         <button className="primary-action" disabled={!gameStarted || cooldown > 0} onClick={recruit}>{cooldown > 0 ? `${cooldown}s` : copy.recruit}</button>
         <button className="selected-reroll-action" disabled={!gameStarted || cooldown > 0 || selected.length === 0} onClick={redraw}><span>{baseCopy.selectedReroll}</span><em>×{selectedRerollCount + 1}</em><b>{selected.length * 5 * (selectedRerollCount + 1)}G</b></button>
-        <button disabled={!gameStarted || cooldown > 0} onClick={redrawAll}><span>{copy.fullReroll}</span><b>3G</b></button>
+        <button disabled={!gameStarted || cooldown > 0} onClick={redrawAll}><span>{copy.fullReroll}</span><b>10G</b></button>
         <button className={running ? "pause" : "start"} onClick={toggleRunning}>{running ? `II ${copy.pause}` : `\u25B6 ${copy.start}`}</button>
       </div>
     </section>

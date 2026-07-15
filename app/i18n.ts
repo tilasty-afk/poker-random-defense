@@ -88,7 +88,7 @@ export const TRAITS: Record<Locale, Record<string,string>> = {
 export function roleCopy(locale: Locale, category: string, tier: number) {
   const n = Math.max(0, Math.min(2, tier - 1));
   const values: Record<string, [number[], string, string, string]> = {
-    high:[[],"Bonus gold on kill · Stronger in greater numbers","击杀敌人时获得额外金币 · 数量越多越强","敵撃破時に追加ゴールド · 数が多いほど強化"], pair:[[],"Leaves a mark that increases damage taken by 100% for 2 seconds","留下持续2秒、使受到伤害提高100%的标记","2秒間、受けるダメージが100%増加する標的を付与"],
+    high:[[],"+1G on kill · Stronger in greater numbers","击杀敌人时额外获得1G · 数量越多越强","敵撃破時に1G追加 · 数が多いほど強化"], pair:[[],"Leaves a mark that increases damage taken by 100% for 2 seconds","留下持续2秒、使受到伤害提高100%的标记","2秒間、受けるダメージが100%増加する標的を付与"],
     twoPair:[[],"Targets the lowest-HP enemy in range","优先攻击范围内生命值最低的敌人","射程内でHPが最も低い敵を優先攻撃"], triple:[[],"Massive attack every 5 seconds · 4-cell range · 2.5-cell explosion","每5秒发动一次强力攻击 · 射程4格 · 2.5格范围爆炸","5秒ごとに強力な攻撃 · 射程4マス · 2.5マス範囲爆発"],
     straight:[[],"Long range · 50% critical chance · 5x critical damage · +50% boss damage","远距离 · 暴击率50% · 暴击伤害5倍 · 对Boss额外伤害50%","長射程 · 会心率50% · 会心ダメージ5倍 · ボス追加ダメージ50%"],
     flush:[[],"Slow and poison pool","减速与中毒区域","スロウ・毒沼"], fullHouse:[[15,25,40],"All allies gain +{v}% ATK","所有友军攻击力提高{v}%","全味方の攻撃力{v}%増加"],
