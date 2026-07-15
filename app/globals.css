@@ -42,7 +42,7 @@ button:focus-visible,summary:focus-visible { outline:2px solid #f0c75e; outline-
 .tower-slot img { position:absolute; z-index:2; bottom:18%; width:72%; height:75%; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(2px 3px #000); }
 .tower-card { position:absolute; z-index:4; right:-5px; top:-5px; padding:2px 3px; color:#20180e; background:var(--parchment); border:1px solid #302414; font-size:9px; font-weight:bold; }
 .slot-plus { font-size:16px; opacity:.6; }
-.enemy { position:absolute; z-index:6; width:9%; aspect-ratio:1; transform:translate(-50%,-50%); display:grid; place-items:center; background-color:transparent; background-image:var(--enemy-atlas); background-repeat:no-repeat; background-size:500% 400%; border:0; filter:hue-rotate(var(--enemy-palette, 0deg)) drop-shadow(2px 3px 1px #080a08); image-rendering:pixelated; transition:left calc(.12s / var(--game-speed)) linear,top calc(.12s / var(--game-speed)) linear; }
+.enemy { position:absolute; z-index:6; width:9%; aspect-ratio:1; transform:translate(-50%,-50%); display:grid; place-items:center; pointer-events:none; background-color:transparent; background-image:var(--enemy-atlas); background-repeat:no-repeat; background-size:500% 400%; border:0; filter:hue-rotate(var(--enemy-palette, 0deg)) drop-shadow(2px 3px 1px #080a08); image-rendering:pixelated; transition:left calc(.12s / var(--game-speed)) linear,top calc(.12s / var(--game-speed)) linear; }
 .enemy.palette-0{--enemy-palette:0deg}.enemy.palette-1{--enemy-palette:45deg}.enemy.palette-2{--enemy-palette:90deg}.enemy.palette-3{--enemy-palette:135deg}.enemy.palette-4{--enemy-palette:180deg}.enemy.palette-5{--enemy-palette:225deg}.enemy.palette-6{--enemy-palette:270deg}.enemy.palette-7{--enemy-palette:315deg}
 .enemy-face { display:none; }.enemy i { position:absolute; z-index:2; left:8%; bottom:-5px; height:4px; background:#c44c3f; border:1px solid #311714; transition:width calc(.12s / var(--game-speed)); }
 html.enemy-images-off .enemy{background-image:none!important;background:#121914!important;border:2px solid #e4c25f;border-radius:5px;filter:none!important;animation:none!important;box-shadow:0 2px 0 #050705,0 0 6px #d7aa3c88}
@@ -94,7 +94,7 @@ html.enemy-images-off .enemy .enemy-face::after{content:var(--enemy-wave);font-s
 .attack-fourKind .attack-trace{height:3px;background:#ef6d54;box-shadow:0 0 8px #d44831}.attack-fourKind .attack-impact{border-color:#ee674d}
 .attack-straightFlush .attack-trace{height:4px;background:#78e1e7;box-shadow:0 0 10px #4acbd3}.attack-straightFlush .attack-impact{border-color:#73dce4}
 .attack-royalFlush .attack-trace{height:3px;background:#ff64e4;box-shadow:0 0 5px #fff,0 0 14px #ff20cf}.attack-royalFlush .attack-impact{border:4px double #ff8bea;background:radial-gradient(circle,#ffb3f422 0,#ff2bd640 58%,#ff00c822 72%,transparent 76%);box-shadow:inset 0 0 12px #fff,inset 0 0 30px #ff2bd6,0 0 8px #fff,0 0 26px #ff20cf}
-.wave-cue { position:absolute; z-index:18; left:50%; top:42%; width:76%; padding:8px; transform:translate(-50%,-50%); color:#f1dfaa; background:#11150edb; border-block:2px solid #b99145; text-align:center; font-size:15px; font-weight:bold; letter-spacing:2px; text-shadow:2px 2px #000; animation:wave-cue calc(1.4s / var(--game-speed)) steps(7,end) forwards; }.wave-cue small{display:block;margin-top:4px;color:#aaa083;font-size:6px;letter-spacing:1px}.wave-cue.boss-cue{color:#ffb04f;border-color:#d05334;background:#2b0e0de8;box-shadow:0 0 24px #b83527aa}
+.wave-cue { position:absolute; z-index:18; left:50%; top:42%; width:76%; padding:8px; transform:translate(-50%,-50%); pointer-events:none; color:#f1dfaa; background:#11150edb; border-block:2px solid #b99145; text-align:center; font-size:15px; font-weight:bold; letter-spacing:2px; text-shadow:2px 2px #000; animation:wave-cue calc(1.4s / var(--game-speed)) steps(7,end) forwards; }.wave-cue small{display:block;margin-top:4px;color:#aaa083;font-size:6px;letter-spacing:1px}.wave-cue.boss-cue{color:#ffb04f;border-color:#d05334;background:#2b0e0de8;box-shadow:0 0 24px #b83527aa}
 .grid-slot { position:absolute; z-index:4; width:7.35%; aspect-ratio:1; padding:0; transform:translate(-50%,-50%); color:#9a927a; background:#17201924; border:1px solid #78806b20; cursor:pointer; }
 .grid-slot.blocked { z-index:2; opacity:.2; border:0; pointer-events:none; }.grid-slot .slot-plus{font-size:8px;opacity:.15}.grid-slot.tower-slot{width:7.35%;aspect-ratio:1}.grid-slot.tower-slot img{bottom:8%;width:95%;height:95%}.grid-slot.tower-slot .tier-dot{bottom:-8px;font-size:5px}
 .grid-slot.move-target { z-index:6; background:#9fca5a2b; border-color:#b8dd72; box-shadow:inset 0 0 6px #9dd95888,0 0 5px #9dd95866; animation:target-pulse .9s steps(2,end) infinite; }.grid-slot.move-target .slot-plus{color:#dff5a0;opacity:1}.grid-slot.swap-target{z-index:7;border-color:#e8aa55;box-shadow:0 0 7px #e89b3b,inset 0 0 5px #e89b3b66;animation:target-pulse .9s steps(2,end) infinite}.grid-slot.selected{z-index:8;outline:2px solid #f4dc78;filter:drop-shadow(0 0 5px #f0bc4d)}
@@ -110,7 +110,7 @@ html.enemy-images-off .enemy .enemy-face::after{content:var(--enemy-wave);font-s
 .grid-slot.tower-slot:has(img[src$="/K.png"])::before{width:28%;height:7%;aspect-ratio:auto;background:#e56b52;border:1px solid #6f271f;box-shadow:0 0 7px #d54b39;animation-duration:calc(1.05s / var(--game-speed))}
 .grid-slot.tower-slot:has(img[src$="/A.png"])::before{width:36%;height:6%;aspect-ratio:auto;background:#75dbe2;border:0;box-shadow:0 0 9px #5bcad3}
 .grid-slot.tower-slot:has(img[src$="/J.png"])::before{background:#bd77e5;border-color:#56326c;border-radius:50%;box-shadow:0 0 10px #a25bcf;animation-duration:calc(.6s / var(--game-speed))}
-.battle-message { position:absolute; z-index:8; left:50%; bottom:3%; transform:translateX(-50%); width:max-content; max-width:86%; padding:5px 9px; background:#121511e8; color:#e8d9ae; border:1px solid #a17a38; font-size:9px; text-align:center; box-shadow:3px 3px #0008; }
+.battle-message { position:absolute; z-index:8; left:50%; bottom:3%; transform:translateX(-50%); width:max-content; max-width:86%; padding:5px 9px; pointer-events:none; background:#121511e8; color:#e8d9ae; border:1px solid #a17a38; font-size:9px; text-align:center; box-shadow:3px 3px #0008; }
 .tower-slot .tier-dot { position:absolute; z-index:5; left:50%; bottom:-7px; transform:translateX(-50%); padding:2px 4px; color:#16120c; background:#b7aa88; border:1px solid #30291d; font-size:6px; font-weight:bold; white-space:nowrap; }
 @keyframes alchemy-ground { 50% { transform:translate(-50%,-50%) scale(.96); filter:brightness(1.3); } }
 @keyframes ranged-shot { 0%,35%{transform:translate(0,0);opacity:0}45%{opacity:1}100%{transform:translate(170%,-120%);opacity:0} }
@@ -285,7 +285,6 @@ html.enemy-images-off .enemy .enemy-face::after{content:var(--enemy-wave);font-s
 
 .field-playback{z-index:28}.field-playback button{width:50px;height:50px;font-size:14px}
 .monster-image-control{display:none;z-index:29}.monster-image-control button{width:58px;height:38px;padding:2px;color:#f3dfa5;background:#242820;border:2px solid #8d7b54;font-size:10px;font-weight:1000;line-height:1;box-shadow:2px 2px #050605}.monster-image-control button.off{color:#fff;background:#913e2c;border-color:#ff9d6e}
-.mobile-restart-control{display:none;z-index:29}.mobile-restart-control button{width:44px;height:40px;padding:0;color:#ffd982;background:#522c26;border:2px solid #bd755f;font-size:17px;font-weight:1000;line-height:1;box-shadow:2px 2px #050605} /* mobile-only reset */
 @media (min-width:760px){
   .field-playback{grid-column:1;grid-row:4;position:relative;justify-self:end;align-self:end;margin:0 8px 5px 0}
   .field-playback button{width:58px;height:58px;font-size:17px}
@@ -311,8 +310,6 @@ html.enemy-images-off .enemy .enemy-face::after{content:var(--enemy-wave);font-s
   .field-playback{position:fixed;top:calc(env(safe-area-inset-top) + 69px);right:5px;bottom:auto}
   .field-playback button{width:44px;height:52px;font-size:14px}
   .monster-image-control{display:block;position:fixed;top:calc(env(safe-area-inset-top) + 125px);right:5px}.monster-image-control button{width:44px;height:40px;padding:1px;font-size:9px}
-  .mobile-restart-control{display:block;position:absolute;top:calc(env(safe-area-inset-top) + 57px + var(--mobile-board) - 42px);right:5px}
-  .game-frame:has(.poker-guide[open]) .mobile-restart-control{display:none}
   .unit-dock .effect-note{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
   html.enemy-images-off .enemy .enemy-face::after{font-size:12px}
   html.enemy-images-off .enemy.boss .enemy-face::after{font-size:16px}

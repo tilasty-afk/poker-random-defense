@@ -61,7 +61,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /return towers\.filter\(priest => priest\.category === "fullHouse"\)\.length/);
   assert.match(page, /function conscriptBuffStacks\(tower: Tower, towers: Tower\[\]\)/);
   assert.match(page, /Math\.max\(0, towers\.filter\(unit => unit\.category === "high"\)\.length - 1\)/);
-  assert.match(page, /case "high": return "적 처치 시 1G 추가 · 많을수록 강해짐"/);
+  assert.match(page, /case "high": return "적 처치 시 1G 추가 · 다른 징집병 1기당 공격력 33% 증가"/);
   assert.match(page, /markExpirations\.set\(target\.id,\s*now \+ 2000\)/);
   assert.match(page, /critical = Math\.random\(\) < \.5/);
   assert.match(page, /baseDamage \* \(critical \? 5 : 1\)/);
@@ -165,7 +165,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /saintess-ending-preview\/\?embedded=1&locale=\$\{locale\}/);
   assert.match(page, /demon-triumph-preview\/\?embedded=1&locale=\$\{locale\}/);
   assert.match(page, /title="ABSOLUTE TRIUMPH"/);
-  assert.match(page, /return \{ damage: priestDamageBuff \+ conscriptStacks \* \.5, speed: 0 \}/);
+  assert.match(page, /return \{ damage: priestDamageBuff \+ conscriptStacks \* \.33, speed: 0 \}/);
   assert.match(page, /high: \[2, 3, 4\]/);
   assert.match(page, /pair: \[3, 5, 7\]/);
   assert.match(page, /twoPair: \[5, 8, 11\]/);
@@ -197,7 +197,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /function priestAttackBuff\(towers: Tower\[\]\)/);
   assert.match(page, /priest\.tier === 1 \? \.15 : priest\.tier === 2 \? \.25 : \.4/);
   assert.match(page, /const priestDamageBuff = priestAttackBuff\(towers\), conscriptStacks = conscriptBuffStacks\(tower, towers\)/);
-  assert.match(page, /return \{ damage: priestDamageBuff \+ conscriptStacks \* \.5, speed: 0 \}/);
+  assert.match(page, /return \{ damage: priestDamageBuff \+ conscriptStacks \* \.33, speed: 0 \}/);
   assert.match(page, /className=\{`game-frame \$\{selectedPlaced \? "unit-command-open" : ""\}`\}/);
   assert.match(css, /\.game-frame\.unit-command-open \.unit-dock\{visibility:hidden\}/);
   assert.doesNotMatch(css, /--mobile-command:92px/);
@@ -218,9 +218,11 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /\.command-stats b\{font-size:16px/);
   assert.match(css, /\.game-frame\.unit-command-open \.battlefield\{overflow:visible\}/);
   assert.match(page, /disabled=\{!gameStarted \|\| gold < upgradeCost\}/);
-  assert.match(page, /className="mobile-restart-control"/);
-  assert.match(css, /\.mobile-restart-control\{display:none/);
-  assert.match(css, /\.mobile-restart-control\{display:block;position:absolute/);
+  assert.doesNotMatch(page, /className="mobile-restart-control"/);
+  assert.doesNotMatch(css, /\.mobile-restart-control/);
+  assert.match(css, /\.wave-cue \{[^}]*pointer-events:none/);
+  assert.match(css, /\.battle-message \{[^}]*pointer-events:none/);
+  assert.match(css, /\.enemy \{[^}]*pointer-events:none/);
   assert.match(css, /\.game-frame:has\(\.poker-guide\[open\]\) \.field-playback,\.game-frame:has\(\.poker-guide\[open\]\) \.monster-image-control\{display:none\}/);
   assert.match(css, /--mobile-rail:52px/);
   assert.match(css, /\.battle-wrap \{[^}]*var\(--mobile-command\)[^}]*justify-items:start/);
@@ -327,7 +329,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /button\.paused\) \.field-unit-actions button\.sell/);
   assert.doesNotMatch(page, /earlyHpMultiplier|earlySpawnMultiplier|hardRamp/);
   assert.match(page, /enemy\.boss \? 20 : 1/);
-  assert.match(page, /const APP_VERSION = "v0\.2005"/);
+  assert.match(page, /const APP_VERSION = "v0\.2006"/);
   assert.match(page, /\[showMonsterImages, setShowMonsterImages\] = useState\(true\)/);
   assert.match(page, /classList\.toggle\("enemy-images-off", !showMonsterImages\)/);
   assert.match(page, /--enemy-wave/);

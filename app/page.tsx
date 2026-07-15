@@ -132,7 +132,7 @@ const HIDDEN_BOSS_IMAGE = `${ASSET_BASE}/sprites/enemies/hidden-demon-lord.png`;
 const MAX_MONSTER_HP_MULTIPLIER = 2;
 const NORMAL_MONSTER_HP_MULTIPLIER = 1.5;
 const MAX_ATTACK_SPEED_LEVEL = 30;
-const APP_VERSION = "v0.2005";
+const APP_VERSION = "v0.2006";
 const BALANCE = { baseHp: 100, hpPerWave: .04, hpGrowth: 1.028, baseSpeed: .76, speedPerWave: .003, maxSpeed: 1.55, damageScale: .24, bossMoveScale: .58, spawnInterval: 600 } as const;
 const NORMAL_HP_DIFFICULTY_STEPS = [[10, 1.3983], [20, 1.601], [30, 1.9387], [40, 2.4891], [50, 3.2002], [60, 3.7484], [70, 4.1104], [80, 4.2995], [90, 4.2814], [100, 4.1578], [110, 4.9272], [120, 5.0028], [130, 5.0434], [140, 5.0998], [150, 5.1259], [160, 5.1645], [170, 5.1768], [180, 5.1671], [190, 5.0801], [200, 4.9316]] as const;
 const BOSS_HP_BY_WAVE: Record<number, number> = { 10: 27000, 20: 48000, 30: 85000, 40: 145000, 50: 233000, 60: 336000, 70: 440000, 80: 556000, 90: 708000, 100: 996000, 110: 1080000, 120: 1160000, 130: 1250000, 140: 1370000, 150: 1500000, 160: 1600000, 170: 1700000, 180: 1800000, 190: 1900000, 200: 2000000 };
@@ -294,7 +294,7 @@ function evaluate(cards: Card[]): Result {
 }
 function roleDescription(unit: Result, locale: Locale = activeLocale) { if (locale !== "ko")
     return roleCopy(locale, unit.category, unit.tier || 3); switch (unit.category) {
-    case "high": return "적 처치 시 1G 추가 · 많을수록 강해짐";
+    case "high": return "적 처치 시 1G 추가 · 다른 징집병 1기당 공격력 33% 증가";
     case "pair": return "2초간 받는 피해 100% 추가 표식을 남긴다";
     case "twoPair": return "사거리 내 체력이 가장 낮은 적 우선 공격";
     case "triple": return "5초마다 강력한 공격 · 사거리 4칸 · 2.5칸 범위 폭발";
@@ -394,7 +394,7 @@ export default function Home() {
                 }
             const supportBuff = (tower: Tower) => {
                 const priestDamageBuff = priestAttackBuff(towers), conscriptStacks = conscriptBuffStacks(tower, towers);
-                return { damage: priestDamageBuff + conscriptStacks * .5, speed: 0 };
+                return { damage: priestDamageBuff + conscriptStacks * .33, speed: 0 };
             };
             const activeTowerIds = new Set(towers.map(tower => tower.id));
             for (const id of lastAttackAtRef.current.keys())
@@ -660,7 +660,6 @@ export default function Home() {
     <section className={`hand-result summon-preview ${gameStarted ? "" : "prestart-hidden"}`}><div className="summon-portrait"><img src={result.image} alt=""/><i>{copy.summonNext}</i></div><div className="summon-copy"><div className="summon-path"><span>{copy.currentHand}</span><b>{term(locale, result.label)}</b></div><strong><i className={`tier-badge tier-${result.tier || 3}`}>{term(locale, result.tierLabel)}</i><span className="summon-job">{term(locale, result.job)}</span><em className="summon-divider">/</em><span className="summon-hand-name">{term(locale, result.label)}</span></strong><div className="summon-stats"><span><small>{copy.attack}</small><b>{result.damage}</b></span><span><small>{copy.range}</small><b>{result.range}</b></span><span><small>{copy.speed}</small><b>{result.speed}</b></span></div><small className="effect-note">{roleDescription(result, locale)}</small></div></section></div>
     <div className="playback-control field-playback"><button className={playbackPaused ? "paused" : ""} aria-label={copy.playback} onClick={cyclePlayback}>{playbackPaused ? "Ⅱ" : `${gameSpeed}×`}</button></div>
     <div className="monster-image-control"><button className={showMonsterImages ? "on" : "off"} aria-label="Monster images on or off" aria-pressed={!showMonsterImages} onClick={() => setShowMonsterImages(value => !value)}>{showMonsterImages ? "IMG ON" : "IMG OFF"}</button></div>
-    <div className="mobile-restart-control"><button type="button" aria-label={copy.retry} title={copy.retry} onClick={restart}>R</button></div>
     <section className="hand-panel">
       <div className="section-title"><div className="hand-heading"><span>{copy.hand}</span></div><div className={`hand-glance ${gameStarted ? "" : "prestart-hidden"}`}>{gameStarted && <><img src={result.image} alt=""/><span><small>{term(locale, result.label)}</small><b>{term(locale, result.job)}</b></span></>}</div><div className="hand-wallet" aria-label={`${gold.toLocaleString()} 골드`}><i className="wallet-coin" aria-hidden="true"/><b>{gold.toLocaleString()}G</b></div></div>
       <div className={`cards ${cooldown > 0 ? "cooling" : ""}`}>{gameStarted ? hand.map(card => { const state = selected.includes(card.id) ? "change" : result.bestCardIds.includes(card.id) ? "best" : "keep"; return <div key={card.id} className="card-slot"><button disabled={cooldown > 0} onClick={() => toggle(card.id)} className={`poker-card ${result.bestCardIds.includes(card.id) ? "best" : ""} ${selected.includes(card.id) ? "active" : ""}`} aria-pressed={selected.includes(card.id)} aria-label={card.rank === 15 ? `${card.joker === "color" ? "컬러" : card.joker === "invert" ? "반전" : "흑백"} 조커` : undefined}><span className={`${card.suit === "heart" || card.suit === "diamond" ? "red-suit" : ""} ${card.joker ? `joker-${card.joker}` : ""}`}>{card.rank === 15 ? (card.joker === "color" ? "C-J" : card.joker === "invert" ? "I-J" : "B-J") : rankLabel(card.rank)}<small>{card.rank === 15 ? "★" : SYMBOL[card.suit]}</small></span><b className="card-center">{cardCenter(card)}</b></button><em className={`card-state ${state}`}>{state === "change" ? copy.change : state === "best" ? copy.best : copy.keep}</em></div>; }) : hand.map(card => <div key={card.id} className="card-slot"><button type="button" disabled className="poker-card concealed" aria-label="숨겨진 카드"><b>?</b></button><em className="card-state prestart-state" aria-hidden="true"/></div>)}</div>
