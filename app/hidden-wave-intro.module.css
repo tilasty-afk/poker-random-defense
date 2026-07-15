@@ -1,0 +1,238 @@
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  overflow: hidden;
+  pointer-events: none;
+  isolation: isolate;
+  background: #010101;
+  animation: introLife 1.8s linear both;
+}
+
+.blackout,
+.shudder,
+.vignette,
+.scanlines {
+  position: absolute;
+  inset: 0;
+}
+
+.blackout {
+  z-index: 0;
+  background: #000;
+  animation: blackout 1.8s linear both;
+}
+
+.shudder {
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  animation: screenShudder 1.8s steps(2, end) both;
+}
+
+.vignette {
+  background:
+    radial-gradient(circle at 50% 49%, rgba(82, 0, 0, .22) 0 9%, transparent 43%),
+    radial-gradient(ellipse at center, transparent 25%, rgba(0, 0, 0, .92) 78%);
+  animation: bloodPulse 1.8s steps(5, end) both;
+}
+
+.portal {
+  position: relative;
+  width: min(66vw, 25rem);
+  aspect-ratio: 1;
+  filter: drop-shadow(0 0 1rem rgba(232, 20, 10, .6));
+  animation: portalOpen 1.8s cubic-bezier(.2, .75, .22, 1) both;
+}
+
+.portal::before,
+.portal::after {
+  content: "";
+  position: absolute;
+  inset: 15%;
+  border: clamp(2px, .7vw, 5px) solid rgba(211, 28, 17, .78);
+  transform: rotate(45deg);
+  box-shadow:
+    0 0 0 3px rgba(58, 0, 0, .9),
+    0 0 1.25rem #d3180c,
+    inset 0 0 1.1rem #8d0904;
+}
+
+.portal::after {
+  inset: 24%;
+  border-style: dashed;
+  border-color: rgba(255, 93, 48, .72);
+  transform: rotate(22.5deg);
+  animation: runeTurn 1.8s steps(8, end) both;
+}
+
+.portalCore {
+  position: absolute;
+  inset: 27%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #000 0 25%, #290000 46%, #9e0d07 65%, transparent 68%);
+  box-shadow: 0 0 2.8rem #c8170d, inset 0 0 1.8rem #000;
+}
+
+.crack {
+  position: absolute;
+  left: 49%;
+  top: 48%;
+  width: 5px;
+  height: 48%;
+  clip-path: polygon(35% 0, 100% 0, 58% 33%, 100% 36%, 43% 69%, 75% 71%, 0 100%, 25% 62%, 0 59%, 43% 29%);
+  background: linear-gradient(#fff0d1, #ff3b1b 34%, #680400);
+  box-shadow: 0 0 .65rem #ff1a0a;
+  transform-origin: 50% 2%;
+  animation: crackGrow 1.8s steps(5, end) both;
+}
+
+.crackOne { transform: rotate(7deg); }
+.crackTwo { transform: rotate(99deg) scaleY(.8); }
+.crackThree { transform: rotate(193deg) scaleY(.72); }
+.crackFour { transform: rotate(285deg) scaleY(.9); }
+
+.warningSeal {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: min(40vw, 13rem);
+  aspect-ratio: 1;
+  color: #ffb09b;
+  text-shadow: 2px 0 #5f0000, -2px 0 #5f0000, 0 0 1rem #ff1a08;
+  animation: sealStrike 1.8s steps(3, end) both;
+}
+
+.warningSeal::before {
+  content: "";
+  position: absolute;
+  inset: 15%;
+  border: 3px double currentColor;
+  transform: rotate(45deg);
+  box-shadow: 0 0 1rem #bd1008, inset 0 0 1rem #bd1008;
+}
+
+.runeRing {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border: 2px dashed rgba(255, 82, 51, .78);
+  border-radius: 50%;
+  font: 700 clamp(.55rem, 2.2vw, .8rem)/1 "Courier New", monospace;
+  animation: runeTurn 1.8s steps(8, end) reverse both;
+}
+
+.warningMark {
+  font: 900 clamp(3.7rem, 18vw, 7rem)/1 Georgia, serif;
+}
+
+.unknown {
+  position: absolute;
+  top: calc(50% + min(25vw, 9.5rem));
+  left: 50%;
+  transform: translateX(-50%);
+  color: #f3d6c9;
+  letter-spacing: .38em;
+  padding-left: .38em;
+  text-shadow: 3px 3px 0 #5d0000, 0 0 1rem #e21b0d;
+  font: 900 clamp(2rem, 9vw, 4.6rem)/1 "Courier New", monospace;
+  animation: unknownReveal 1.8s steps(2, end) both;
+}
+
+.scanlines {
+  background: repeating-linear-gradient(to bottom, transparent 0 3px, rgba(0, 0, 0, .22) 3px 5px);
+  mix-blend-mode: multiply;
+  opacity: .65;
+}
+
+@keyframes introLife {
+  0% { opacity: 0; }
+  5%, 88% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+@keyframes blackout {
+  0%, 20% { opacity: 1; }
+  36%, 86% { opacity: .72; }
+  100% { opacity: 0; }
+}
+
+@keyframes portalOpen {
+  0%, 20% { opacity: 0; transform: scale(.03) rotate(-18deg); }
+  32% { opacity: 1; transform: scale(.26) rotate(5deg); }
+  48% { transform: scale(1.07) rotate(-2deg); }
+  75%, 100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+@keyframes crackGrow {
+  0%, 24% { opacity: 0; clip-path: inset(0 0 100%); }
+  31% { opacity: 1; }
+  52%, 100% { opacity: 1; clip-path: inset(0); }
+}
+
+@keyframes sealStrike {
+  0%, 45% { opacity: 0; transform: scale(2.2) rotate(-12deg); }
+  49% { opacity: 1; transform: scale(.86) rotate(3deg); }
+  56%, 86% { opacity: 1; transform: scale(1) rotate(0); }
+  100% { opacity: 0; transform: scale(1.08); }
+}
+
+@keyframes unknownReveal {
+  0%, 69% { opacity: 0; transform: translate(-50%, .7rem); }
+  73%, 90% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -.2rem); }
+}
+
+@keyframes screenShudder {
+  0%, 44%, 78%, 100% { transform: translate(0); }
+  47% { transform: translate(-5px, 2px); }
+  50% { transform: translate(6px, -4px); }
+  54% { transform: translate(-3px, 5px); }
+  58% { transform: translate(4px, -2px); }
+  64% { transform: translate(-2px, 1px); }
+}
+
+@keyframes bloodPulse {
+  0%, 22% { opacity: 0; }
+  36% { opacity: .55; }
+  48% { opacity: 1; }
+  68% { opacity: .68; }
+  86%, 100% { opacity: 1; }
+}
+
+@keyframes runeTurn {
+  from { transform: rotate(0); }
+  to { transform: rotate(90deg); }
+}
+
+@keyframes reducedLife {
+  0% { opacity: 0; }
+  14%, 80% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro { animation: reducedLife 1.8s ease-in-out both; }
+  .blackout,
+  .shudder,
+  .vignette,
+  .portal,
+  .portal::after,
+  .crack,
+  .warningSeal,
+  .runeRing,
+  .unknown {
+    animation: none;
+  }
+  .portal,
+  .crack,
+  .warningSeal,
+  .unknown { opacity: 1; }
+}
+
+@media (max-width: 480px) {
+  .portal { width: min(84vw, 23rem); }
+  .warningSeal { width: min(52vw, 12rem); }
+  .unknown { top: calc(50% + min(34vw, 9rem)); }
+}

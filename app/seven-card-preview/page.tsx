@@ -347,6 +347,7 @@ export default function SevenCardPreviewPage() {
   const [replay, setReplay] = useState(0);
   const [phase, setPhase] = useState("카드 집결");
   const [embedded, setEmbedded] = useState(false);
+  const [finished, setFinished] = useState(false);
 
   useEffect(() => {
     setEmbedded(new URLSearchParams(window.location.search).get("embedded") === "1");
@@ -356,6 +357,7 @@ export default function SevenCardPreviewPage() {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
+    setFinished(false);
     let frame = 0;
     let startedAt = performance.now();
     let latestPhase = "";
@@ -372,6 +374,7 @@ export default function SevenCardPreviewPage() {
         setPhase(nextPhase);
       }
       if (elapsed < DURATION) frame = requestAnimationFrame(animate);
+      else setFinished(true);
     };
     frame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(frame);
@@ -381,6 +384,7 @@ export default function SevenCardPreviewPage() {
     <section className={styles.stage} aria-label="세븐 카드 히든 엔딩 Canvas 미리보기">
       <canvas ref={canvasRef} width={WIDTH} height={HEIGHT}/>
       <div className={styles.scanlines}/>
+      {!embedded && finished && <button className={styles.stageReplay} type="button" onClick={() => { window.location.href = `${ASSET_BASE}/`; }}>PLAY AGAIN?</button>}
     </section>
     {!embedded && <aside className={styles.controls}>
       <span>CANVAS SEQUENCE</span>

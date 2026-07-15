@@ -1,6 +1,9 @@
 .previewPage{min-height:100dvh;display:grid;grid-template-columns:minmax(260px,360px) minmax(220px,320px);place-content:center;gap:22px;padding:20px;color:#f2dfaa;background:radial-gradient(circle at 50% 30%,#173429,#050806 65%);font-family:"Courier New",monospace}
 .stage{position:relative;width:min(360px,calc(100vw - 32px));aspect-ratio:9/16;overflow:hidden;border:3px solid #b68a3d;box-shadow:0 0 0 2px #262015,0 0 34px #d8a84433,8px 8px #000;background:#030706}
 .stage canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+.stageReplay{position:absolute;z-index:5;left:50%;bottom:7%;min-width:168px;min-height:44px;padding:8px 18px;transform:translateX(-50%);color:#fff1b0;background:linear-gradient(#2d2719e8,#0d1210ee);border:2px solid #e9bd58;box-shadow:0 0 20px #ffc64388,inset 0 0 12px #f3c65e33;font:900 13px "Courier New",monospace;letter-spacing:.06em;text-shadow:1px 1px #000;cursor:pointer;animation:stage-replay-in .4s ease-out both}
+.stageReplay:active{transform:translate(calc(-50% + 2px),2px)}
+@keyframes stage-replay-in{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
 .scanlines{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#0000 0 3px,#0003 4px);mix-blend-mode:multiply}
 .controls{align-self:center;padding:18px;color:#cfc29d;background:#111712e8;border:2px solid #5e573f;box-shadow:6px 6px #000}
 .controls span{display:block;color:#6ed8cc;font-size:10px;letter-spacing:1.5px}

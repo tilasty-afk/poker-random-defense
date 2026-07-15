@@ -34,36 +34,40 @@ export function term(locale: Locale, text: string) {
 }
 
 export const UI = {
-  ko: { hand:"운명의 손패", handHint:"7장 중 가장 강한 조합이 자동 선택됩니다", inventory:"내 유닛", emptyInventory:"소환 유닛 보관함", summonNext:"소환 예정", currentHand:"현재 족보", attack:"공격", range:"사거리", speed:"공속", recruit:"족보 확정 & 소환", selectedReroll:"선택 카드 교체", fullReroll:"전체 손패 교체", start:"웨이브 시작", pause:"일시 정지", keep:"유지", best:"최선", change:"교체", use:"사용", sell:"판매", recall:"인벤토리 회수", placeHint:"빈 칸을 눌러 배치", attackUp:"공격 강화", speedUp:"속도 강화", totalAttack:"전체 공격력", totalSpeed:"전체 공격속도", guide:"족보별 소환 직업", open:"펼쳐 보기", tutorialAgain:"처음 설명 다시 보기", skip:"건너뛰기", next:"다음", begin:"게임 시작", gameOver:"성채 함락", retry:"다시 방어하기", endingReplay:"다시 플레이하기", bossEquivalent:"강적 1체 · 웨이브별 고유 체력", defeated:"명의 약탈자를 처치했습니다.", victory:"성채 방어 성공", clear:"100 웨이브 클리어", pausedRecruit:"일시정지 중에도 리롤·소환·배치 가능", language:"언어 변경", playback:"재생 속도 변경" },
-  en: { hand:"Hand of Fate", handHint:"The strongest 5-card hand out of 7 is selected automatically", inventory:"My Units", emptyInventory:"Summoned units are stored here", summonNext:"Next Summon", currentHand:"Current Hand", attack:"ATK", range:"Range", speed:"ASPD", recruit:"Confirm Hand & Summon", selectedReroll:"Reroll Selected", fullReroll:"Reroll All", start:"Start Wave", pause:"Pause", keep:"KEEP", best:"BEST", change:"CHANGE", use:"USE", sell:"Sell", recall:"Return to Inventory", placeHint:"Tap an empty tile to deploy", attackUp:"Upgrade ATK", speedUp:"Upgrade ASPD", totalAttack:"Global Attack", totalSpeed:"Global Attack Speed", guide:"Poker Hands & Units", open:"Open", tutorialAgain:"Replay Tutorial", skip:"Skip", next:"Next", begin:"Start Game", gameOver:"Fortress Fallen", retry:"Defend Again", endingReplay:"Play Again", bossEquivalent:"1 BOSS · UNIQUE HP BY WAVE", defeated:" raiders defeated.", victory:"Fortress Defended", clear:"100 WAVES CLEARED", pausedRecruit:"Reroll, summon, and deploy while paused", language:"Change language", playback:"Change game speed" },
-  zh: { hand:"命运手牌", handHint:"自动选择7张牌中最强的5张组合", inventory:"我的单位", emptyInventory:"召唤单位将保存在这里", summonNext:"即将召唤", currentHand:"当前牌型", attack:"攻击", range:"射程", speed:"攻速", recruit:"确认牌型并召唤", selectedReroll:"重抽所选牌", fullReroll:"重抽全部", start:"开始波次", pause:"暂停", keep:"保留", best:"最佳", change:"替换", use:"使用", sell:"出售", recall:"收回仓库", placeHint:"点击空位进行部署", attackUp:"强化攻击", speedUp:"强化攻速", totalAttack:"全军攻击力", totalSpeed:"全军攻击速度", guide:"牌型与召唤职业", open:"展开", tutorialAgain:"重看教程", skip:"跳过", next:"下一步", begin:"开始游戏", gameOver:"要塞陷落", retry:"再次防守", endingReplay:"再玩一次", bossEquivalent:"1名首领 · 每个波次独立生命值", defeated:"名掠夺者已被消灭。", victory:"要塞防守成功", clear:"100波通关", pausedRecruit:"暂停时仍可重抽、召唤和部署", language:"切换语言", playback:"切换游戏速度" },
-  ja: { hand:"運命の手札", handHint:"7枚から最も強い5枚の役を自動選択します", inventory:"所持ユニット", emptyInventory:"召喚ユニットはここに保管されます", summonNext:"召喚予定", currentHand:"現在の役", attack:"攻撃", range:"射程", speed:"攻速", recruit:"役を確定して召喚", selectedReroll:"選択カードを引き直す", fullReroll:"すべて引き直す", start:"ウェーブ開始", pause:"一時停止", keep:"維持", best:"最善", change:"交換", use:"使用", sell:"売却", recall:"インベントリへ戻す", placeHint:"空きマスをタップして配置", attackUp:"攻撃強化", speedUp:"攻速強化", totalAttack:"全体攻撃力", totalSpeed:"全体攻撃速度", guide:"役別の召喚職業", open:"開く", tutorialAgain:"チュートリアルを再表示", skip:"スキップ", next:"次へ", begin:"ゲーム開始", gameOver:"城塞陥落", retry:"もう一度防衛", endingReplay:"もう一度プレイ", bossEquivalent:"ボス1体・ウェーブ別固有HP", defeated:"体の略奪者を倒しました。", victory:"城塞防衛成功", clear:"100ウェーブクリア", pausedRecruit:"一時停止中も引き直し・召喚・配置可能", language:"言語変更", playback:"ゲーム速度変更" },
+  ko: { hand:"운명의 손패", handHint:"7장 중 가장 강한 조합이 자동 선택됩니다", inventory:"예비대", emptyInventory:"배치 대기 유닛", summonNext:"소환 예정", currentHand:"현재 족보", attack:"공격", range:"사거리", speed:"공속", recruit:"족보 확정 & 소환", selectedReroll:"선택 카드 교체", fullReroll:"전체 손패 교체", start:"웨이브 시작", pause:"일시 정지", keep:"유지", best:"최선", change:"교체", use:"사용", sell:"판매", recall:"예비대로 회수", placeHint:"빈 칸을 눌러 배치", attackUp:"공격 강화", speedUp:"속도 강화", totalAttack:"전체 공격력", totalSpeed:"전체 공격속도", guide:"족보별 소환 직업", open:"펼쳐 보기", tutorialAgain:"처음 설명 다시 보기", skip:"건너뛰기", next:"다음", begin:"게임 시작", gameOver:"성채 함락", retry:"다시 방어하기", endingReplay:"다시 플레이하기", bossEquivalent:"강적 1체 · 웨이브별 고유 체력", defeated:"명의 약탈자를 처치했습니다.", victory:"성채 방어 성공", clear:"200 웨이브 클리어", pausedRecruit:"일시정지 중에도 리롤·소환·배치 가능", language:"언어 변경", playback:"재생 속도 변경" },
+  en: { hand:"Hand of Fate", handHint:"The strongest 5-card hand out of 7 is selected automatically", inventory:"Reserves", emptyInventory:"Units awaiting deployment", summonNext:"Next Summon", currentHand:"Current Hand", attack:"ATK", range:"Range", speed:"ASPD", recruit:"Confirm Hand & Summon", selectedReroll:"Reroll Selected", fullReroll:"Reroll All", start:"Start Wave", pause:"Pause", keep:"KEEP", best:"BEST", change:"CHANGE", use:"USE", sell:"Sell", recall:"Return to Reserves", placeHint:"Tap an empty tile to deploy", attackUp:"Upgrade ATK", speedUp:"Upgrade ASPD", totalAttack:"Global Attack", totalSpeed:"Global Attack Speed", guide:"Poker Hands & Units", open:"Open", tutorialAgain:"Replay Tutorial", skip:"Skip", next:"Next", begin:"Start Game", gameOver:"Fortress Fallen", retry:"Defend Again", endingReplay:"Play Again", bossEquivalent:"1 BOSS · UNIQUE HP BY WAVE", defeated:" raiders defeated.", victory:"Fortress Defended", clear:"200 WAVES CLEARED", pausedRecruit:"Reroll, summon, and deploy while paused", language:"Change language", playback:"Change game speed" },
+  zh: { hand:"命运手牌", handHint:"自动选择7张牌中最强的5张组合", inventory:"预备队", emptyInventory:"待部署单位", summonNext:"即将召唤", currentHand:"当前牌型", attack:"攻击", range:"射程", speed:"攻速", recruit:"确认牌型并召唤", selectedReroll:"重抽所选牌", fullReroll:"重抽全部", start:"开始波次", pause:"暂停", keep:"保留", best:"最佳", change:"替换", use:"使用", sell:"出售", recall:"收回预备队", placeHint:"点击空位进行部署", attackUp:"强化攻击", speedUp:"强化攻速", totalAttack:"全军攻击力", totalSpeed:"全军攻击速度", guide:"牌型与召唤职业", open:"展开", tutorialAgain:"重看教程", skip:"跳过", next:"下一步", begin:"开始游戏", gameOver:"要塞陷落", retry:"再次防守", endingReplay:"再玩一次", bossEquivalent:"1名首领 · 每个波次独立生命值", defeated:"名掠夺者已被消灭。", victory:"要塞防守成功", clear:"通关200波", pausedRecruit:"暂停时仍可重抽、召唤和部署", language:"切换语言", playback:"切换游戏速度" },
+  ja: { hand:"運命の手札", handHint:"7枚から最も強い5枚の役を自動選択します", inventory:"予備隊", emptyInventory:"配置待機ユニット", summonNext:"召喚予定", currentHand:"現在の役", attack:"攻撃", range:"射程", speed:"攻速", recruit:"役を確定して召喚", selectedReroll:"選択カードを引き直す", fullReroll:"すべて引き直す", start:"ウェーブ開始", pause:"一時停止", keep:"維持", best:"最善", change:"交換", use:"使用", sell:"売却", recall:"予備隊へ戻す", placeHint:"空きマスをタップして配置", attackUp:"攻撃強化", speedUp:"攻速強化", totalAttack:"全体攻撃力", totalSpeed:"全体攻撃速度", guide:"役別の召喚職業", open:"開く", tutorialAgain:"チュートリアルを再表示", skip:"スキップ", next:"次へ", begin:"ゲーム開始", gameOver:"城塞陥落", retry:"もう一度防衛", endingReplay:"もう一度プレイ", bossEquivalent:"ボス1体・ウェーブ別固有HP", defeated:"体の略奪者を倒しました。", victory:"城塞防衛成功", clear:"200ウェーブクリア", pausedRecruit:"一時停止中も引き直し・召喚・配置可能", language:"言語変更", playback:"ゲーム速度変更" },
 } as const;
 
 export const TUTORIALS: Record<Locale, Array<{title:string;body:string}>> = {
   ko:[
     {title:"1. 세븐포커 소환",body:"7장 중 가장 강한 조합이 자동으로 강조되며 그 족보가 직업을 결정합니다. 흑백·컬러·반전 조커 3장은 모두 와일드 카드입니다."},
     {title:"2. 배치·회수·판매",body:"유닛을 눌러 빈 칸에 배치하세요. 필요 없는 유닛은 회수하거나 판매해 리롤 골드를 마련할 수 있습니다. 희귀 유닛은 판매 버튼을 두 번 눌러야 합니다."},
-    {title:"3. 강화와 전투 효과",body:"공격력은 레벨당 10%씩 제한 없이, 공격속도는 레벨당 5%씩 최대 30레벨까지 상승합니다. 빨간 점멸은 직접 타격이며, 짙은 보라색 원은 연금술 장판입니다."},
-    {title:"4. 200 인구를 막아라",body:"적은 탈출하지 않고 계속 순환합니다. 일반 몬스터는 인구 1, 보스는 인구 20입니다. 보스는 게임 시간 3분 안에 처치해야 합니다."},
+    {title:"3. 강화와 전투 효과",body:"공격력은 레벨당 2.5%씩 제한 없이, 공격속도는 레벨당 2.5%씩 최대 30레벨까지 상승합니다. 빨간 점멸은 직접 타격이며, 짙은 보라색 원은 연금술 장판입니다."},
+    {title:"4. 200 인구를 막아라",body:"200웨이브까지 성채를 방어하세요. 적은 탈출하지 않고 계속 순환합니다. 일반 몬스터는 인구 1, 보스는 인구 20이며 보스는 게임 시간 3분 안에 처치해야 합니다."},
+    {title:"5. 성녀의 선택",body:"성녀 5기를 예비대에 모으는 선택에도 의미가 있습니다. 즉시 사용과 보관을 전략적으로 판단하세요."},
   ],
   en:[
     {title:"1. Seven-Card Summoning",body:"The strongest combination among seven cards is highlighted automatically, and that poker hand determines the summoned class. The black, color, and inverted Jokers are all wild cards."},
     {title:"2. Deploy, Recall, Sell",body:"Select a unit and tap an empty tile to deploy it. Recall or sell unwanted units to fund rerolls. Rare units require two taps to confirm a sale."},
-    {title:"3. Upgrades and Effects",body:"Attack rises 10% per level and attack speed rises 5% per level with no cap. Red flashes are direct hits, and dark violet circles are Alchemist pools."},
-    {title:"4. Hold Below 200",body:"Enemies never escape and keep circling the battlefield. Normal enemies use 1 population and bosses use 20. Defeat each boss within three game-time minutes."},
+    {title:"3. Upgrades and Effects",body:"Attack rises 2.5% per level without a cap. Attack speed rises 2.5% per level up to level 30. Red flashes are direct hits, and dark violet circles are Alchemist pools."},
+    {title:"4. Hold Below 200",body:"Defend the fortress through wave 200. Enemies never escape and keep circling the battlefield. Normal enemies use 1 population and bosses use 20. Defeat each boss within three game-time minutes."},
+    {title:"5. The Saintess Choice",body:"There is meaning in collecting five Saintesses in your Reserves. Choose strategically between using one immediately and keeping them."},
   ],
   zh:[
     {title:"1. 七张牌召唤",body:"系统会自动突出7张牌中的最强组合，牌型决定召唤职业。黑白、彩色与反转小丑牌均为万能牌。"},
     {title:"2. 部署、收回与出售",body:"选择单位后点击空位进行部署。可收回或出售多余单位来获得重抽资金。稀有单位需要点击两次确认出售。"},
-    {title:"3. 强化与战斗效果",body:"攻击力每级提高10%，攻击速度每级提高5%，没有等级上限。红色闪烁是直接伤害，绿色区域是炼金术，紫色是命运术师的持续伤害。"},
-    {title:"4. 人口保持在200以下",body:"敌人不会逃离，而会持续绕场移动。普通怪物占1人口，Boss占20人口。必须在3分钟游戏时间内击败Boss。"},
+    {title:"3. 强化与战斗效果",body:"攻击力每级提高2.5%且无上限，攻击速度每级提高2.5%，最高30级。红色闪烁是直接伤害，深紫色区域是炼金术师的持续区域。"},
+    {title:"4. 人口保持在200以下",body:"守卫要塞直到第200波。敌人不会逃离，而会持续绕场移动。普通怪物占1人口，Boss占20人口，必须在3分钟游戏时间内击败Boss。"},
+    {title:"5. 圣女的选择",body:"在预备队中集齐5名圣女同样具有意义。请在立即使用与保留之间作出策略判断。"},
   ],
   ja:[
     {title:"1. セブンカード召喚",body:"7枚から最も強い組み合わせが自動で強調され、その役で召喚職業が決まります。白黒・カラー・反転ジョーカーの3枚はすべてワイルドカードです。"},
     {title:"2. 配置・回収・売却",body:"ユニットを選び、空きマスをタップして配置します。不要なユニットは回収または売却して引き直し資金にできます。希少ユニットの売却は2回タップで確定します。"},
-    {title:"3. 強化と戦闘効果",body:"攻撃力はレベルごとに10%、攻撃速度は5%ずつ上限なく上昇します。赤い点滅は直接攻撃、緑は錬金術の沼、紫は運命術師の持続ダメージです。"},
-    {title:"4. 人口200を防げ",body:"敵は脱出せず戦場を周回し続けます。通常敵は人口1、ボスは人口20です。ボスはゲーム時間3分以内に倒してください。"},
+    {title:"3. 強化と戦闘効果",body:"攻撃力はレベルごとに2.5%ずつ上限なく上昇し、攻撃速度は2.5%ずつ最大30レベルまで上昇します。赤い点滅は直接攻撃、濃い紫色の範囲は錬金術師の持続領域です。"},
+    {title:"4. 人口200を防げ",body:"ウェーブ200まで城塞を守ってください。敵は脱出せず戦場を周回し続けます。通常敵は人口1、ボスは人口20で、ボスはゲーム時間3分以内に倒す必要があります。"},
+    {title:"5. 聖女の選択",body:"聖女5体をインベントリに集める選択にも意味があります。すぐ使うか保管するか、戦略的に判断してください。"},
   ],
 };
 
@@ -85,9 +89,9 @@ export function roleCopy(locale: Locale, category: string, tier: number) {
   const n = Math.max(0, Math.min(2, tier - 1));
   const values: Record<string, [number[], string, string, string]> = {
     high:[[],"Ranged single-target attack","远程单体攻击","遠距離単体攻撃"], pair:[[],"Rapid fire + 20% damage mark for 2 sec","速射 + 2秒内受到伤害提高20%标记","速射 + 2秒間被ダメージ20%標的"],
-    twoPair:[[2,3,4],"Throwing axe chains to {v} targets","飞斧连锁{v}个目标","投げ斧が{v}体に連鎖"], triple:[[8,11,14],"Radius {v} area explosion","半径{v}范围爆炸","半径{v}の範囲爆発"],
+    twoPair:[[],"Throwing axe · chains through 4 monsters","飞斧 · 连锁攻击4只怪物","投げ斧 · モンスター4体に連鎖"], triple:[[8,11,14],"Radius {v} area explosion","半径{v}范围爆炸","半径{v}の範囲爆発"],
     straight:[[],"Long range + 50% critical chance + 100% bonus boss damage","长射程 + 50%暴击率 + 对Boss额外伤害100%","長射程 + 会心率50% + ボス追加ダメージ100%"],
-    flush:[[],"Poison pool + 50% movement slow","毒池 + 移速降低50%","毒沼 + 移動速度50%低下"], fullHouse:[[],"4-tile attack range; non-Priest allies within 3 tiles gain +20% ATK and +20% ASPD per Priest (stacks)","攻击射程4格；3格内非祭司友军每名祭司提供攻击力+20%、攻速+20%（可叠加）","攻撃射程4マス・3マス内の司祭以外の味方は司祭1体ごとに攻撃力・攻速+20%（重複可）"],
+    flush:[[],"Poison pool + 50% movement slow","毒池 + 移速降低50%","毒沼 + 移動速度50%低下"], fullHouse:[[],"4-tile attack range; non-Priest allies within 3 tiles gain +50% ATK per Priest (stacks); no ASPD bonus","攻击射程4格；3格内非祭司友军每名祭司提供攻击力+50%（可叠加），不增加攻速","攻撃射程4マス・3マス内の司祭以外の味方は司祭1体ごとに攻撃力+50%（重複可）・攻速補正なし"],
     fourKind:[[],"Powerful single slash + 120% bonus boss damage","强力单体剑气 + 对Boss额外伤害120%","強力な単体斬撃 + ボス追加ダメージ120%"],
     straightFlush:[[],"Extremely powerful single-target attack","极强的单体攻击","非常に強力な単体攻撃"], royalFlush:[[],"Huge, powerful area damage over time","超大范围持续伤害","超広範囲の強力な持続ダメージ"],
     fiveKind:[[],"Instantly removes every enemy","立即消灭所有敌人","すべての敵を即時消滅"], sixKind:[[],"Instantly grants 2,000G","立即获得2,000G","即座に2,000G獲得"], sevenKind:[[],"???","???","???"],
