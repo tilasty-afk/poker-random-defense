@@ -341,11 +341,61 @@ html.enemy-images-off .enemy .enemy-face::after{content:var(--enemy-wave);font-s
 @media (min-width:760px){
   .poker-card::after,.actions button::after,.army-upgrade button::after,.field-unit-actions button.sell::after,.inventory-selection>button::after{position:absolute;z-index:8;display:grid;place-items:center;min-width:19px;height:18px;padding:0 4px;color:#fff1b4;background:#171914e8;border:1px solid #a98a4d;box-shadow:1px 1px #000;font:900 9px/1 monospace;letter-spacing:0}
   .card-slot:nth-child(1) .poker-card::after{content:"1"}.card-slot:nth-child(2) .poker-card::after{content:"2"}.card-slot:nth-child(3) .poker-card::after{content:"3"}.card-slot:nth-child(4) .poker-card::after{content:"4"}.card-slot:nth-child(5) .poker-card::after{content:"5"}.card-slot:nth-child(6) .poker-card::after{content:"6"}.card-slot:nth-child(7) .poker-card::after{content:"7"}.poker-card::after{right:4px;bottom:4px}
-  .actions .selected-reroll-action::after{content:"R"}.actions .primary-action::after{content:"SPACE"}.actions button::after{right:6px;bottom:5px}.actions .primary-action::after{min-width:42px}
+  .actions>button:nth-child(3)::after{content:"R"}.actions .primary-action::after{content:"SPACE"}.actions button::after{right:6px;bottom:5px}.actions .primary-action::after{min-width:42px}
   .army-upgrade .upgrade-row:not(.speed-row) button::after{content:"["}.army-upgrade .speed-row button::after{content:"]"}.army-upgrade button{position:relative}.army-upgrade button::after{right:3px;bottom:3px}
   .field-unit-actions button.sell,.inventory-selection>button{position:relative}.field-unit-actions button.sell::after,.inventory-selection>button::after{content:"D";right:3px;bottom:3px}
 }
 .poker-card:has(.joker-black)>span,.poker-card:has(.joker-color)>span,.poker-card:has(.joker-invert)>span{font-size:0!important}.poker-card:has(.joker-black)>span::before,.poker-card:has(.joker-color)>span::before,.poker-card:has(.joker-invert)>span::before{content:"JOKER";font-size:10px;line-height:1;color:inherit}
+
+/* v0.2010: centered start, larger hand summary, and a compact mobile reserve/upgrade row. */
+.unit-glyph{display:none}
+@media (min-width:760px){
+  .game-frame{--desktop-board:min(710px,calc(100dvh - 384px));grid-template-rows:74px auto auto minmax(0,1fr) 252px}
+  .hand-panel{height:244px}
+  .actions button.start{top:calc(84px + var(--desktop-board)/2 - 23px);left:37.5%;transform:translateX(-50%)}
+  .section-title{min-height:50px}
+  .section-title .hand-glance{min-height:48px;grid-template-columns:44px minmax(0,1fr)}
+  .section-title .hand-glance img{width:42px;height:42px}
+  .hand-glance-name b{font-size:15px}.hand-glance-name em{font-size:13px}
+  .hand-glance-stats span{font-size:12px}.hand-glance-copy>small{font-size:11px}
+  .inventory-selection{min-height:52px;grid-template-columns:42px minmax(0,1fr) minmax(96px,auto);padding:6px 7px}
+  .inventory-selection>img{width:38px;height:38px}.inventory-selection>div strong{font-size:11px}.inventory-selection>div small{font-size:9px}
+  .inventory-selection>button{min-width:96px;min-height:42px;padding:6px 30px 6px 10px;font-size:11px}
+  .inventory-selection>button::after{right:5px!important;bottom:5px!important}
+}
+@media (max-width:759px){
+  .game-frame{--mobile-dock:104px;--mobile-board:min(calc(100vw - var(--mobile-rail) - 8px),calc(100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - var(--mobile-dock) - 271px))}
+  .game-frame:has(.unit-dock.has-selection){--mobile-dock:104px}
+  .unit-dock,.unit-dock.has-selection{flex:0 0 var(--mobile-dock);min-height:var(--mobile-dock);grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:minmax(0,1fr);gap:5px;overflow:hidden}
+  .unit-dock .unit-inventory,.unit-dock.has-selection .unit-inventory{grid-column:1;grid-row:1;min-width:0;height:100%}
+  .unit-dock .upgrade-panel,.unit-dock.has-selection .upgrade-panel{grid-column:2;grid-row:1;min-width:0;height:100%;padding:2px}
+  .unit-dock .upgrade-panel{background:linear-gradient(135deg,#171b16,#0d110d);border:2px solid #766644;box-shadow:inset 0 0 9px #000}
+  .unit-dock .army-upgrade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;padding:3px}
+  .unit-dock .army-upgrade .upgrade-row,.unit-dock .army-upgrade button{width:100%;min-width:0;min-height:100%;height:100%}
+  .unit-dock .army-upgrade button{gap:4px;padding:5px 2px;border-width:2px;box-shadow:inset 0 0 8px #ffe29a35,2px 2px #050605}
+  .unit-dock .army-upgrade .speed-row button{box-shadow:inset 0 0 8px #c1fff044,2px 2px #050605}
+  .unit-dock .army-upgrade button::before{display:block;font-size:22px;line-height:1;filter:drop-shadow(1px 1px #000)}
+  .unit-dock .army-upgrade .upgrade-row:not(.speed-row) button::before{content:"⚔"}
+  .unit-dock .army-upgrade .speed-row button::before{content:"⌛"}
+  .unit-dock .army-upgrade button .upgrade-action-main{font-size:11px;font-weight:1000}
+  .unit-dock .army-upgrade button .upgrade-action-level{font-size:17px;line-height:1.05;font-weight:1000;letter-spacing:-.7px}
+  .unit-dock .army-upgrade button:disabled{filter:saturate(.45);opacity:.58}
+  .hand-panel{flex:0 0 236px;min-height:236px}
+  .section-title{flex:0 0 76px;min-height:76px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:5px}
+  .section-title .hand-glance{min-width:0;min-height:72px;grid-template-columns:44px minmax(0,1fr);grid-template-rows:auto auto minmax(24px,auto);padding:3px 6px}
+  .section-title .hand-glance img{width:42px;height:46px}
+  .section-title .hand-glance-copy{display:contents!important}
+  .section-title .hand-glance-name{grid-column:2;grid-row:1;gap:4px;overflow:visible}.section-title .hand-glance-name .tier-badge{font-size:8px}.section-title .hand-glance-name b{font-size:11px}.section-title .hand-glance-name em{font-size:9px}
+  .section-title .hand-glance-stats{grid-column:2;grid-row:2;gap:5px}.section-title .hand-glance-stats span{font-size:8px}
+  .section-title .hand-glance-copy>small{grid-column:1/-1;grid-row:3;font-size:9px;line-height:1.25;white-space:normal;overflow:visible;text-overflow:clip;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+}
+
+/* IMG OFF is a low-rendering mode: use readable unit glyphs and suppress combat decoration. */
+html.enemy-images-off .grid-slot.tower-slot img{display:none!important}
+html.enemy-images-off .grid-slot.tower-slot .unit-glyph{position:absolute;z-index:6;inset:0;display:grid;place-items:center;color:#fff2b3;font-size:clamp(11px,1.8vw,18px);font-weight:1000;line-height:1;text-shadow:2px 2px #000,-1px -1px #000}
+html.enemy-images-off .attack-fx,html.enemy-images-off .alchemy-pool,html.enemy-images-off .hit-number,html.enemy-images-off .range-preview{display:none!important}
+html.enemy-images-off .grid-slot.tower-slot::before,html.enemy-images-off .grid-slot.tower-slot::after{display:none!important;animation:none!important}
+html.enemy-images-off .grid-slot.tower-slot,html.enemy-images-off .enemy{animation:none!important;filter:none!important}
 
 @media (prefers-reduced-motion:reduce) { * { scroll-behavior:auto!important; transition:none!important; } }
 
