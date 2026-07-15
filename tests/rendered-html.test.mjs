@@ -61,8 +61,8 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /markExpirations\.set\(target\.id,\s*now \+ 2000\)/);
   assert.match(page, /critical = Math\.random\(\) < \.5/);
   assert.match(page, /baseDamage \* \(critical \? 5 : 1\)/);
-  assert.match(page, /case "straight": return "장거리 \+ 치명타확률 50% \+ 보스 추가피해 100%"/);
-  assert.match(page, /case "pair": return "속사 \+ 2초간 받는 피해 20% 표식"/);
+  assert.match(page, /case "straight": return "치명타피해 50%, 보스 추가피해 100%"/);
+  assert.match(page, /case "pair": return "2초간 받는 피해 20% 추가 표식을 남긴다"/);
   assert.match(page, /tower\.category === "pair"[^}]+markExpirations\.set\(target\.id, now \+ 2000\)/);
   assert.match(page, /markedMultiplier = markExpirations\.has\(id\) \? 1\.2 : 1/);
   assert.match(page, /baseDamage \* \(critical \? 5 : 1\) \* \(target\.boss \? 2 : 1\)/);
@@ -97,6 +97,8 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.doesNotMatch(page, /sort\(\(\) => Math\.random\(\) - \.5\)/);
   assert.match(page, /const PIP_POSITIONS/);
   assert.match(page, /function cardCenter\(card: Card\)/);
+  assert.match(page, /className=\{`court-suit /);
+  assert.match(page, />\{SYMBOL\[card\.suit\]\}<\/i>/);
   assert.match(page, /sprites\/royal-jester\.png/);
   assert.match(page, /sprites\/cards\/\$\{filename\}\.png/);
   assert.match(page, /court-\$\{card\.suit\}/);
@@ -119,7 +121,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /fourKind:[^\n]+base: \[43\.5, RANGE_PER_CELL \* 6, 1\.15\]/);
   assert.match(page, /straightFlush:[^\n]+base: \[224\.4, RANGE_PER_CELL \* 6, \.732\]/);
   assert.match(page, /category === "fourKind" \|\| category === "straightFlush"\)\s*return 3/);
-  assert.match(page, /case "straightFlush": return "매우 강력한 단일 공격"/);
+  assert.match(page, /case "straightFlush": return "매우 강한 단일 피해"/);
   assert.doesNotMatch(page, /if \(tower\.category === "straightFlush"\)/);
   assert.match(page, /royalFlush:[^\n]+base: \[140, 100, 1\.4\]/);
   assert.match(page, /setGold\(v => v \+ 2000\)/);
@@ -142,6 +144,8 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /palette: monsterPalette/);
   assert.match(page, /function hpDifficultyForWave\(wave: number\)/);
   assert.match(page, /lowerMultiplier \+ \(upperMultiplier - lowerMultiplier\) \* progress/);
+  assert.match(page, /function normalMonsterHpScaleForWave\(wave: number\) \{ return wave >= 90 \? \.9 : 1; \}/);
+  assert.match(page, /Math\.min\(monster\.hp, MAX_MONSTER_HP_MULTIPLIER\) \* normalMonsterHpScaleForWave\(wave\)/);
   assert.match(page, /function bossHpForWave\(wave: number\) \{ return wave === HIDDEN_WAVE \? HIDDEN_BOSS_HP : BOSS_HP_BY_WAVE\[wave\] \?\? BOSS_HP_BY_WAVE\[VISIBLE_MAX_WAVE\]; \}/);
   assert.match(page, /isHiddenWave \|\| wave % 10 === 0 \? 1 : 30/);
   assert.match(page, /hidden: hiddenSpawn/);
@@ -156,7 +160,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /twoPair: \[5, 8, 11\]/);
   assert.match(page, /fixedUtility = best\.category === "flush" \|\| best\.category === "fullHouse"/);
   assert.match(page, /\.slice\(0, 4\)/);
-  assert.match(page, /투척 도끼 · 몬스터 4기 연쇄/);
+  assert.match(page, /몬스터 4기 연쇄공격/);
   assert.match(page, /triple: \[10, 13, 15\]/);
   assert.match(page, /straight: \[15, 17, 20\]/);
   assert.match(page, /flush: \[20, 30, 40\]/);
@@ -174,9 +178,10 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /\{term\(locale, result\.label\)\}/);
   assert.match(page, /\{term\(locale, result\.tierLabel\)\}/);
   assert.match(page, /\{term\(locale, unit\.job\)\}/);
-  assert.match(page, /공격 사거리 4칸 · 버프 범위 3칸 내 사제 외 아군 공격력 \+50% · 공격속도 보정 없음 · 사제 수만큼 중복/);
+  assert.match(page, /사제 1기당 아군 공격력 50% 증가/);
   assert.match(page, /wave === VISIBLE_MAX_WAVE && enemies\.length > 0/);
   assert.match(page, /function priestBuffStacks\(tower: Tower, towers: Tower\[\]\)/);
+  assert.doesNotMatch(page, /if \(tower\.category === "fullHouse"\)\s*return 0/);
   assert.match(page, /stackCount = priestBuffStacks\(tower, towers\)/);
   assert.match(page, /return \{ damage: stackCount \* \.5, speed: 0 \}/);
   assert.match(page, /setHiddenIntroActive\(true\)/);
@@ -193,6 +198,11 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /\.command-unit strong\{font-size:18px/);
   assert.match(css, /\.command-stats b\{font-size:16px/);
   assert.match(css, /\.game-frame:has\(\.field-unit-actions\)\{--mobile-command:92px\}/);
+  assert.match(page, /disabled=\{!gameStarted \|\| gold < upgradeCost\}/);
+  assert.match(page, /className="mobile-restart-control"/);
+  assert.match(css, /\.mobile-restart-control\{display:none/);
+  assert.match(css, /\.mobile-restart-control\{display:block;position:absolute/);
+  assert.match(css, /\.game-frame:has\(\.poker-guide\[open\]\) \.field-playback,\.game-frame:has\(\.poker-guide\[open\]\) \.monster-image-control\{display:none\}/);
   assert.match(css, /--mobile-rail:52px/);
   assert.match(css, /\.battle-wrap \{[^}]*var\(--mobile-command\)[^}]*justify-items:start/);
   assert.match(css, /\.field-unit-actions \{ top:calc\(100% \+ 5px\); bottom:auto; left:0; transform:none/);
@@ -298,7 +308,14 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /button\.paused\) \.field-unit-actions button\.sell/);
   assert.doesNotMatch(page, /earlyHpMultiplier|earlySpawnMultiplier|hardRamp/);
   assert.match(page, /enemy\.boss \? 20 : 1/);
-  assert.match(page, /const APP_VERSION = "v0\.1002"/);
+  assert.match(page, /const APP_VERSION = "v0\.2002"/);
+  assert.match(page, /\[showMonsterImages, setShowMonsterImages\] = useState\(true\)/);
+  assert.match(page, /classList\.toggle\("enemy-images-off", !showMonsterImages\)/);
+  assert.match(page, /--enemy-wave/);
+  assert.match(page, /showMonsterImages \? "IMG ON" : "IMG OFF"/);
+  assert.match(css, /html\.enemy-images-off \.enemy \.enemy-face::after\{content:var\(--enemy-wave\)/);
+  assert.match(css, /\.monster-image-control\{display:none;z-index:29\}/);
+  assert.match(css, /\.monster-image-control\{display:block;position:fixed;top:calc\(env\(safe-area-inset-top\) \+ 125px\)/);
   assert.match(page, /\[gameStarted, setGameStarted\] = useState\(false\)/);
   assert.match(page, /setGameStarted\(true\)/);
   assert.match(page, /setGameStarted\(false\)/);
@@ -328,7 +345,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /Math\.max\(0, waveTarget - spawned\)/);
   assert.match(page, /BOSS TIME OVER/);
   assert.match(page, /completedBosses = Math\.floor\(\(wave - 1\) \/ 10\)/);
-  assert.match(page, /강력한 단일 검기 \+ 보스 120% 추가 피해/);
+  assert.match(page, /보스 120% 추가피해/);
   assert.match(css, /@keyframes alchemy-ground/);
   assert.match(css, /\.enemy\[title\*="이끼 슬라임"\]/);
   assert.match(css, /\.enemy\.boss-rank-10/);

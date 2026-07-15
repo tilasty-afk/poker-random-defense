@@ -88,13 +88,13 @@ export const TRAITS: Record<Locale, Record<string,string>> = {
 export function roleCopy(locale: Locale, category: string, tier: number) {
   const n = Math.max(0, Math.min(2, tier - 1));
   const values: Record<string, [number[], string, string, string]> = {
-    high:[[],"Ranged single-target attack","远程单体攻击","遠距離単体攻撃"], pair:[[],"Rapid fire + 20% damage mark for 2 sec","速射 + 2秒内受到伤害提高20%标记","速射 + 2秒間被ダメージ20%標的"],
-    twoPair:[[],"Throwing axe · chains through 4 monsters","飞斧 · 连锁攻击4只怪物","投げ斧 · モンスター4体に連鎖"], triple:[[8,11,14],"Radius {v} area explosion","半径{v}范围爆炸","半径{v}の範囲爆発"],
-    straight:[[],"Long range + 50% critical chance + 100% bonus boss damage","长射程 + 50%暴击率 + 对Boss额外伤害100%","長射程 + 会心率50% + ボス追加ダメージ100%"],
-    flush:[[],"Poison pool + 50% movement slow","毒池 + 移速降低50%","毒沼 + 移動速度50%低下"], fullHouse:[[],"4-tile attack range; non-Priest allies within 3 tiles gain +50% ATK per Priest (stacks); no ASPD bonus","攻击射程4格；3格内非祭司友军每名祭司提供攻击力+50%（可叠加），不增加攻速","攻撃射程4マス・3マス内の司祭以外の味方は司祭1体ごとに攻撃力+50%（重複可）・攻速補正なし"],
-    fourKind:[[],"Powerful single slash + 120% bonus boss damage","强力单体剑气 + 对Boss额外伤害120%","強力な単体斬撃 + ボス追加ダメージ120%"],
-    straightFlush:[[],"Extremely powerful single-target attack","极强的单体攻击","非常に強力な単体攻撃"], royalFlush:[[],"Huge, powerful area damage over time","超大范围持续伤害","超広範囲の強力な持続ダメージ"],
-    fiveKind:[[],"Instantly removes every enemy","立即消灭所有敌人","すべての敵を即時消滅"], sixKind:[[],"Instantly grants 2,000G","立即获得2,000G","即座に2,000G獲得"], sevenKind:[[],"???","???","???"],
+    high:[[],"","",""], pair:[[],"Leaves a mark that increases damage taken by 20% for 2 seconds","留下持续2秒、使受到伤害提高20%的标记","2秒間、受けるダメージが20%増加する標的を付与"],
+    twoPair:[[],"Chain-attacks 4 monsters","连锁攻击4只怪物","モンスター4体を連鎖攻撃"], triple:[[],"Explosive attack","爆炸型攻击","爆発攻撃"],
+    straight:[[],"50% critical damage, +100% boss damage","暴击伤害50%，对Boss额外伤害100%","クリティカルダメージ50%、ボス追加ダメージ100%"],
+    flush:[[],"Slow and poison pool","减速与中毒区域","スロウ・毒沼"], fullHouse:[[],"Allies gain +50% ATK per Priest","每名祭司使友军攻击力提高50%","司祭1体ごとに味方の攻撃力50%増加"],
+    fourKind:[[],"+120% boss damage","对Boss额外伤害120%","ボス追加ダメージ120%"],
+    straightFlush:[[],"Extremely powerful single-target damage","极强的单体伤害","非常に強力な単体ダメージ"], royalFlush:[[],"Area damage over time","范围持续伤害","範囲持続ダメージ"],
+    fiveKind:[[],"Removes every enemy when deployed","部署时消灭所有敌人","配置時にすべての敵を消滅"], sixKind:[[],"Instantly grants 2,000G","立即获得2,000G","即座に2,000G獲得"], sevenKind:[[],"???","???","???"],
   };
   if (locale === "ko") return "";
   const item = values[category]; if (!item) return "";
