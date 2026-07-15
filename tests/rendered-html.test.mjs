@@ -22,7 +22,7 @@ test("포커 랜덤 디펜스의 핵심 게임 화면을 렌더링한다", async
   const html = await response.text();
   assert.match(html, /<title>포커 랜덤 디펜스<\/title>/);
   assert.match(html, /WAVE/);
-  assert.match(html, /내 유닛/);
+  assert.match(html, /병영/);
   assert.match(html, /전체 공격력/);
   assert.match(html, /전체 공격속도/);
   assert.match(html, /족보 확정 &amp; 소환/);
@@ -217,6 +217,8 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /1800/);
   assert.match(page, /if \(wave === HIDDEN_WAVE\)/);
   assert.match(page, /className="hidden-wave-intro"/);
+  assert.match(page, /label=\{baseCopy\.demonArrival\}/);
+  assert.match(i18n, /demonArrival:"대마왕 등장!"/);
   assert.match(i18n, /성녀 5기를 병영에 모으는 선택에도 의미가 있습니다/);
   assert.match(i18n, /inventory:"병영"/);
   assert.match(i18n, /inventory:"Barracks"/);
@@ -321,9 +323,12 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /className="unit-glyph"/);
   assert.match(css, /html\.enemy-images-off \.grid-slot\.tower-slot img\{display:none!important\}/);
   assert.match(css, /html\.enemy-images-off \.attack-fx/);
-  assert.match(css, /--mobile-dock:104px/);
-  assert.match(css, /button::before\{display:block;font-size:22px/);
-  assert.match(css, /upgrade-action-level\{font-size:17px/);
+  assert.match(css, /--mobile-dock:58px/);
+  assert.match(css, /button::before\{display:block;font-size:13px/);
+  assert.match(css, /upgrade-action-level\{font-size:10px/);
+  assert.match(css, /hand-glance-copy>small\{grid-column:1\/-1;grid-row:3;font-size:8px/);
+  assert.match(i18n, /5s heavy hit · Range 4 · Blast 2\.5/);
+  assert.match(i18n, /射程6・会心50%・会心5倍・ボス\+50%/);
   assert.match(css, /\.hand-panel\{flex:0 0 236px;min-height:236px\}/);
   assert.match(css, /\.hand-glance-copy\{display:contents!important\}/);
   assert.match(css, /top:calc\(84px \+ var\(--desktop-board\)\/2 - 23px\);left:37\.5%/);

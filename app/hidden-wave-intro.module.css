@@ -133,10 +133,11 @@
   left: 50%;
   transform: translateX(-50%);
   color: #f3d6c9;
-  letter-spacing: .38em;
-  padding-left: .38em;
+  white-space: nowrap;
+  letter-spacing: .08em;
+  padding-left: .08em;
   text-shadow: 3px 3px 0 #5d0000, 0 0 1rem #e21b0d;
-  font: 900 clamp(2rem, 9vw, 4.6rem)/1 "Courier New", monospace;
+  font: 900 clamp(1.35rem, 6vw, 3.2rem)/1.1 "Courier New", monospace;
   animation: unknownReveal 1.8s steps(2, end) both;
 }
 

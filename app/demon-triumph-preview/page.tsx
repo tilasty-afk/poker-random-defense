@@ -189,40 +189,46 @@ function render(ctx: CanvasRenderingContext2D, elapsed: number, demon: HTMLImage
 export default function DemonTriumphPreviewPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [replay, setReplay] = useState(0);
-  const [embedded, setEmbedded] = useState(false);
+  const [embedded, setEmbedded] = useState<boolean | null>(null);
   const [locale, setLocale] = useState<Locale>("ko");
   const [finished, setFinished] = useState(false);
   useEffect(() => {
-    setFinished(false);
     const query = new URLSearchParams(window.location.search);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setEmbedded(query.get("embedded") === "1");
     const requested = query.get("locale") as Locale | null;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (requested && requested in COPY) setLocale(requested);
   }, []);
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
-    if (!canvas || !ctx) return;
-    setFinished(false);
-    const demon = new Image();
-    const victoryArt = new Image();
-    let ready: HTMLImageElement | null = null;
-    let victoryReady: HTMLImageElement | null = null;
-    demon.onload = () => { ready = demon; };
-    victoryArt.onload = () => { victoryReady = victoryArt; };
-    demon.src = `${ASSET_BASE}/sprites/enemies/hidden-demon-lord.png`;
-    victoryArt.src = `${ASSET_BASE}/effects/demon-king-fallen.png`;
-    const started = performance.now();
+    if (!canvas || !ctx || embedded === null) return;
     let frame = 0;
-    const animate = (now: number) => {
-      const elapsed = Math.min(DURATION, now - started);
-      render(ctx, elapsed, ready, victoryReady, locale);
-      if (elapsed < DURATION) frame = requestAnimationFrame(animate);
-      else setFinished(true);
-    };
-    frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
-  }, [locale, replay]);
+    let cancelled = false;
+    const loadImage = (src: string) => new Promise<HTMLImageElement | null>(resolve => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => resolve(null);
+      image.src = src;
+    });
+    Promise.all([
+      loadImage(`${ASSET_BASE}/sprites/enemies/hidden-demon-lord.png`),
+      loadImage(`${ASSET_BASE}/effects/demon-king-fallen.png`),
+    ]).then(([ready, victoryReady]) => {
+      if (cancelled) return;
+      const started = performance.now();
+      const animate = (now: number) => {
+        const elapsed = Math.min(DURATION, now - started);
+        render(ctx, elapsed, ready, victoryReady, locale);
+        if (elapsed < DURATION) frame = requestAnimationFrame(animate);
+        else setFinished(true);
+      };
+      frame = requestAnimationFrame(animate);
+    });
+    return () => { cancelled = true; cancelAnimationFrame(frame); };
+  }, [embedded, locale, replay]);
+  if (embedded === null) return <main className={`${styles.previewPage} ${styles.embedded}`} aria-hidden="true"/>;
   const copy = COPY[locale];
   return <main className={`${styles.previewPage} ${embedded ? styles.embedded : ""}`}>
     <section className={styles.stage} aria-label={`ABSOLUTE TRIUMPH · ${copy.sub}`}>
@@ -234,7 +240,7 @@ export default function DemonTriumphPreviewPage() {
       <span>DIRECT CLEAR · CANVAS SEQUENCE</span>
       <strong>ABSOLUTE TRIUMPH</strong>
       <p>{copy.phase}</p>
-      <button type="button" onClick={() => setReplay(value => value + 1)}>{copy.replay}</button>
+      <button type="button" onClick={() => { setFinished(false); setReplay(value => value + 1); }}>{copy.replay}</button>
     </aside>}
   </main>;
 }

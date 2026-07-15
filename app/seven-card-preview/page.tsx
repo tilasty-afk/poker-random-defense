@@ -346,39 +346,47 @@ export default function SevenCardPreviewPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [replay, setReplay] = useState(0);
   const [phase, setPhase] = useState("카드 집결");
-  const [embedded, setEmbedded] = useState(false);
+  const [embedded, setEmbedded] = useState<boolean | null>(null);
   const [finished, setFinished] = useState(false);
 
   useEffect(() => {
+    // Query-string state is only available after hydration. Keep the first frame black
+    // so an embedded ending never flashes the standalone preview controls.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setEmbedded(new URLSearchParams(window.location.search).get("embedded") === "1");
   }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
-    if (!canvas || !ctx) return;
-    setFinished(false);
+    if (!canvas || !ctx || embedded === null) return;
     let frame = 0;
-    let startedAt = performance.now();
-    let latestPhase = "";
+    let cancelled = false;
     const art = new Image();
-    let loadedArt: HTMLImageElement | null = null;
-    art.onload = () => { loadedArt = art; startedAt = performance.now(); };
-    art.src = EFFECT_ART;
-    const animate = (now: number) => {
-      const elapsed = Math.min(DURATION, now - startedAt);
-      renderFrame(ctx, elapsed, loadedArt);
-      const nextPhase = phaseFor(elapsed);
-      if (nextPhase !== latestPhase) {
-        latestPhase = nextPhase;
-        setPhase(nextPhase);
-      }
-      if (elapsed < DURATION) frame = requestAnimationFrame(animate);
-      else setFinished(true);
+    const start = (loadedArt: HTMLImageElement | null) => {
+      if (cancelled) return;
+      const startedAt = performance.now();
+      let latestPhase = "";
+      const animate = (now: number) => {
+        const elapsed = Math.min(DURATION, now - startedAt);
+        renderFrame(ctx, elapsed, loadedArt);
+        const nextPhase = phaseFor(elapsed);
+        if (nextPhase !== latestPhase) {
+          latestPhase = nextPhase;
+          setPhase(nextPhase);
+        }
+        if (elapsed < DURATION) frame = requestAnimationFrame(animate);
+        else setFinished(true);
+      };
+      frame = requestAnimationFrame(animate);
     };
-    frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
-  }, [replay]);
+    art.onload = () => start(art);
+    art.onerror = () => start(null);
+    art.src = EFFECT_ART;
+    return () => { cancelled = true; cancelAnimationFrame(frame); };
+  }, [embedded, replay]);
+
+  if (embedded === null) return <main className={`${styles.previewPage} ${styles.embedded}`} aria-hidden="true"/>;
 
   return <main className={`${styles.previewPage} ${embedded ? styles.embedded : ""}`}>
     <section className={styles.stage} aria-label="세븐 카드 히든 엔딩 Canvas 미리보기">
@@ -390,7 +398,7 @@ export default function SevenCardPreviewPage() {
       <span>CANVAS SEQUENCE</span>
       <strong>{phase}</strong>
       <p>♠ → ♦ → 흑백 조커 → 컬러 조커 → 반전 조커 → ♥ → ♣</p>
-      <button type="button" onClick={() => setReplay(value => value + 1)}>↻ 다시 보기</button>
+      <button type="button" onClick={() => { setFinished(false); setReplay(value => value + 1); }}>↻ 다시 보기</button>
     </aside>}
   </main>;
 }
