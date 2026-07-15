@@ -88,11 +88,11 @@ export const TRAITS: Record<Locale, Record<string,string>> = {
 export function roleCopy(locale: Locale, category: string, tier: number) {
   const n = Math.max(0, Math.min(2, tier - 1));
   const values: Record<string, [number[], string, string, string]> = {
-    high:[[],"","",""], pair:[[],"Leaves a mark that increases damage taken by 20% for 2 seconds","留下持续2秒、使受到伤害提高20%的标记","2秒間、受けるダメージが20%増加する標的を付与"],
-    twoPair:[[],"Chain-attacks 4 monsters","连锁攻击4只怪物","モンスター4体を連鎖攻撃"], triple:[[],"Explosive attack","爆炸型攻击","爆発攻撃"],
-    straight:[[],"50% critical damage, +100% boss damage","暴击伤害50%，对Boss额外伤害100%","クリティカルダメージ50%、ボス追加ダメージ100%"],
-    flush:[[],"Slow and poison pool","减速与中毒区域","スロウ・毒沼"], fullHouse:[[],"Allies gain +50% ATK per Priest","每名祭司使友军攻击力提高50%","司祭1体ごとに味方の攻撃力50%増加"],
-    fourKind:[[],"+120% boss damage","对Boss额外伤害120%","ボス追加ダメージ120%"],
+    high:[[],"Bonus gold on kill · Stronger in greater numbers","击杀敌人时获得额外金币 · 数量越多越强","敵撃破時に追加ゴールド · 数が多いほど強化"], pair:[[],"Leaves a mark that increases damage taken by 100% for 2 seconds","留下持续2秒、使受到伤害提高100%的标记","2秒間、受けるダメージが100%増加する標的を付与"],
+    twoPair:[[],"Chain-attacks 6 monsters","连锁攻击6只怪物","モンスター6体を連鎖攻撃"], triple:[[],"Explosive attack","爆炸型攻击","爆発攻撃"],
+    straight:[[],"50% critical chance, 5x critical damage, +50% boss damage","暴击率50%，暴击伤害5倍，对Boss额外伤害50%","会心率50%、会心ダメージ5倍、ボス追加ダメージ50%"],
+    flush:[[],"Slow and poison pool","减速与中毒区域","スロウ・毒沼"], fullHouse:[[],"All allies gain +50% ATK per Priest","每名祭司使所有友军攻击力提高50%","司祭1体ごとに全味方の攻撃力50%増加"],
+    fourKind:[[],"+100% boss damage","对Boss额外伤害100%","ボス追加ダメージ100%"],
     straightFlush:[[],"Extremely powerful single-target damage","极强的单体伤害","非常に強力な単体ダメージ"], royalFlush:[[],"Area damage over time","范围持续伤害","範囲持続ダメージ"],
     fiveKind:[[],"Removes every enemy when deployed","部署时消灭所有敌人","配置時にすべての敵を消滅"], sixKind:[[],"Instantly grants 2,000G","立即获得2,000G","即座に2,000G獲得"], sevenKind:[[],"???","???","???"],
   };

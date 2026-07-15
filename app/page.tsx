@@ -103,7 +103,7 @@ const PIP_POSITIONS: Record<number, Array<[number, number]>> = {
     10: [[1, 1], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 2], [3, 3], [4, 1], [4, 3]],
 };
 const RANGE_PER_CELL = 100 / 12;
-const PRIEST_BUFF_RANGE = RANGE_PER_CELL * 3;
+const ALCHEMY_POOL_RADIUS = 10;
 function cardCenter(card: Card) { if (card.joker)
     return <img className={`court-art joker-art joker-art-${card.joker}`} src={`${ASSET_BASE}/sprites/royal-jester.png`} alt={card.joker === "color" ? "컬러 광대" : card.joker === "invert" ? "반전 광대" : "흑백 광대"}/>; if (card.rank >= 11 && card.rank <= 13) {
     const filename = card.rank === 11 ? "jack" : card.rank === 12 ? "queen" : "king";
@@ -120,7 +120,7 @@ const JOBS: Record<Category, {
         number
     ];
 }> = {
-    high: { label: T.high, job: T.conscript, image: `${ASSET_BASE}/sprites/units/2.png`, base: [3, RANGE_PER_CELL * 3, 1] }, pair: { label: T.pair, job: T.rogue, image: `${ASSET_BASE}/sprites/units/3.png`, base: [5, RANGE_PER_CELL * 3, 1.35] }, twoPair: { label: T.twoPair, job: T.warrior, image: `${ASSET_BASE}/sprites/units/4.png`, base: [8, RANGE_PER_CELL * 3, 1.05] }, triple: { label: T.triple, job: T.mage, image: `${ASSET_BASE}/sprites/units/10.png`, base: [33, RANGE_PER_CELL * 5, .6] }, straight: { label: T.straight, job: T.elf, image: `${ASSET_BASE}/sprites/units/7.png`, base: [15.6, RANGE_PER_CELL * 5, .5] }, flush: { label: T.flush, job: T.alchemist, image: `${ASSET_BASE}/sprites/units/6.png`, base: [110, RANGE_PER_CELL * 2, .5] }, fullHouse: { label: T.fullHouse, job: T.priest, image: `${ASSET_BASE}/sprites/units/Q.png`, base: [21.92, RANGE_PER_CELL * 4, .65] }, fourKind: { label: T.fourKind, job: T.royal, image: `${ASSET_BASE}/sprites/units/K.png`, base: [43.5, RANGE_PER_CELL * 6, 1.15] }, straightFlush: { label: T.straightFlush, job: T.dragoon, image: `${ASSET_BASE}/sprites/units/A.png`, base: [224.4, RANGE_PER_CELL * 6, .732] }, royalFlush: { label: T.royalFlush, job: T.fate, image: `${ASSET_BASE}/sprites/units/J.png`, base: [140, 100, 1.4] }, fiveKind: { label: T.fiveKind, job: T.saintess, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] }, sixKind: { label: T.sixKind, job: T.jackpot, image: `${ASSET_BASE}/sprites/units/Jackpot.png`, base: [0, 0, 0] }, sevenKind: { label: T.sevenKind, job: T.mystery, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] },
+    high: { label: T.high, job: T.conscript, image: `${ASSET_BASE}/sprites/units/2.png`, base: [3, RANGE_PER_CELL * 3, 1] }, pair: { label: T.pair, job: T.rogue, image: `${ASSET_BASE}/sprites/units/3.png`, base: [5, RANGE_PER_CELL * 3, 1.35] }, twoPair: { label: T.twoPair, job: T.warrior, image: `${ASSET_BASE}/sprites/units/4.png`, base: [8, RANGE_PER_CELL * 3, 1.05] }, triple: { label: T.triple, job: T.mage, image: `${ASSET_BASE}/sprites/units/10.png`, base: [33, RANGE_PER_CELL * 5, .6] }, straight: { label: T.straight, job: T.elf, image: `${ASSET_BASE}/sprites/units/7.png`, base: [46.8, RANGE_PER_CELL * 5, .5] }, flush: { label: T.flush, job: T.alchemist, image: `${ASSET_BASE}/sprites/units/6.png`, base: [110, RANGE_PER_CELL * 2, .5] }, fullHouse: { label: T.fullHouse, job: T.priest, image: `${ASSET_BASE}/sprites/units/Q.png`, base: [65.76, RANGE_PER_CELL * 4, .65] }, fourKind: { label: T.fourKind, job: T.royal, image: `${ASSET_BASE}/sprites/units/K.png`, base: [65.25, RANGE_PER_CELL * 6, 1.15] }, straightFlush: { label: T.straightFlush, job: T.dragoon, image: `${ASSET_BASE}/sprites/units/A.png`, base: [224.4, RANGE_PER_CELL * 6, .732] }, royalFlush: { label: T.royalFlush, job: T.fate, image: `${ASSET_BASE}/sprites/units/J.png`, base: [140, 100, 1.4] }, fiveKind: { label: T.fiveKind, job: T.saintess, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] }, sixKind: { label: T.sixKind, job: T.jackpot, image: `${ASSET_BASE}/sprites/units/Jackpot.png`, base: [0, 0, 0] }, sevenKind: { label: T.sevenKind, job: T.mystery, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] },
 };
 const GRID_SIZE = 12;
 const VISIBLE_MAX_WAVE = 200;
@@ -130,14 +130,18 @@ const HIDDEN_BOSS_HP = 5000000;
 const HIDDEN_BOSS_IMAGE = `${ASSET_BASE}/sprites/enemies/hidden-demon-lord.png`;
 const MAX_MONSTER_HP_MULTIPLIER = 2;
 const MAX_ATTACK_SPEED_LEVEL = 30;
-const APP_VERSION = "v0.2002";
+const APP_VERSION = "v0.2003";
 const BALANCE = { baseHp: 100, hpPerWave: .04, hpGrowth: 1.028, baseSpeed: .76, speedPerWave: .003, maxSpeed: 1.55, damageScale: .24, bossMoveScale: .58, spawnInterval: 600 } as const;
 const NORMAL_HP_DIFFICULTY_STEPS = [[10, 1.3983], [20, 1.601], [30, 1.9387], [40, 2.4891], [50, 3.2002], [60, 3.7484], [70, 4.1104], [80, 4.2995], [90, 4.2814], [100, 4.1578], [110, 4.9272], [120, 5.0028], [130, 5.0434], [140, 5.0998], [150, 5.1259], [160, 5.1645], [170, 5.1768], [180, 5.1671], [190, 5.0801], [200, 4.9316]] as const;
 const BOSS_HP_BY_WAVE: Record<number, number> = { 10: 27000, 20: 48000, 30: 85000, 40: 145000, 50: 233000, 60: 336000, 70: 440000, 80: 556000, 90: 708000, 100: 996000, 110: 1080000, 120: 1160000, 130: 1250000, 140: 1370000, 150: 1500000, 160: 1600000, 170: 1700000, 180: 1800000, 190: 1900000, 200: 2000000 };
 const SLOTS = Array.from({ length: GRID_SIZE * GRID_SIZE }, (_, index) => ({ x: ((index % GRID_SIZE) + .5) / GRID_SIZE * 100, y: (Math.floor(index / GRID_SIZE) + .5) / GRID_SIZE * 100 }));
-function priestBuffStacks(tower: Tower, towers: Tower[]) {
-    const target = SLOTS[tower.slot];
-    return towers.filter(priest => priest.category === "fullHouse" && Math.hypot(target.x - SLOTS[priest.slot].x, target.y - SLOTS[priest.slot].y) <= PRIEST_BUFF_RANGE + 1e-6).length;
+function priestBuffStacks(_tower: Tower, towers: Tower[]) {
+    return towers.filter(priest => priest.category === "fullHouse").length;
+}
+function conscriptBuffStacks(tower: Tower, towers: Tower[]) {
+    if (tower.category !== "high")
+        return 0;
+    return Math.max(0, towers.filter(unit => unit.category === "high").length - 1);
 }
 const PATH = [{ x: 50, y: 12.5 }, { x: 87.5, y: 12.5 }, { x: 87.5, y: 87.5 }, { x: 12.5, y: 87.5 }, { x: 12.5, y: 12.5 }, { x: 50, y: 12.5 }];
 function isPathSlot(index: number) { const row = Math.floor(index / GRID_SIZE), col = index % GRID_SIZE; return (row === 1 || row === 10) && col >= 1 && col <= 10 || (col === 1 || col === 10) && row >= 1 && row <= 10; }
@@ -283,14 +287,14 @@ function evaluate(cards: Card[]): Result {
 }
 function roleDescription(unit: Result, locale: Locale = activeLocale) { if (locale !== "ko")
     return roleCopy(locale, unit.category, unit.tier || 3); switch (unit.category) {
-    case "high": return "";
-    case "pair": return "2초간 받는 피해 20% 추가 표식을 남긴다";
-    case "twoPair": return "몬스터 4기 연쇄공격";
+    case "high": return "적 처치 시 추가 골드 · 많을수록 강해짐";
+    case "pair": return "2초간 받는 피해 100% 추가 표식을 남긴다";
+    case "twoPair": return "몬스터 6기 연쇄공격";
     case "triple": return "폭발형 공격";
-    case "straight": return "치명타피해 50%, 보스 추가피해 100%";
+    case "straight": return "치명타 확률 50%, 치명타 피해 5배, 보스 추가피해 50%";
     case "flush": return "슬로우 및 중독 장판";
-    case "fullHouse": return "사제 1기당 아군 공격력 50% 증가";
-    case "fourKind": return "보스 120% 추가피해";
+    case "fullHouse": return "사제 1기당 모든 아군 공격력 50% 증가";
+    case "fourKind": return "보스 100% 추가피해";
     case "straightFlush": return "매우 강한 단일 피해";
     case "royalFlush": return "광역 지속 피해";
     case "fiveKind": return "배치시 전체 적 소멸";
@@ -370,8 +374,8 @@ export default function Home() {
                 setAlchemyPools(activePools);
             }
             let defeated = 0, bossDefeated = 0, earnedGold = 0, bossGold = 0;
-            const damageMap = new Map<number, number>(), hitKinds = new Map<number, "direct" | "alchemyDot" | "fateDot">(), slowMap = new Map<number, number>(), criticalHits = new Set<number>(), cursedHits = new Set<number>(), positions = new Map(current.map(enemy => [enemy.id, pointOnPath(enemy.progress)])), markExpirations = new Map(current.filter(enemy => (enemy.markExpiresAt || 0) > now).map(enemy => [enemy.id, enemy.markExpiresAt!])), attackCandidates: AttackFx[] = [];
-            const add = (id: number, damage: number, kind: "direct" | "alchemyDot" | "fateDot" = "direct", ownMultiplier = 1) => { const markedMultiplier = markExpirations.has(id) ? 1.2 : 1; damageMap.set(id, (damageMap.get(id) || 0) + damage * markedMultiplier * ownMultiplier); if (kind === "direct" || !hitKinds.has(id))
+            const damageMap = new Map<number, number>(), hitKinds = new Map<number, "direct" | "alchemyDot" | "fateDot">(), slowMap = new Map<number, number>(), criticalHits = new Set<number>(), cursedHits = new Set<number>(), positions = new Map(current.map(enemy => [enemy.id, pointOnPath(enemy.progress)])), enemyHp = new Map(current.map(enemy => [enemy.id, enemy.hp])), conscriptKillBonuses = new Map<number, number>(), markExpirations = new Map(current.filter(enemy => (enemy.markExpiresAt || 0) > now).map(enemy => [enemy.id, enemy.markExpiresAt!])), attackCandidates: AttackFx[] = [];
+            const add = (id: number, damage: number, kind: "direct" | "alchemyDot" | "fateDot" = "direct", ownMultiplier = 1, source?: Category) => { const markedMultiplier = markExpirations.has(id) ? 2 : 1, previousDamage = damageMap.get(id) || 0, appliedDamage = damage * markedMultiplier * ownMultiplier; damageMap.set(id, previousDamage + appliedDamage); if (source === "high" && previousDamage < (enemyHp.get(id) || 0) && previousDamage + appliedDamage >= (enemyHp.get(id) || 0)) conscriptKillBonuses.set(id, 5); if (kind === "direct" || !hitKinds.has(id))
                 hitKinds.set(id, kind); }, tierIndex = (tower: Tower) => (tower.tier || 3) - 1;
             for (const pool of activePools)
                 for (const enemy of current) {
@@ -381,16 +385,16 @@ export default function Home() {
                         slowMap.set(enemy.id, Math.min(slowMap.get(enemy.id) || 1, pool.slow));
                     }
                 }
-            const priestBuff = (tower: Tower) => {
-                const stackCount = priestBuffStacks(tower, towers);
-                return { damage: stackCount * .5, speed: 0 };
+            const supportBuff = (tower: Tower) => {
+                const priestStacks = priestBuffStacks(tower, towers), conscriptStacks = conscriptBuffStacks(tower, towers);
+                return { damage: priestStacks * .5 + conscriptStacks, speed: 0 };
             };
             const activeTowerIds = new Set(towers.map(tower => tower.id));
             for (const id of lastAttackAtRef.current.keys())
                 if (!activeTowerIds.has(id))
                     lastAttackAtRef.current.delete(id);
             for (const tower of towers) {
-                const slot = SLOTS[tower.slot], i = tierIndex(tower), buff = priestBuff(tower), attackRate = tower.speed * attackSpeedMultiplier * (1 + buff.speed), attackInterval = 500 / Math.max(.01, attackRate), lastAttackAt = lastAttackAtRef.current.get(tower.id) || 0, baseDamage = tower.damage * attackMultiplier * (1 + buff.damage), inRange = current.filter(enemy => { const p = positions.get(enemy.id)!; return Math.hypot(slot.x - p.x, slot.y - p.y) <= tower.range; }).sort((a, b) => b.progress - a.progress);
+                const slot = SLOTS[tower.slot], i = tierIndex(tower), buff = supportBuff(tower), attackRate = tower.speed * attackSpeedMultiplier * (1 + buff.speed), attackInterval = 500 / Math.max(.01, attackRate), lastAttackAt = lastAttackAtRef.current.get(tower.id) || 0, baseDamage = tower.damage * attackMultiplier * (1 + buff.damage), inRange = current.filter(enemy => { const p = positions.get(enemy.id)!; return Math.hypot(slot.x - p.x, slot.y - p.y) <= tower.range; }).sort((a, b) => b.progress - a.progress);
                 if (now - lastAttackAt < attackInterval)
                     continue;
                 if (tower.category === "royalFlush") {
@@ -409,7 +413,7 @@ export default function Home() {
                     continue;
                 lastAttackAtRef.current.set(tower.id, now);
                 const visual = positions.get(inRange[0].id)!;
-                attackCandidates.push({ id: `attack-${tower.id}-${now}`, towerId: tower.id, expiresAt: now + 320, category: tower.category, x: slot.x, y: slot.y, tx: visual.x, ty: visual.y, radius: tower.category === "flush" ? 12 : tower.category === "triple" ? [8, 11, 14][i] : 5 });
+                attackCandidates.push({ id: `attack-${tower.id}-${now}`, towerId: tower.id, expiresAt: now + 320, category: tower.category, x: slot.x, y: slot.y, tx: visual.x, ty: visual.y, radius: tower.category === "flush" || tower.category === "triple" ? ALCHEMY_POOL_RADIUS : 5 });
                 if (tower.category === "pair") {
                     const target = inRange[0];
                     markExpirations.set(target.id, now + 2000);
@@ -418,19 +422,19 @@ export default function Home() {
                 }
                 if (tower.category === "twoPair") {
                     const primary = inRange[0], p = positions.get(primary.id)!;
-                    const chain = inRange.slice().sort((a, b) => { const pa = positions.get(a.id)!, pb = positions.get(b.id)!; return Math.hypot(pa.x - p.x, pa.y - p.y) - Math.hypot(pb.x - p.x, pb.y - p.y); }).slice(0, 4);
-                    chain.forEach((enemy, index) => { add(enemy.id, baseDamage * (1 - index * .18)); if (index > 0) {
+                    const chain = inRange.slice().sort((a, b) => { const pa = positions.get(a.id)!, pb = positions.get(b.id)!; return Math.hypot(pa.x - p.x, pa.y - p.y) - Math.hypot(pb.x - p.x, pb.y - p.y); }).slice(0, 6);
+                    chain.forEach((enemy, index) => { add(enemy.id, baseDamage); if (index > 0) {
                         const hit = positions.get(enemy.id)!;
                         attackCandidates.push({ id: `attack-${tower.id}-${now}-chain-${index}`, towerId: tower.id, expiresAt: now + 320, category: tower.category, x: p.x, y: p.y, tx: hit.x, ty: hit.y, radius: 4 });
                     } });
                     continue;
                 }
                 if (tower.category === "triple") {
-                    const target = inRange[0], center = positions.get(target.id)!, radius = [8, 11, 14][i];
+                    const target = inRange[0], center = positions.get(target.id)!, radius = ALCHEMY_POOL_RADIUS;
                     for (const enemy of current) {
                         const p = positions.get(enemy.id)!;
                         if (Math.hypot(p.x - center.x, p.y - center.y) <= radius)
-                            add(enemy.id, baseDamage * .92);
+                            add(enemy.id, baseDamage);
                     }
                     continue;
                 }
@@ -438,7 +442,7 @@ export default function Home() {
                     const target = inRange.slice().sort((a, b) => Number(b.boss) - Number(a.boss) || b.hp - a.hp)[0], critical = Math.random() < .5;
                     const targetPosition = positions.get(target.id)!;
                     attackCandidates[attackCandidates.length - 1] = { ...attackCandidates[attackCandidates.length - 1], tx: targetPosition.x, ty: targetPosition.y };
-                    add(target.id, baseDamage * (critical ? 5 : 1) * (target.boss ? 2 : 1));
+                    add(target.id, baseDamage * (critical ? 5 : 1) * (target.boss ? 1.5 : 1));
                     if (critical)
                         criticalHits.add(target.id);
                     continue;
@@ -446,7 +450,7 @@ export default function Home() {
                 if (tower.category === "flush") {
                     const target = inRange[0], center = positions.get(target.id)!;
                     add(target.id, baseDamage * .45);
-                    const pool: AlchemyPool = { id: `pool-${tower.id}-${now}`, x: center.x, y: center.y, radius: 10, expiresAt: now + 2000, damage: baseDamage * attackRate * BALANCE.damageScale * .14, slow: .5 }, nextPools = [...alchemyPoolsRef.current, pool];
+                    const pool: AlchemyPool = { id: `pool-${tower.id}-${now}`, x: center.x, y: center.y, radius: ALCHEMY_POOL_RADIUS, expiresAt: now + 2000, damage: baseDamage * attackRate * BALANCE.damageScale * .14, slow: .5 }, nextPools = [...alchemyPoolsRef.current, pool];
                     alchemyPoolsRef.current = nextPools;
                     setAlchemyPools(nextPools);
                     continue;
@@ -455,11 +459,11 @@ export default function Home() {
                     const target = inRange.slice().sort((a, b) => Number(b.boss) - Number(a.boss) || b.hp - a.hp)[0];
                     const targetPosition = positions.get(target.id)!;
                     attackCandidates[attackCandidates.length - 1] = { ...attackCandidates[attackCandidates.length - 1], tx: targetPosition.x, ty: targetPosition.y };
-                    add(target.id, baseDamage * (target.boss ? 2.2 : 1));
+                    add(target.id, baseDamage * (target.boss ? 2 : 1));
                     continue;
                 }
                 const target = inRange[0];
-                add(target.id, baseDamage);
+                add(target.id, baseDamage, "direct", 1, tower.category);
             }
             if (attackCandidates.length || now - lastFxAt.current > 360) {
                 lastFxAt.current = now;
@@ -468,10 +472,11 @@ export default function Home() {
             setAttackFx(existing => { const active = existing.filter(fx => fx.expiresAt > now), nextFx = [...active, ...attackCandidates].slice(-160); return nextFx.length === existing.length && !attackCandidates.length ? existing : nextFx; });
             const next = current.map(enemy => { const slow = slowMap.get(enemy.id) || 1, pace = .0046 * enemy.speed * slow * (enemy.boss ? BALANCE.bossMoveScale : 1), damage = damageMap.get(enemy.id) || 0, hitKind = damage > 0 ? (hitKinds.get(enemy.id) || "direct") : undefined, markExpiresAt = markExpirations.get(enemy.id); return { ...enemy, markExpiresAt, marked: !!markExpiresAt && markExpiresAt > now, slowed: slowMap.has(enemy.id), cursed: cursedHits.has(enemy.id), hitKind, hitPulse: hitKind === "direct" ? !enemy.hitPulse : enemy.hitPulse, progress: (enemy.progress + pace) % 1, hp: enemy.hp - damage }; }).filter(enemy => { if (enemy.hp <= 0) {
                 defeated++;
-                earnedGold += enemy.reward;
+                const killBonus = conscriptKillBonuses.get(enemy.id) || 0;
+                earnedGold += enemy.reward + killBonus;
                 if (enemy.boss) {
                     bossDefeated++;
-                    bossGold += enemy.reward;
+                    bossGold += enemy.reward + killBonus;
                 }
                 return false;
             } return true; });
