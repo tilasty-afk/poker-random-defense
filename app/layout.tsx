@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "\uD3EC\uCEE4 \uB79C\uB364 \uB514\uD39C\uC2A4",
   description: "\uC190\uD328\uB85C \uD0C0\uC6CC\uB97C \uC18C\uD658\uD558\uACE0 \uD3EC\uCEE4 \uC871\uBCF4\uB85C \uACB0\uC18D\uD558\uB294 \uC911\uC138 \uB3C4\uD2B8 \uD0C0\uC6CC \uB514\uD39C\uC2A4",
   icons: { icon: `${assetBase}/favicon.svg`, shortcut: `${assetBase}/favicon.svg` },
+  other: { "color-scheme": "only light", "supported-color-schemes": "light" },
 };
 
 export const viewport: Viewport = {

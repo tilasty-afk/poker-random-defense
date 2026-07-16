@@ -399,7 +399,8 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /button\.paused\) \.field-unit-actions button\.sell/);
   assert.doesNotMatch(page, /earlyHpMultiplier|earlySpawnMultiplier|hardRamp/);
   assert.match(page, /enemy\.boss \? 20 : 1/);
-  assert.match(page, /const APP_VERSION = "v0\.3001"/);
+  assert.match(page, /const APP_VERSION = "v0\.3002"/);
+  assert.match(css, /:root \{ color-scheme:only light;/);
   assert.match(css, /tier-dot\.tier-4/);
   assert.match(css, /tier-dot\.tier-5/);
   assert.match(page, /className="mobile-barracks-sell"/);
