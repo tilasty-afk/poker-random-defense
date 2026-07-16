@@ -200,7 +200,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /\{term\(locale, result\.tierLabel\)\}/);
   assert.match(page, /\{term\(locale, unit\.job\)\}/);
   assert.match(page, /모든 아군 공격력 \$\{unit\.tier === 1 \? 15 : unit\.tier === 2 \? 25 : 40\}% 증가/);
-  assert.match(page, /wave === VISIBLE_MAX_WAVE && enemies\.length > 0/);
+  assert.match(page, /wave === VISIBLE_MAX_WAVE && liveEnemyCount > 0/);
   assert.match(page, /function priestBuffStacks\(_tower: Tower, towers: Tower\[\]\)/);
   assert.doesNotMatch(page, /if \(tower\.category === "fullHouse"\)\s*return 0/);
   assert.match(page, /function priestAttackBuff\(towers: Tower\[\]\)/);
@@ -326,10 +326,10 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /--mobile-dock:58px/);
   assert.match(css, /button::before\{display:block;font-size:13px/);
   assert.match(css, /upgrade-action-level\{font-size:10px/);
-  assert.match(css, /hand-glance-copy>small\{grid-column:1\/-1;grid-row:3;font-size:8px/);
+  assert.match(css, /hand-glance-copy>small\{grid-column:1\/-1;grid-row:3;font-size:7px/);
   assert.match(i18n, /5s heavy hit · Range 4 · Blast 2\.5/);
   assert.match(i18n, /射程6・会心50%・会心5倍・ボス\+50%/);
-  assert.match(css, /\.hand-panel\{flex:0 0 236px;min-height:236px\}/);
+  assert.match(css, /\.hand-panel\{flex:0 0 190px;min-height:190px\}/);
   assert.match(css, /\.hand-glance-copy\{display:contents!important\}/);
   assert.match(css, /top:calc\(84px \+ var\(--desktop-board\)\/2 - 23px\);left:37\.5%/);
   assert.match(css, /button::before\{content:"⚔"\}/);
@@ -382,7 +382,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /button\.paused\) \.field-unit-actions button\.sell/);
   assert.doesNotMatch(page, /earlyHpMultiplier|earlySpawnMultiplier|hardRamp/);
   assert.match(page, /enemy\.boss \? 20 : 1/);
-  assert.match(page, /const APP_VERSION = "v0\.2010"/);
+  assert.match(page, /const APP_VERSION = "v0\.2012"/);
   assert.match(page, /\[showMonsterImages, setShowMonsterImages\] = useState\(true\)/);
   assert.match(page, /classList\.toggle\("enemy-images-off", !showMonsterImages\)/);
   assert.match(page, /--enemy-wave/);

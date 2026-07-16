@@ -154,6 +154,8 @@ html.enemy-images-off .enemy .enemy-face::after{content:var(--enemy-wave);font-s
 .summon-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:3px; }.summon-stats span{min-width:0;padding:3px 2px;text-align:center;background:#111510;border:1px solid #5b5545}.summon-stats small,.summon-stats b{display:block}.summon-stats small{color:#9b927c;font-size:6px}.summon-stats b{color:#f2d27d;font-size:9px}
 .summon-path { display:flex; align-items:center; gap:4px; white-space:nowrap; }.summon-path span{color:#817a68;font-size:6px}.summon-path b{max-width:92px;padding:2px 4px;color:#f0c967;background:#181a16;border:1px solid #5d5645;font-size:7px;overflow:hidden;text-overflow:ellipsis}.summon-path em{color:#d69139;font-size:10px;font-style:normal}
 .tier-badge { display:inline-block; padding:2px 4px; color:#21180d; background:#b7aa88; border:1px solid #443824; font-size:7px; font-style:normal; vertical-align:2px; }.tier-2 { background:#73a6b2!important; }.tier-3 { background:#e0ad48!important; }
+.grid-slot.tower-slot:has(img[src*="/K.png"]),.grid-slot.tower-slot:has(img[src*="/A.png"]),.inventory-list button:has(img[src*="/K.png"]),.inventory-list button:has(img[src*="/A.png"]),.hand-glance:has(img[src*="/K.png"]),.hand-glance:has(img[src*="/A.png"]),.hand-result:has(img[src*="/K.png"]),.hand-result:has(img[src*="/A.png"]){border-color:#df5cff!important;box-shadow:inset 0 0 10px #ff54ee88,0 0 6px #f7d4ff,0 0 13px #cf36ff!important}
+.grid-slot.tower-slot:has(img[src*="/J.png"]),.grid-slot.tower-slot:has(img[src*="/Joker.png"]),.inventory-list button:has(img[src*="/J.png"]),.inventory-list button:has(img[src*="/Joker.png"]),.hand-glance:has(img[src*="/J.png"]),.hand-glance:has(img[src*="/Joker.png"]),.hand-result:has(img[src*="/J.png"]),.hand-result:has(img[src*="/Joker.png"]){border-color:#ff3949!important;box-shadow:inset 0 0 10px #ff243e99,0 0 6px #ffd3d8,0 0 14px #ff102c!important}
 
 .field-bond { margin:8px; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:7px 8px; background:#20251f; border:1px solid #5f5a49; box-shadow:3px 3px #050605; }
 .field-bond div { display:flex; flex-direction:column; gap:2px; }.field-bond span { color:#a79d83; font-size:9px; }.field-bond strong { font-size:11px; }
@@ -378,8 +380,9 @@ html.enemy-images-off .enemy .enemy-face::after{content:var(--enemy-wave);font-s
   .unit-dock.has-selection .inventory-list button .inventory-unit-label{font-size:7px;line-height:9px;letter-spacing:-.55px}
   .unit-dock .inventory-selection{position:absolute;z-index:4;top:13px;right:2px;bottom:2px;width:46px;height:auto;margin:0;padding:0;display:block;background:#351713;border-color:#a84e3d;box-shadow:-2px 0 #090707}
   .unit-dock .inventory-selection>img,.unit-dock .inventory-selection>div,.unit-dock .inventory-selection>span{display:none}
-  .unit-dock .inventory-selection>button{width:100%;height:100%;min-height:0;padding:2px 3px 14px;font-size:7px;line-height:1.1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
-  .unit-dock .inventory-selection>button b{display:block;font-size:8px}
+  .unit-dock .inventory-selection>button{width:100%;height:100%;min-height:0;padding:2px 3px;font-size:8px;line-height:1.1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;overflow:visible}
+  .unit-dock .inventory-selection>button b{display:block;font-size:9px;line-height:1}
+  .unit-dock .inventory-selection>button::after{display:none!important}
   .unit-dock .upgrade-panel,.unit-dock.has-selection .upgrade-panel{grid-column:2;grid-row:1;min-width:0;height:100%;padding:2px}
   .unit-dock .upgrade-panel{background:linear-gradient(135deg,#171b16,#0d110d);border:2px solid #766644;box-shadow:inset 0 0 9px #000}
   .unit-dock .army-upgrade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;padding:2px}
@@ -392,14 +395,14 @@ html.enemy-images-off .enemy .enemy-face::after{content:var(--enemy-wave);font-s
   .unit-dock .army-upgrade button .upgrade-action-main{font-size:9px;font-weight:1000;letter-spacing:-.65px}
   .unit-dock .army-upgrade button .upgrade-action-level{font-size:10px;line-height:1;font-weight:1000;letter-spacing:-1px}
   .unit-dock .army-upgrade button:disabled{filter:saturate(.45);opacity:.58}
-  .hand-panel{flex:0 0 236px;min-height:236px}
-  .section-title{flex:0 0 76px;min-height:76px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:5px}
-  .section-title .hand-glance{min-width:0;min-height:72px;grid-template-columns:44px minmax(0,1fr);grid-template-rows:auto auto minmax(24px,auto);padding:3px 6px}
-  .section-title .hand-glance img{width:42px;height:46px}
+  .hand-panel{flex:0 0 190px;min-height:190px}
+  .section-title{flex:0 0 58px;min-height:58px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px}
+  .section-title .hand-glance{min-width:0;min-height:54px;grid-template-columns:36px minmax(0,1fr);grid-template-rows:auto auto minmax(17px,auto);padding:2px 5px}
+  .section-title .hand-glance img{width:34px;height:38px}
   .section-title .hand-glance-copy{display:contents!important}
   .section-title .hand-glance-name{grid-column:2;grid-row:1;gap:4px;overflow:visible}.section-title .hand-glance-name .tier-badge{font-size:8px}.section-title .hand-glance-name b{font-size:11px}.section-title .hand-glance-name em{font-size:9px}
   .section-title .hand-glance-stats{grid-column:2;grid-row:2;gap:5px}.section-title .hand-glance-stats span{font-size:8px}
-  .section-title .hand-glance-copy>small{grid-column:1/-1;grid-row:3;font-size:8px;line-height:1.15;letter-spacing:-.45px;white-space:normal;overflow:hidden;text-overflow:clip;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .section-title .hand-glance-copy>small{grid-column:1/-1;grid-row:3;font-size:7px;line-height:1.1;letter-spacing:-.45px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
 
 /* IMG OFF is a low-rendering mode: use readable unit glyphs and suppress combat decoration. */
