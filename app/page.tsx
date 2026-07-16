@@ -153,6 +153,9 @@ const UNIT_GLYPH: Record<Category, string> = {
     high: "징", pair: "도", twoPair: "전", triplePair: "깃", triple: "마", backStraight: "석", straight: "궁", mountain: "얼", flush: "연", sevenStraight: "포", fullHouse: "사", doubleTriple: "열",
     fourKind: "왕", straightFlush: "용", backStraightFlush: "백", royalFlush: "운", fiveKind: "성", fourFullHouse: "회", sixKind: "$", sevenKind: "?",
 };
+const HEART_THEME_UNIT: Partial<Record<Category, string>> = {
+    high: "conscript", pair: "rogue", twoPair: "warrior", triplePair: "standard-bearer", triple: "mage", backStraight: "crossbowwoman", straight: "archer", mountain: "ice-mage", flush: "alchemist", sevenStraight: "artillerywoman", fullHouse: "priestess", doubleTriple: "line-captain", fourKind: "royal-knight", straightFlush: "dragoon", backStraightFlush: "white-knight", royalFlush: "fate-weaver", fiveKind: "saintess", fourFullHouse: "otherworlder",
+};
 const GRID_SIZE = 12;
 const VISIBLE_MAX_WAVE = 200;
 const HIDDEN_WAVE = 201;
@@ -162,7 +165,7 @@ const HIDDEN_BOSS_IMAGE = `${ASSET_BASE}/sprites/enemies/hidden-demon-lord.png`;
 const MAX_MONSTER_HP_MULTIPLIER = 2;
 const NORMAL_MONSTER_HP_MULTIPLIER = 1.5;
 const MAX_ATTACK_SPEED_LEVEL = 30;
-const APP_VERSION = "v0.2012";
+const APP_VERSION = "v0.2013";
 const BALANCE = { baseHp: 100, hpPerWave: .04, hpGrowth: 1.028, baseSpeed: .76, speedPerWave: .003, maxSpeed: 1.55, damageScale: .24, bossMoveScale: .58, spawnInterval: 600 } as const;
 const NORMAL_HP_DIFFICULTY_STEPS = [[10, 1.3983], [20, 1.601], [30, 1.9387], [40, 2.4891], [50, 3.2002], [60, 3.7484], [70, 4.1104], [80, 4.2995], [90, 4.2814], [100, 4.1578], [110, 4.9272], [120, 5.0028], [130, 5.0434], [140, 5.0998], [150, 5.1259], [160, 5.1645], [170, 5.1768], [180, 5.1671], [190, 5.0801], [200, 4.9316]] as const;
 const BOSS_HP_BY_WAVE: Record<number, number> = { 10: 27000, 20: 48000, 30: 85000, 40: 145000, 50: 233000, 60: 336000, 70: 440000, 80: 556000, 90: 708000, 100: 996000, 110: 1080000, 120: 1160000, 130: 1250000, 140: 1370000, 150: 1500000, 160: 1600000, 170: 1700000, 180: 1800000, 190: 1900000, 200: 2000000 };
@@ -381,16 +384,16 @@ function roleDescription(unit: Result, locale: Locale = activeLocale) { if (loca
     case "backStraightFlush": return "용기사보다 강력한 단일 피해 · 사거리 5칸";
     case "royalFlush": return "전역 지속 피해";
     case "fiveKind": return "배치시 전체 적 소멸";
-    case "fourFullHouse": return "사용 시 업그레이드 비용 60% 감소 · 미사용 시 특별한 결말";
+    case "fourFullHouse": return "이세계의 이방인. 하나면 기술 발전, 둘이면…";
     case "sixKind": return "소환 즉시 5,000G 획득";
     case "sevenKind": return "???";
 } }
 export default function Home() {
     const [selectedRerollCount, setSelectedRerollCount] = useState(0);
     const [hand, setHand] = useState<Card[]>(STARTING_HAND), [selected, setSelected] = useState<string[]>([]), [inventory, setInventory] = useState<Unit[]>([]), [selectedInventory, setSelectedInventory] = useState<string | null>(null), [towers, setTowers] = useState<Tower[]>([]), [selectedTower, setSelectedTower] = useState<string | null>(null), [saleConfirmId, setSaleConfirmId] = useState<string | null>(null), [enemies, setEnemies] = useState<Enemy[]>([]), [hitFx, setHitFx] = useState<HitFx[]>([]), [attackFx, setAttackFx] = useState<AttackFx[]>([]), [alchemyPools, setAlchemyPools] = useState<AlchemyPool[]>([]), [running, setRunning] = useState(false), [gameOver, setGameOver] = useState(false), [won, setWon] = useState(false), [gold, setGold] = useState(50), [attackLevel, setAttackLevel] = useState(0), [attackSpeedLevel, setAttackSpeedLevel] = useState(0), [wave, setWave] = useState(1), [kills, setKills] = useState(0), [spawned, setSpawned] = useState(0), [cooldown, setCooldown] = useState(0), [message, setMessage] = useState(T.hint), [waveCue, setWaveCue] = useState<string | null>(null), [tutorialStep, setTutorialStep] = useState(0), [soundOn, setSoundOn] = useState(true), [bgmOn, setBgmOn] = useState(false), [settingsOpen, setSettingsOpen] = useState(false), [locale, setLocale] = useState<Locale>("ko"), [languageChosen, setLanguageChosen] = useState(false);
-    const [endingActive, setEndingActive] = useState(false), [saintessEndingActive, setSaintessEndingActive] = useState(false), [directEndingActive, setDirectEndingActive] = useState(false), [returnerEndingActive, setReturnerEndingActive] = useState(false), [returnerEndingMode, setReturnerEndingMode] = useState<"solo" | "paradox">("solo"), [returnerSummons, setReturnerSummons] = useState(0), [returnerDiscount, setReturnerDiscount] = useState(false), [hiddenIntroActive, setHiddenIntroActive] = useState(false), [gameStarted, setGameStarted] = useState(false), [showMonsterImages, setShowMonsterImages] = useState(true);
+    const [endingActive, setEndingActive] = useState(false), [saintessEndingActive, setSaintessEndingActive] = useState(false), [directEndingActive, setDirectEndingActive] = useState(false), [returnerEndingActive, setReturnerEndingActive] = useState(false), [returnerEndingMode, setReturnerEndingMode] = useState<"solo" | "paradox">("solo"), [returnerSummons, setReturnerSummons] = useState(0), [returnerDiscount, setReturnerDiscount] = useState(false), [hiddenIntroActive, setHiddenIntroActive] = useState(false), [gameStarted, setGameStarted] = useState(false), [heartTheme, setHeartTheme] = useState(false), [showMonsterImages, setShowMonsterImages] = useState(true);
     activeLocale = locale;
-    const result = useMemo(() => evaluate(hand), [hand, locale]), attackMultiplier = 1 + attackLevel * .025, attackSpeedMultiplier = 1 + attackSpeedLevel * .025, upgradeDiscount = returnerDiscount ? .4 : 1, upgradeCost = Math.max(1, Math.ceil((attackLevel + 1) * 5 * upgradeDiscount)), speedUpgradeCost = Math.max(1, Math.ceil((attackSpeedLevel + 1) * 5 * upgradeDiscount)), initialDealRef = useRef(false), lastFxAt = useRef(0), gameAudioRef = useRef<ReturnType<typeof createGameAudio> | null>(null), alchemyPoolsRef = useRef<AlchemyPool[]>([]), alchemyLastCastRef = useRef<Map<string, number>>(new Map()), lastAttackAtRef = useRef<Map<string, number>>(new Map()), selectedPlaced = towers.find(t => t.id === selectedTower);
+    const evaluatedResult = useMemo(() => evaluate(hand), [hand, locale]), heartThemeName = HEART_THEME_UNIT[evaluatedResult.category], result = heartTheme && heartThemeName ? { ...evaluatedResult, image: `${ASSET_BASE}/sprites/units/themes/beautiful-women/${heartThemeName}.png` } : evaluatedResult, attackMultiplier = 1 + attackLevel * .025, attackSpeedMultiplier = 1 + attackSpeedLevel * .025, upgradeDiscount = returnerDiscount ? .4 : 1, upgradeCost = Math.max(1, Math.ceil((attackLevel + 1) * 5 * upgradeDiscount)), speedUpgradeCost = Math.max(1, Math.ceil((attackSpeedLevel + 1) * 5 * upgradeDiscount)), initialDealRef = useRef(false), lastFxAt = useRef(0), gameAudioRef = useRef<ReturnType<typeof createGameAudio> | null>(null), alchemyPoolsRef = useRef<AlchemyPool[]>([]), alchemyLastCastRef = useRef<Map<string, number>>(new Map()), lastAttackAtRef = useRef<Map<string, number>>(new Map()), selectedPlaced = towers.find(t => t.id === selectedTower);
     const [gameSpeed, setGameSpeed] = useState<1 | 2 | 3>(1), [playbackPaused, setPlaybackPaused] = useState(false), [bossWaveHold, setBossWaveHold] = useState(0), gameClockRef = useRef(0), lastTickAtRef = useRef(0), bossWaveReleaseRef = useRef(0);
     const baseCopy = UI[locale], copy = { ...baseCopy, start: wave === 1 && spawned === 0 ? baseCopy.begin : baseCopy.start, selectedReroll: `${baseCopy.selectedReroll} · ×${selectedRerollCount + 1}`, placeHint: selectedPlaced ? roleDescription(selectedPlaced, locale) : baseCopy.placeHint };
     const selectedInventoryUnit = inventory.find(unit => unit.id === selectedInventory), livingEnemies = enemies.filter(enemy => enemy.hp > 0), liveEnemyCount = livingEnemies.length, activeBosses = livingEnemies.filter(enemy => enemy.boss), population = livingEnemies.reduce((total, enemy) => total + (enemy.boss ? 20 : 1), 0);
@@ -425,10 +428,10 @@ export default function Home() {
         };
     }, [showMonsterImages, wave]);
     useEffect(() => () => { void gameAudioRef.current?.dispose(); }, []);
-    useEffect(() => { if (!running || wave !== HIDDEN_WAVE || spawned < waveTarget || liveEnemyCount > 0 || saintessEndingActive || returnerEndingActive)
+    useEffect(() => { const saintessReady = inventory.filter(unit => unit.effect === "purge").length >= 5; if (!running || wave !== HIDDEN_WAVE || spawned < waveTarget || liveEnemyCount > 0 || saintessReady || saintessEndingActive || returnerEndingActive)
         return; setWon(true); setRunning(false); setPlaybackPaused(true); if (inventory.some(unit => unit.effect === "returner")) { setReturnerEndingMode("solo"); setReturnerEndingActive(true); setMessage("THE OTHERWORLDER AWAKENS"); } else { setDirectEndingActive(true); setMessage("ABSOLUTE TRIUMPH"); } }, [running, wave, spawned, waveTarget, liveEnemyCount, saintessEndingActive, returnerEndingActive, inventory]);
     useEffect(() => { const saintesses = inventory.filter(unit => unit.effect === "purge"); if (wave !== HIDDEN_WAVE || saintesses.length < 5 || saintessEndingActive)
-        return; const consumed = new Set(saintesses.slice(0, 5).map(unit => unit.id)); setInventory(units => units.filter(unit => !consumed.has(unit.id))); setSelectedInventory(null); setEnemies([]); setRunning(false); setPlaybackPaused(true); setWon(true); setSaintessEndingActive(true); setMessage("성녀 5기가 마왕을 봉인했습니다"); playSound("saintess"); }, [inventory, wave, saintessEndingActive]);
+        return; const consumed = new Set(saintesses.slice(0, 5).map(unit => unit.id)); setInventory(units => units.filter(unit => !consumed.has(unit.id))); setSelectedInventory(null); setEnemies([]); setRunning(false); setPlaybackPaused(true); setWon(true); setDirectEndingActive(false); setReturnerEndingActive(false); setSaintessEndingActive(true); setMessage("성녀 5기가 마왕을 봉인했습니다"); playSound("saintess"); }, [inventory, wave, saintessEndingActive]);
     useEffect(() => { if (population < 200 || gameOver)
         return; setGameOver(true); setRunning(false); }, [population, gameOver]);
     useEffect(() => {
@@ -626,6 +629,9 @@ export default function Home() {
         setGameStarted(true);
         setMessage("방어전 시작");
     } }
+    function startHeartMode() { if (gameStarted)
+        return; setHeartTheme(true); if (!running)
+        toggleRunning(); }
     function cyclePlayback() { unlockAudio(); if (gameOver || won)
         return; if (!gameStarted)
         return; if (playbackPaused || !running) {
@@ -752,7 +758,7 @@ export default function Home() {
         setMessage(T.noGold);
         return;
     } setGold(v => v - speedUpgradeCost); setAttackSpeedLevel(v => v + 1); setMessage(`전체 공격속도 LV.${attackSpeedLevel + 1} 강화 완료`); playSound("upgrade"); }
-    function restart() { setHand(dealHand()); setSelected([]); setSelectedRerollCount(0); setInventory([]); setSelectedInventory(null); setTowers([]); setSelectedTower(null); setSaleConfirmId(null); setEnemies([]); setHitFx([]); setAttackFx([]); setAlchemyPools([]); alchemyPoolsRef.current = []; alchemyLastCastRef.current.clear(); lastAttackAtRef.current.clear(); lastFxAt.current = 0; gameClockRef.current = 0; lastTickAtRef.current = 0; bossWaveReleaseRef.current = 0; setBossWaveHold(0); setGameSpeed(1); setPlaybackPaused(false); setRunning(false); setGameStarted(false); setGameOver(false); setWon(false); setEndingActive(false); setSaintessEndingActive(false); setDirectEndingActive(false); setReturnerEndingActive(false); setReturnerEndingMode("solo"); setReturnerSummons(0); setReturnerDiscount(false); setHiddenIntroActive(false); setSettingsOpen(false); setGold(50); setAttackLevel(0); setAttackSpeedLevel(0); setWave(1); setKills(0); setSpawned(0); setCooldown(0); setMessage(T.hint); }
+    function restart() { setHand(dealHand()); setSelected([]); setSelectedRerollCount(0); setInventory([]); setSelectedInventory(null); setTowers([]); setSelectedTower(null); setSaleConfirmId(null); setEnemies([]); setHitFx([]); setAttackFx([]); setAlchemyPools([]); alchemyPoolsRef.current = []; alchemyLastCastRef.current.clear(); lastAttackAtRef.current.clear(); lastFxAt.current = 0; gameClockRef.current = 0; lastTickAtRef.current = 0; bossWaveReleaseRef.current = 0; setBossWaveHold(0); setGameSpeed(1); setPlaybackPaused(false); setRunning(false); setGameStarted(false); setHeartTheme(false); setGameOver(false); setWon(false); setEndingActive(false); setSaintessEndingActive(false); setDirectEndingActive(false); setReturnerEndingActive(false); setReturnerEndingMode("solo"); setReturnerSummons(0); setReturnerDiscount(false); setHiddenIntroActive(false); setSettingsOpen(false); setGold(50); setAttackLevel(0); setAttackSpeedLevel(0); setWave(1); setKills(0); setSpawned(0); setCooldown(0); setMessage(T.hint); }
     useEffect(() => {
         function handleGameShortcut(event: KeyboardEvent) {
             const target = event.target as HTMLElement | null;
@@ -822,6 +828,7 @@ export default function Home() {
         <button className="selected-reroll-action" disabled={!gameStarted || cooldown > 0 || selected.length === 0} onClick={redraw}><span>{baseCopy.selectedReroll}</span><em>×{selectedRerollCount + 1}</em><b>{selected.length * 5 * (selectedRerollCount + 1)}G</b></button>
         <button disabled={!gameStarted || cooldown > 0} onClick={redrawAll}><span>{copy.fullReroll}</span><b>10G</b></button>
         <button className={running ? "pause" : "start"} onClick={toggleRunning}>{running ? `II ${copy.pause}` : `\u25B6 ${copy.start}`}</button>
+        {!gameStarted && <button className="heart-start" onClick={startHeartMode} aria-label="Hidden Heart Mode">♥</button>}
       </div>
     </section>
     <details className="poker-guide" data-locale={locale}><summary>{copy.guide}<span>{copy.open}</span></summary><div className="guide-grid job-guide" tabIndex={0} onWheel={event => event.stopPropagation()}>{guide.map(([category, job]) => <span key={category}><b>{term(locale, JOBS[category].label)}</b><small>{term(locale, job)}{["fourKind", "straightFlush", "triplePair", "backStraight", "mountain", "sevenStraight"].includes(category) ? ` / ${term(locale, T.legend)}` : ["royalFlush", "fiveKind", "doubleTriple", "backStraightFlush"].includes(category) ? ` / ${term(locale, T.transcendent)}` : category !== "sixKind" && category !== "sevenKind" && category !== "fourFullHouse" ? ` / ${term(locale, T.beginner)} ${term(locale, T.middle)} ${term(locale, T.elite)}` : ""}</small></span>)}</div><button className="tutorial-reopen" onClick={() => setTutorialStep(0)}>{copy.tutorialAgain}</button></details>

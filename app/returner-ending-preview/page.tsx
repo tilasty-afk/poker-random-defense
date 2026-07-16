@@ -68,6 +68,42 @@ function drawPortal(ctx: CanvasRenderingContext2D, elapsed: number, power: numbe
   ctx.fillStyle = core; ctx.fillRect(-120, -145, 240, 290); ctx.restore();
 }
 
+function drawAwakeningAura(ctx: CanvasRenderingContext2D, elapsed: number, power: number) {
+  if (power <= 0) return;
+  const pulse = .82 + Math.sin(elapsed * .006) * .18;
+  ctx.save();
+  ctx.translate(180, 278);
+  ctx.globalCompositeOperation = "screen";
+  const halo = ctx.createRadialGradient(0, 0, 12, 0, 0, 150);
+  halo.addColorStop(0, `rgba(238,253,255,${power * .88})`);
+  halo.addColorStop(.28, `rgba(91,222,255,${power * .42})`);
+  halo.addColorStop(.65, `rgba(101,119,255,${power * .2})`);
+  halo.addColorStop(1, "rgba(30,54,180,0)");
+  ctx.fillStyle = halo;
+  ctx.fillRect(-180, -210, 360, 420);
+  ctx.strokeStyle = `rgba(145,238,255,${power * .62})`;
+  ctx.shadowColor = "#65eaff";
+  ctx.shadowBlur = 20;
+  for (let ring = 0; ring < 3; ring++) {
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(0, 5, (72 + ring * 27) * pulse, (118 + ring * 31) * pulse, elapsed * .00008 * (ring % 2 ? -1 : 1), 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  for (let ray = 0; ray < 18; ray++) {
+    const angle = ray * Math.PI * 2 / 18 + elapsed * .00012;
+    const inner = 62 + (ray % 3) * 8;
+    const outer = 145 + (ray % 4) * 13;
+    ctx.globalAlpha = power * (.22 + (ray % 3) * .11);
+    ctx.lineWidth = ray % 4 === 0 ? 3 : 1;
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(angle) * inner, Math.sin(angle) * inner * 1.28);
+    ctx.lineTo(Math.cos(angle) * outer, Math.sin(angle) * outer * 1.28);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
 function background(ctx: CanvasRenderingContext2D, elapsed: number, mode: Mode) {
   const gradient = ctx.createLinearGradient(0, 0, 0, HEIGHT);
   gradient.addColorStop(0, mode === "solo" ? "#111936" : "#260b22"); gradient.addColorStop(.55, "#07101f"); gradient.addColorStop(1, "#02030a");
@@ -92,11 +128,12 @@ function renderSolo(ctx: CanvasRenderingContext2D, elapsed: number, image: HTMLI
   const portal = ease((t - .25) * 3.2) * clamp(1 - (t - .79) * 5); drawPortal(ctx, elapsed, portal);
   for (let i = 0; i < 5; i++) drawReturnerEcho(ctx, image, 180 + Math.sin(i * 2.7) * (55 + i * 8), 300 - i * 20, clamp((t - .08) * 4) * (1 - t) * .22, "#72eaff");
   const stride = ease((t - .12) * 2.1);
+  drawAwakeningAura(ctx, elapsed, ease((t - .16) * 2.8) * clamp(1 - (t - .7) * 4));
   if (image) { ctx.save(); ctx.globalAlpha = clamp((t - .08) * 5); ctx.shadowColor = "#72eaff"; ctx.shadowBlur = 25; ctx.drawImage(image, 82, 122 - stride * 34, 196, 294); ctx.restore(); }
   const slash = clamp((t - .49) * 12) * clamp(1 - (t - .62) * 10);
   if (slash > 0) { ctx.save(); ctx.globalAlpha = slash; ctx.strokeStyle = "#eaffff"; ctx.shadowColor = "#65e8ff"; ctx.shadowBlur = 25; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(180, 346, 155, -2.5, .35); ctx.stroke(); ctx.restore(); }
   const depart = ease((t - .62) * 4); if (depart > 0) { ctx.fillStyle = `rgba(216,250,255,${depart * .85})`; ctx.fillRect(0, 0, WIDTH, HEIGHT); }
-  drawTitle(ctx, ease((t - .73) * 4.8), ["THE OTHERWORLDER", "AWAKENS"], "#7ceaff", "ONE UNUSED OTHERWORLDER · SECRET ENDING");
+  drawTitle(ctx, ease((t - .73) * 4.8), ["THE OTHERWORLDER", "AWAKENS"], "#7ceaff", "ONE STRANGER · A NEW WORLD");
 }
 
 function renderParadox(ctx: CanvasRenderingContext2D, elapsed: number, image: HTMLImageElement | null) {
@@ -108,10 +145,20 @@ function renderParadox(ctx: CanvasRenderingContext2D, elapsed: number, image: HT
   ctx.restore();
   for (let i = 0; i < 8; i++) drawReturnerEcho(ctx, image, i % 2 ? 70 : 290, 115 + i * 52, clamp((t - .06 - i * .015) * 3) * clamp(1 - (t - .55) * 4) * .24, i % 2 ? "#51dbff" : "#ff3f71");
   const approach = ease((t - .18) * 2.8);
-  if (image) { ctx.save(); ctx.globalAlpha = approach; ctx.shadowColor = "#bc6fff"; ctx.shadowBlur = 22; ctx.drawImage(image, 8, 170, 344, 221); ctx.restore(); }
+  if (image) {
+    const imageScale = .93 + approach * .07;
+    const imageWidth = 344 * imageScale;
+    const imageHeight = imageWidth * 9 / 16;
+    ctx.save();
+    ctx.globalAlpha = approach;
+    ctx.shadowColor = "#bc6fff";
+    ctx.shadowBlur = 22;
+    ctx.drawImage(image, 180 - imageWidth / 2, 276 - imageHeight / 2, imageWidth, imageHeight);
+    ctx.restore();
+  }
   const impact = clamp((t - .52) * 15) * clamp(1 - (t - .72) * 7);
   if (impact > 0) {
-    ctx.save(); ctx.translate(180, 328); ctx.globalCompositeOperation = "screen";
+    ctx.save(); ctx.translate(180, 276); ctx.globalCompositeOperation = "screen";
     const burst = ctx.createRadialGradient(0, 0, 0, 0, 0, 155 * impact); burst.addColorStop(0, `rgba(255,255,255,${impact})`); burst.addColorStop(.2, `rgba(205,99,255,${impact})`); burst.addColorStop(1, "rgba(70,190,255,0)"); ctx.fillStyle = burst; ctx.fillRect(-180, -180, 360, 360);
     for (let i = 0; i < 32; i++) { const a = i * 2.399; ctx.strokeStyle = i % 2 ? "#48eaff" : "#ff487e"; ctx.globalAlpha = impact; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * (50 + impact * 170), Math.sin(a) * (50 + impact * 170)); ctx.stroke(); }
     ctx.restore();
