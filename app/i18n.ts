@@ -11,12 +11,19 @@ const terms: Record<string, [string, string, string]> = {
   "풀하우스": ["Full House", "葫芦", "フルハウス"], "포카드": ["Four of a Kind", "四条", "フォーカード"],
   "스트레이트 플러시": ["Straight Flush", "同花顺", "ストレートフラッシュ"], "로열 플러시": ["Royal Flush", "皇家同花顺", "ロイヤルフラッシュ"],
   "파이브 카드": ["Five of a Kind", "五条", "ファイブカード"], "식스 카드": ["Six Card", "六张同点", "シックスカード"], "세븐 카드": ["Seven Card", "七张同点", "セブンカード"],
+  "트리플 페어": ["Triple Pair", "三对", "スリーペア"], "백 스트레이트": ["Back Straight", "A-5顺子", "バックストレート"],
+  "마운틴": ["Mountain", "皇家顺子", "マウンテン"], "세븐 스트레이트": ["Seven Straight", "七张顺子", "セブンストレート"],
+  "더블 트리플": ["Double Triple", "双三条", "ダブルスリー"], "백 스트레이트 플러시": ["Back Straight Flush", "A-5同花顺", "バックストレートフラッシュ"],
+  "포카드 풀하우스": ["Four-Kind Full House", "四条葫芦", "フォーカードフルハウス"],
   "초급": ["Rookie", "新手", "初級"], "중급": ["Advanced", "进阶", "中級"], "정예": ["Elite", "精英", "精鋭"], "전설": ["Legendary", "传说", "伝説"], "초월": ["Transcendent", "超越", "超越"], "특수": ["Special", "特殊", "特殊"],
   "징집병": ["Conscript", "征召兵", "徴集兵"], "도적": ["Rogue", "盗贼", "盗賊"], "전사": ["Warrior", "战士", "戦士"],
   "마도사": ["Mage", "法师", "魔道士"], "궁수": ["Archer", "弓箭手", "弓使い"], "사제": ["Priest", "祭司", "司祭"],
+  "깃발병": ["Standard Bearer", "旗手", "旗手"], "석궁사수": ["Crossbowman", "弩手", "クロスボウ兵"], "얼음술사": ["Ice Mage", "冰霜法师", "氷術師"],
+  "포격수": ["Artillerywoman", "炮兵", "砲撃手"], "전열대장": ["Line Captain", "阵线队长", "戦列隊長"], "백기사": ["White Knight", "白骑士", "白騎士"],
   "연금술사": ["Alchemist", "炼金术师", "錬金術師"], "왕실 기사": ["Royal Knight", "皇家骑士", "王室騎士"],
   "용기사": ["Dragoon", "龙骑士", "竜騎士"], "운명술사": ["Fate Weaver", "命运术师", "運命術師"],
-  "성녀": ["Saintess", "圣女", "聖女"], "황금 잭팟": ["Golden Jackpot", "黄金大奖", "ゴールドジャックポット"],
+  "성녀": ["Saintess", "圣女", "聖女"], "이세계인?": ["Otherworlder?", "异世界人?", "異世界人?"],
+  "황금 잭팟": ["Golden Jackpot", "黄金大奖", "ゴールドジャックポット"],
   "운명의 손패": ["Hand of Fate", "命运手牌", "運命の手札"], "교체할 카드를 선택하세요": ["Select cards to reroll", "请选择要重抽的牌", "引き直すカードを選択してください"],
   "족보 확정 & 소환": ["Confirm Hand & Summon", "确认牌型并召唤", "役を確定して召喚"], "선택 카드 교체": ["Reroll Selected", "重抽所选牌", "選択カードを引き直す"],
   "웨이브 시작": ["Start Wave", "开始波次", "ウェーブ開始"], "일시 정지": ["Pause", "暂停", "一時停止"],
@@ -86,9 +93,9 @@ export const TRAITS: Record<Locale, Record<string,string>> = {
 };
 
 const COMPACT_ROLE_COPY: Record<Exclude<Locale, "ko">, Record<string, string>> = {
-  en:{high:"+1G/kill · +33% ATK per other Conscript",pair:"2s mark · target takes +100% damage",twoPair:"Targets lowest-HP enemy in range",triple:"5s heavy hit · Range 4 · Blast 2.5",straight:"Range 6 · 50% crit · 5× crit dmg · Boss +50%",flush:"Slow + poison pool",fullHouse:"All allies gain +{v}% ATK",fourKind:"Boss +100% dmg · Range 3",straightFlush:"Heavy single hit · Range 5",royalFlush:"Global damage over time",fiveKind:"Deploy: erase all enemies",sixKind:"Instantly gain 5,000G",sevenKind:"???"},
-  zh:{high:"击杀+1G · 每名其他征召兵使攻击+33%",pair:"2秒标记 · 目标承伤+100%",twoPair:"优先攻击射程内最低生命目标",triple:"每5秒重击 · 射程4格 · 爆炸2.5格",straight:"射程6格 · 暴击50% · 暴伤5倍 · 对首领+50%",flush:"减速与中毒区域",fullHouse:"全体友军攻击+{v}%",fourKind:"对首领+100% · 射程3格",straightFlush:"强力单体攻击 · 射程5格",royalFlush:"全图持续伤害",fiveKind:"部署时消灭所有敌人",sixKind:"立即获得5,000G",sevenKind:"???"},
-  ja:{high:"撃破+1G・他の徴集兵1体ごとに攻撃+33%",pair:"2秒間マーク・被ダメージ+100%",twoPair:"射程内の低HPを優先攻撃",triple:"5秒ごとに強打・射程4・爆発2.5マス",straight:"射程6・会心50%・会心5倍・ボス+50%",flush:"減速＋毒エリア",fullHouse:"味方全体の攻撃+{v}%",fourKind:"ボス+100%・射程3",straightFlush:"強力な単体攻撃・射程5",royalFlush:"全体への持続ダメージ",fiveKind:"配置時に敵を全消去",sixKind:"即座に5,000G獲得",sevenKind:"???"},
+  en:{high:"+1G/kill · +33% ATK per other Conscript",pair:"2s mark · target takes +100% damage",twoPair:"Targets lowest-HP enemy in range",triplePair:"Nearby allies gain +20% ASPD",triple:"5s heavy hit · Range 4 · Blast 2.5",backStraight:"Pierces up to 7 enemies",straight:"Range 6 · 50% crit · 5× crit dmg · Boss +50%",mountain:"1s area freeze · minimum 3.2s cooldown",flush:"Slow + poison pool",sevenStraight:"Rapid area bombardment",fullHouse:"All allies gain +{v}% ATK",doubleTriple:"Raises nearby Rookie/Advanced units to Elite stats",fourKind:"Boss +100% dmg · Range 3",straightFlush:"Heavy single hit · Range 5",backStraightFlush:"Single hit 20% stronger than Dragoon",royalFlush:"Global damage over time",fiveKind:"Deploy: erase all enemies",fourFullHouse:"Use: upgrade costs -60% · keep for a special ending",sixKind:"Instantly gain 5,000G",sevenKind:"???"},
+  zh:{high:"击杀+1G · 每名其他征召兵使攻击+33%",pair:"2秒标记 · 目标承伤+100%",twoPair:"优先攻击射程内最低生命目标",triplePair:"附近友军攻速+20%",triple:"每5秒重击 · 射程4格 · 爆炸2.5格",backStraight:"最多贯穿7名敌人",straight:"射程6格 · 暴击50% · 暴伤5倍 · 对首领+50%",mountain:"范围冻结1秒 · 最短冷却3.2秒",flush:"减速与中毒区域",sevenStraight:"快速范围炮击",fullHouse:"全体友军攻击+{v}%",doubleTriple:"附近新手/进阶单位获得精英属性",fourKind:"对首领+100% · 射程3格",straightFlush:"强力单体攻击 · 射程5格",backStraightFlush:"单次伤害比龙骑士高20%",royalFlush:"全图持续伤害",fiveKind:"部署时消灭所有敌人",fourFullHouse:"使用后强化费用-60% · 保留可触发特殊结局",sixKind:"立即获得5,000G",sevenKind:"???"},
+  ja:{high:"撃破+1G・他の徴集兵1体ごとに攻撃+33%",pair:"2秒間マーク・被ダメージ+100%",twoPair:"射程内の低HPを優先攻撃",triplePair:"周囲の味方の攻速+20%",triple:"5秒ごとに強打・射程4・爆発2.5マス",backStraight:"最大7体を貫通",straight:"射程6・会心50%・会心5倍・ボス+50%",mountain:"範囲を1秒停止・最短CT3.2秒",flush:"減速＋毒エリア",sevenStraight:"高速範囲砲撃",fullHouse:"味方全体の攻撃+{v}%",doubleTriple:"周囲の初級・中級を精鋭能力に変更",fourKind:"ボス+100%・射程3",straightFlush:"強力な単体攻撃・射程5",backStraightFlush:"竜騎士より一撃20%強化",royalFlush:"全体への持続ダメージ",fiveKind:"配置時に敵を全消去",fourFullHouse:"使用で強化費用-60%・保管で特別エンディング",sixKind:"即座に5,000G獲得",sevenKind:"???"},
 };
 
 export function roleCopy(locale: Locale, category: string, tier: number) {

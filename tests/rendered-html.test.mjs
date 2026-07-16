@@ -80,7 +80,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /attackSpeedLevel >= MAX_ATTACK_SPEED_LEVEL/);
   assert.match(page, /전체 공격속도는 LV\.30이 최대입니다/);
   assert.match(page, /lastAttackAtRef = useRef<Map<string, number>>/);
-  assert.match(page, /attackInterval = 500 \/ Math\.max/);
+  assert.match(page, /rawAttackInterval = 500 \/ Math\.max/);
   assert.match(page, /towerId: tower\.id,\s*expiresAt: now \+ 320/);
   assert.match(page, /attackFx\.some\(fx => fx\.towerId === tower\.id\) \? "attacking"/);
   assert.match(page, /fixedUtility = best\.category === "triple" \|\| best\.category === "flush" \|\| best\.category === "fullHouse"/);
@@ -88,7 +88,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /flush:\s*\{[\s\S]*?base:\s*\[110,\s*RANGE_PER_CELL \* 2,\s*\.5\]/);
   assert.match(page, /fullHouse:\s*\{[\s\S]*?base:\s*\[65\.76,\s*RANGE_PER_CELL \* 4,\s*\.65\]/);
   assert.match(page, /className="inventory-selection"/);
-  assert.match(page, /\{copy\.sell\} \{sellValue\(selectedInventoryUnit\)\}G/);
+  assert.match(page, /selectedInventoryUnit\.effect === "returner" \? "강화 비용 -60%"/);
   assert.match(page, /className="field-unit-actions"/);
   assert.match(page, /function sellTower\(\)/);
   assert.doesNotMatch(page, /className=\{`hand-result summon-preview \$\{gameStarted/);
@@ -174,7 +174,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /saintess-ending-preview\/\?embedded=1&locale=\$\{locale\}/);
   assert.match(page, /demon-triumph-preview\/\?embedded=1&locale=\$\{locale\}/);
   assert.match(page, /title="ABSOLUTE TRIUMPH"/);
-  assert.match(page, /return \{ damage: priestDamageBuff \+ conscriptStacks \* \.33, speed: 0 \}/);
+  assert.match(page, /speed: hasFlagBuff\(tower, towers\) \? \.2 : 0/);
   assert.match(page, /high: \[2, 3, 4\]/);
   assert.match(page, /pair: \[3, 5, 7\]/);
   assert.match(page, /twoPair: \[5, 8, 11\]/);
@@ -206,7 +206,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /function priestAttackBuff\(towers: Tower\[\]\)/);
   assert.match(page, /priest\.tier === 1 \? \.15 : priest\.tier === 2 \? \.25 : \.4/);
   assert.match(page, /const priestDamageBuff = priestAttackBuff\(towers\), conscriptStacks = conscriptBuffStacks\(tower, towers\)/);
-  assert.match(page, /return \{ damage: priestDamageBuff \+ conscriptStacks \* \.33, speed: 0 \}/);
+  assert.match(page, /speed: hasFlagBuff\(tower, towers\) \? \.2 : 0/);
   assert.match(page, /className=\{`game-frame \$\{selectedPlaced \? "unit-command-open" : ""\}`\}/);
   assert.match(css, /\.game-frame\.unit-command-open \.unit-dock\{visibility:hidden\}/);
   assert.doesNotMatch(css, /--mobile-command:92px/);
@@ -301,11 +301,11 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /\.grid-slot\.tower-slot:has\(\.tier-dot\.tier-1\)/);
   assert.match(css, /img\[src\*="\/K\.png"\][\s\S]*img\[src\*="\/A\.png"\][\s\S]*border:3px solid #df5cff/);
   assert.match(css, /img\[src\*="\/J\.png"\][\s\S]*img\[src\*="\/Joker\.png"\][\s\S]*border:3px solid #ff454f/);
-  assert.match(page, /legendary = best\.category === "fourKind" \|\| best\.category === "straightFlush"/);
-  assert.match(page, /transcendent = best\.category === "royalFlush" \|\| best\.category === "fiveKind"/);
+  assert.match(page, /legendary = \["fourKind", "straightFlush", "triplePair", "backStraight", "mountain", "sevenStraight"\]\.includes/);
+  assert.match(page, /transcendent = \["royalFlush", "fiveKind", "doubleTriple", "backStraightFlush"\]\.includes/);
   assert.match(page, /tierLabel = legendary \? T\.legend : transcendent \? T\.transcendent/);
-  assert.match(page, /category === "fourKind" \|\| category === "straightFlush" \? ` \/ \$\{term\(locale, T\.legend\)\}`/);
-  assert.match(page, /category === "royalFlush" \|\| category === "fiveKind" \? ` \/ \$\{term\(locale, T\.transcendent\)\}`/);
+  assert.match(page, /\["fourKind", "straightFlush", "triplePair", "backStraight", "mountain", "sevenStraight"\]\.includes\(category\)/);
+  assert.match(page, /\["royalFlush", "fiveKind", "doubleTriple", "backStraightFlush"\]\.includes\(category\)/);
   assert.match(i18n, /"초월": \["Transcendent", "超越", "超越"\]/);
   assert.match(page, /className="gold-resource"/);
   assert.doesNotMatch(page, /padStart\(3, "0"\)\} \/ 100/);
@@ -342,8 +342,9 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /\.joker-art-invert/);
   assert.match(page, /joker\?: "black" \| "color" \| "invert"/);
   assert.match(page, /joker-invert/);
-  assert.match(page, /sevenEntry = jokers\.length === 3/);
-  assert.match(page, /best = \{ category: "sevenKind"/);
+  assert.match(page, /if \(jokers\.length === 3\)/);
+  assert.match(page, /function sevenCardSpecials\(cards: Card\[\]\)/);
+  assert.match(page, /add\("sevenKind", rank\)/);
   assert.match(page, /result\.effect === "ending"/);
   assert.match(page, /setEndingActive\(true\)/);
   assert.match(page, /seven-card-ending-overlay/);

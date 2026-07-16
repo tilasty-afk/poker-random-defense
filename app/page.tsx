@@ -4,7 +4,7 @@ import { createGameAudio, type AttackSound, type GameSound } from "./game-audio"
 import HiddenWaveIntro from "./hidden-wave-intro";
 import { LOCALE_LABEL, LOCALE_ORDER, MONSTER_NAMES, TRAITS, TUTORIALS, UI, roleCopy, term, type Locale } from "./i18n";
 type Suit = "spade" | "heart" | "diamond" | "club";
-type Category = "high" | "pair" | "twoPair" | "triple" | "straight" | "flush" | "fullHouse" | "fourKind" | "straightFlush" | "royalFlush" | "fiveKind" | "sixKind" | "sevenKind";
+type Category = "high" | "pair" | "twoPair" | "triplePair" | "triple" | "backStraight" | "straight" | "mountain" | "flush" | "sevenStraight" | "fullHouse" | "doubleTriple" | "fourKind" | "straightFlush" | "backStraightFlush" | "royalFlush" | "fiveKind" | "fourFullHouse" | "sixKind" | "sevenKind";
 type Tier = 1 | 2 | 3;
 type Card = {
     id: string;
@@ -23,7 +23,7 @@ type Result = {
     damage: number;
     range: number;
     speed: number;
-    effect: "single" | "alchemy" | "globalDot" | "purge" | "jackpot" | "ending";
+    effect: "single" | "alchemy" | "globalDot" | "purge" | "jackpot" | "ending" | "support" | "returner";
     bestCardIds: string[];
 };
 type Unit = Result & {
@@ -51,6 +51,7 @@ type Enemy = {
     marked?: boolean;
     markExpiresAt?: number;
     slowed?: boolean;
+    frozenUntil?: number;
     cursed?: boolean;
     hitPulse?: boolean;
     hitKind?: "direct" | "alchemyDot" | "fateDot";
@@ -83,9 +84,9 @@ type AlchemyPool = {
     slow: number;
 };
 const T_BASE = {
-    brand: "\uD3EC\uCEE4 \uB79C\uB364 \uB514\uD39C\uC2A4", high: "\uD558\uC774 \uCE74\uB4DC", pair: "\uC6D0 \uD398\uC5B4", twoPair: "\uD22C \uD398\uC5B4", triple: "\uD2B8\uB9AC\uD50C", straight: "\uC2A4\uD2B8\uB808\uC774\uD2B8", flush: "\uD50C\uB7EC\uC2DC", fullHouse: "\uD480\uD558\uC6B0\uC2A4", fourKind: "\uD3EC\uCE74\uB4DC", straightFlush: "\uC2A4\uD2B8\uB808\uC774\uD2B8 \uD50C\uB7EC\uC2DC", royalFlush: "\uB85C\uC5F4 \uD50C\uB7EC\uC2DC", fiveKind: "\uD30C\uC774\uBE0C \uCE74\uB4DC", sixKind: "식스 카드", sevenKind: "세븐 카드",
+    brand: "\uD3EC\uCEE4 \uB79C\uB364 \uB514\uD39C\uC2A4", high: "\uD558\uC774 \uCE74\uB4DC", pair: "\uC6D0 \uD398\uC5B4", twoPair: "\uD22C \uD398\uC5B4", triplePair: "트리플 페어", triple: "\uD2B8\uB9AC\uD50C", backStraight: "백 스트레이트", straight: "\uC2A4\uD2B8\uB808\uC774\uD2B8", mountain: "마운틴", flush: "\uD50C\uB7EC\uC2DC", sevenStraight: "세븐 스트레이트", fullHouse: "\uD480\uD558\uC6B0\uC2A4", doubleTriple: "더블 트리플", fourKind: "\uD3EC\uCE74\uB4DC", straightFlush: "\uC2A4\uD2B8\uB808\uC774\uD2B8 \uD50C\uB7EC\uC2DC", backStraightFlush: "백 스트레이트 플러시", royalFlush: "\uB85C\uC5F4 \uD50C\uB7EC\uC2DC", fiveKind: "\uD30C\uC774\uBE0C \uCE74\uB4DC", fourFullHouse: "포카드 풀하우스", sixKind: "식스 카드", sevenKind: "세븐 카드",
     beginner: "\uCD08\uAE09", middle: "\uC911\uAE09", elite: "\uC815\uC608", legend: "\uC804\uC124", transcendent: "\uCD08\uC6D4", unique: "\uD2B9\uC218",
-    conscript: "\uC9D5\uC9D1\uBCD1", rogue: "\uB3C4\uC801", warrior: "\uC804\uC0AC", mage: "\uB9C8\uB3C4\uC0AC", elf: "\uAD81\uC218", priest: "\uC0AC\uC81C", alchemist: "\uC5F0\uAE08\uC220\uC0AC", royal: "\uC655\uC2E4 \uAE30\uC0AC", dragoon: "\uC6A9\uAE30\uC0AC", fate: "\uC6B4\uBA85\uC220\uC0AC", saintess: "\uC131\uB140", jackpot: "황금 잭팟", mystery: "???",
+    conscript: "\uC9D5\uC9D1\uBCD1", rogue: "\uB3C4\uC801", warrior: "\uC804\uC0AC", standardBearer: "깃발병", mage: "\uB9C8\uB3C4\uC0AC", crossbowman: "석궁사수", elf: "\uAD81\uC218", iceMage: "얼음술사", priest: "\uC0AC\uC81C", alchemist: "\uC5F0\uAE08\uC220\uC0AC", artillery: "포격수", lineCaptain: "전열대장", royal: "\uC655\uC2E4 \uAE30\uC0AC", dragoon: "\uC6A9\uAE30\uC0AC", whiteKnight: "백기사", fate: "\uC6B4\uBA85\uC220\uC0AC", saintess: "\uC131\uB140", returner: "이세계인?", jackpot: "황금 잭팟", mystery: "???",
     hand: "\uC6B4\uBA85\uC758 \uC190\uD328", hint: "\uAD50\uCCB4\uD560 \uCE74\uB4DC\uB97C \uC120\uD0DD\uD558\uC138\uC694", recruit: "\uC871\uBCF4 \uD655\uC815 & \uC18C\uD658", redraw: "\uC120\uD0DD \uCE74\uB4DC \uAD50\uCCB4", start: "\uC6E8\uC774\uBE0C \uC2DC\uC791", pause: "\uC77C\uC2DC \uC815\uC9C0", noSelection: "\uAD50\uCCB4\uD560 \uCE74\uB4DC\uB97C \uC120\uD0DD\uD558\uC138\uC694", noGold: "\uACE8\uB4DC\uAC00 \uBD80\uC871\uD569\uB2C8\uB2E4", full: "\uC804\uC7A5\uC774 \uAC00\uB4DD \uCC3C\uC2B5\uB2C8\uB2E4", summoned: " \uC18C\uD658 \uC644\uB8CC", rerolled: "\uC120\uD0DD\uD55C \uCE74\uB4DC\uB97C \uAD50\uCCB4\uD588\uC2B5\uB2C8\uB2E4",
     next: "\uB2E4\uC74C \uC2B5\uACA9 \uB300\uAE30 \uC911", raiding: "\uD574\uACE8 \uC57D\uD0C8\uB300 \uC9C4\uACA9 \uC911", kills: "\uCC98\uCE58", attack: "\uACF5\uACA9", range: "\uBC94\uC704", speed: "\uC18D\uB3C4", alchemyEffect: "\uBC94\uC704 \uACF5\uACA9 + \uAC15\uB825\uD55C \uC2AC\uB85C\uC6B0 + \uC7A5\uD310 \uC9C0\uC18D \uD53C\uD574", fateEffect: "\uB9F5 \uC804\uCCB4 \uC9C0\uC18D \uD53C\uD574", purgeEffect: "\uC18C\uD658 \uC989\uC2DC \uBAA8\uB4E0 \uC801 \uC18C\uBA78", guide: "\uC871\uBCF4\uBCC4 \uC18C\uD658 \uC9C1\uC5C5", open: "\uD3BC\uCCD0 \uBCF4\uAE30", gameOver: "\uC131\uCC44 \uD568\uB77D", retry: "\uB2E4\uC2DC \uBC29\uC5B4\uD558\uAE30", enemies: "\uBA85\uC758 \uC57D\uD0C8\uC790\uB97C \uCC98\uCE58\uD588\uC2B5\uB2C8\uB2E4.",
 };
@@ -105,6 +106,12 @@ const PIP_POSITIONS: Record<number, Array<[number, number]>> = {
 const RANGE_PER_CELL = 100 / 12;
 const ALCHEMY_POOL_RADIUS = 10;
 const MAGE_BLAST_RADIUS = RANGE_PER_CELL * 2.5;
+const ARTILLERY_BLAST_RADIUS = RANGE_PER_CELL * 2;
+const ICE_BLAST_RADIUS = RANGE_PER_CELL * 1.2;
+const ICE_FREEZE_MS = 1000;
+const ICE_MIN_INTERVAL_MS = 3200;
+const FLAG_AURA_RADIUS = RANGE_PER_CELL * 3;
+const CAPTAIN_AURA_RADIUS = RANGE_PER_CELL * 2;
 function cardCenter(card: Card) { if (card.joker)
     return <img className={`court-art joker-art joker-art-${card.joker}`} src={`${ASSET_BASE}/sprites/royal-jester.png`} alt={card.joker === "color" ? "컬러 광대" : card.joker === "invert" ? "반전 광대" : "흑백 광대"}/>; if (card.rank >= 11 && card.rank <= 13) {
     const filename = card.rank === 11 ? "jack" : card.rank === 12 ? "queen" : "king";
@@ -121,11 +128,30 @@ const JOBS: Record<Category, {
         number
     ];
 }> = {
-    high: { label: T.high, job: T.conscript, image: `${ASSET_BASE}/sprites/units/2.png`, base: [3, RANGE_PER_CELL * 3, 1] }, pair: { label: T.pair, job: T.rogue, image: `${ASSET_BASE}/sprites/units/3.png`, base: [5, RANGE_PER_CELL * 3, 1.35] }, twoPair: { label: T.twoPair, job: T.warrior, image: `${ASSET_BASE}/sprites/units/4.png`, base: [16, RANGE_PER_CELL * 2, 1.05] }, triple: { label: T.triple, job: T.mage, image: `${ASSET_BASE}/sprites/units/10.png`, base: [257.4, RANGE_PER_CELL * 4, .1] }, straight: { label: T.straight, job: T.elf, image: `${ASSET_BASE}/sprites/units/7.png`, base: [46.8, RANGE_PER_CELL * 6, .5] }, flush: { label: T.flush, job: T.alchemist, image: `${ASSET_BASE}/sprites/units/6.png`, base: [110, RANGE_PER_CELL * 2, .5] }, fullHouse: { label: T.fullHouse, job: T.priest, image: `${ASSET_BASE}/sprites/units/Q.png`, base: [65.76, RANGE_PER_CELL * 4, .65] }, fourKind: { label: T.fourKind, job: T.royal, image: `${ASSET_BASE}/sprites/units/K.png`, base: [71.775, RANGE_PER_CELL * 3, 1.15] }, straightFlush: { label: T.straightFlush, job: T.dragoon, image: `${ASSET_BASE}/sprites/units/A.png`, base: [224.4, RANGE_PER_CELL * 5, .732] }, royalFlush: { label: T.royalFlush, job: T.fate, image: `${ASSET_BASE}/sprites/units/J.png`, base: [140, 100, 1.4] }, fiveKind: { label: T.fiveKind, job: T.saintess, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] }, sixKind: { label: T.sixKind, job: T.jackpot, image: `${ASSET_BASE}/sprites/units/Jackpot.png`, base: [0, 0, 0] }, sevenKind: { label: T.sevenKind, job: T.mystery, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] },
+    high: { label: T.high, job: T.conscript, image: `${ASSET_BASE}/sprites/units/2.png`, base: [3, RANGE_PER_CELL * 3, 1] },
+    pair: { label: T.pair, job: T.rogue, image: `${ASSET_BASE}/sprites/units/3.png`, base: [5, RANGE_PER_CELL * 3, 1.35] },
+    twoPair: { label: T.twoPair, job: T.warrior, image: `${ASSET_BASE}/sprites/units/4.png`, base: [16, RANGE_PER_CELL * 2, 1.05] },
+    triplePair: { label: T.triplePair, job: T.standardBearer, image: `${ASSET_BASE}/sprites/units/standard-bearer.png`, base: [0, RANGE_PER_CELL * 3, 0] },
+    triple: { label: T.triple, job: T.mage, image: `${ASSET_BASE}/sprites/units/10.png`, base: [257.4, RANGE_PER_CELL * 4, .1] },
+    backStraight: { label: T.backStraight, job: T.crossbowman, image: `${ASSET_BASE}/sprites/units/crossbowman.png`, base: [260, RANGE_PER_CELL * 5, .4] },
+    straight: { label: T.straight, job: T.elf, image: `${ASSET_BASE}/sprites/units/7.png`, base: [46.8, RANGE_PER_CELL * 6, .5] },
+    mountain: { label: T.mountain, job: T.iceMage, image: `${ASSET_BASE}/sprites/units/ice-mage.png`, base: [75, RANGE_PER_CELL * 4, 1 / 14] },
+    flush: { label: T.flush, job: T.alchemist, image: `${ASSET_BASE}/sprites/units/6.png`, base: [110, RANGE_PER_CELL * 2, .5] },
+    sevenStraight: { label: T.sevenStraight, job: T.artillery, image: `${ASSET_BASE}/sprites/units/artillery.png`, base: [240, RANGE_PER_CELL * 5, .35] },
+    fullHouse: { label: T.fullHouse, job: T.priest, image: `${ASSET_BASE}/sprites/units/Q.png`, base: [65.76, RANGE_PER_CELL * 4, .65] },
+    doubleTriple: { label: T.doubleTriple, job: T.lineCaptain, image: `${ASSET_BASE}/sprites/units/line-captain.png`, base: [110, RANGE_PER_CELL * 3, 1.288] },
+    fourKind: { label: T.fourKind, job: T.royal, image: `${ASSET_BASE}/sprites/units/K.png`, base: [71.775, RANGE_PER_CELL * 3, 1.15] },
+    straightFlush: { label: T.straightFlush, job: T.dragoon, image: `${ASSET_BASE}/sprites/units/A.png`, base: [224.4, RANGE_PER_CELL * 5, .732] },
+    backStraightFlush: { label: T.backStraightFlush, job: T.whiteKnight, image: `${ASSET_BASE}/sprites/units/white-knight.png`, base: [336.6, RANGE_PER_CELL * 5, .81984] },
+    royalFlush: { label: T.royalFlush, job: T.fate, image: `${ASSET_BASE}/sprites/units/J.png`, base: [140, 100, 1.4] },
+    fiveKind: { label: T.fiveKind, job: T.saintess, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] },
+    fourFullHouse: { label: T.fourFullHouse, job: T.returner, image: `${ASSET_BASE}/sprites/units/returner.png`, base: [0, 0, 0] },
+    sixKind: { label: T.sixKind, job: T.jackpot, image: `${ASSET_BASE}/sprites/units/Jackpot.png`, base: [0, 0, 0] },
+    sevenKind: { label: T.sevenKind, job: T.mystery, image: `${ASSET_BASE}/sprites/units/Joker.png`, base: [0, 0, 0] },
 };
 const UNIT_GLYPH: Record<Category, string> = {
-    high: "징", pair: "도", twoPair: "전", triple: "마", straight: "궁", flush: "연", fullHouse: "사",
-    fourKind: "왕", straightFlush: "용", royalFlush: "운", fiveKind: "성", sixKind: "$", sevenKind: "?",
+    high: "징", pair: "도", twoPair: "전", triplePair: "깃", triple: "마", backStraight: "석", straight: "궁", mountain: "얼", flush: "연", sevenStraight: "포", fullHouse: "사", doubleTriple: "열",
+    fourKind: "왕", straightFlush: "용", backStraightFlush: "백", royalFlush: "운", fiveKind: "성", fourFullHouse: "회", sixKind: "$", sevenKind: "?",
 };
 const GRID_SIZE = 12;
 const VISIBLE_MAX_WAVE = 200;
@@ -152,6 +178,20 @@ function conscriptBuffStacks(tower: Tower, towers: Tower[]) {
         return 0;
     return Math.max(0, towers.filter(unit => unit.category === "high").length - 1);
 }
+function towerDistance(a: Tower, b: Tower) { const first = SLOTS[a.slot], second = SLOTS[b.slot]; return Math.hypot(first.x - second.x, first.y - second.y); }
+function hasFlagBuff(tower: Tower, towers: Tower[]) { return towers.some(flag => flag.category === "triplePair" && flag.id !== tower.id && towerDistance(tower, flag) <= FLAG_AURA_RADIUS); }
+function hasCaptainBuff(tower: Tower, towers: Tower[]) { return (tower.tier === 1 || tower.tier === 2) && towers.some(captain => captain.category === "doubleTriple" && captain.id !== tower.id && towerDistance(tower, captain) <= CAPTAIN_AURA_RADIUS); }
+function combatStats(tower: Tower, towers: Tower[]) {
+    if (!hasCaptainBuff(tower, towers)) return { damage: tower.damage, range: tower.range, speed: tower.speed };
+    const base = JOBS[tower.category].base, damageMultiplier = tower.category === "triple" ? 1.39 : 1.25, fixedUtility = tower.category === "triple" || tower.category === "flush" || tower.category === "fullHouse";
+    return { damage: Math.max(base[0] > 0 ? 1 : 0, Math.round(base[0] * damageMultiplier)), range: Number(base[1].toFixed(2)), speed: Number((base[2] * (fixedUtility ? 1 : 1.12)).toFixed(2)) };
+}
+function distanceToSegment(point: { x: number; y: number }, start: { x: number; y: number }, end: { x: number; y: number }) {
+    const dx = end.x - start.x, dy = end.y - start.y, lengthSq = dx * dx + dy * dy;
+    if (!lengthSq) return Math.hypot(point.x - start.x, point.y - start.y);
+    const t = Math.max(0, Math.min(1, ((point.x - start.x) * dx + (point.y - start.y) * dy) / lengthSq)), x = start.x + t * dx, y = start.y + t * dy;
+    return Math.hypot(point.x - x, point.y - y);
+}
 const PATH = [{ x: 50, y: 12.5 }, { x: 87.5, y: 12.5 }, { x: 87.5, y: 87.5 }, { x: 12.5, y: 87.5 }, { x: 12.5, y: 12.5 }, { x: 50, y: 12.5 }];
 function isPathSlot(index: number) { const row = Math.floor(index / GRID_SIZE), col = index % GRID_SIZE; return (row === 1 || row === 10) && col >= 1 && col <= 10 || (col === 1 || col === 10) && row >= 1 && row <= 10; }
 const MONSTERS = [
@@ -177,7 +217,7 @@ const SELL_VALUES: Record<Category, [
     number,
     number,
     number
-] | number> = { high: [2, 3, 4], pair: [3, 5, 7], twoPair: [5, 8, 11], triple: [10, 13, 15], straight: [15, 17, 20], flush: [20, 30, 40], fullHouse: [25, 35, 50], fourKind: 100, straightFlush: 200, royalFlush: 350, fiveKind: 500, sixKind: 0, sevenKind: 0 };
+] | number> = { high: [2, 3, 4], pair: [3, 5, 7], twoPair: [5, 8, 11], triplePair: 30, triple: [10, 13, 15], backStraight: 30, straight: [15, 17, 20], mountain: 40, flush: [20, 30, 40], sevenStraight: 80, fullHouse: [25, 35, 50], doubleTriple: 150, fourKind: 100, straightFlush: 200, backStraightFlush: 250, royalFlush: 350, fiveKind: 500, fourFullHouse: 0, sixKind: 0, sevenKind: 0 };
 function sellValue(unit: Result) { const value = SELL_VALUES[unit.category]; return typeof value === "number" ? value : value[(unit.tier || 1) - 1]; }
 const STARTING_HAND: Card[] = [{ id: "s1", rank: 2, suit: "spade" }, { id: "s2", rank: 2, suit: "heart" }, { id: "s3", rank: 5, suit: "diamond" }, { id: "s4", rank: 5, suit: "club" }, { id: "s5", rank: 9, suit: "spade" }, { id: "s6", rank: 11, suit: "diamond" }, { id: "s7", rank: 13, suit: "club" }];
 function rankLabel(rank: number) { return rank === 15 ? "JOKER" : rank === 14 ? "A" : rank === 13 ? "K" : rank === 12 ? "Q" : rank === 11 ? "J" : String(rank); }
@@ -189,67 +229,65 @@ function buildDeck(prefix = "deck") { const deck: Card[] = []; for (let rank = 2
 function dealHand(): Card[] { return shuffled(buildDeck(`deal-${Date.now()}`)).slice(0, 7).map((card, index) => ({ ...card, id: `${card.id}-${index}-${Math.random().toString(36).slice(2)}` })); }
 function drawFromDeck(count: number, kept: Card[]) { const excluded = new Set(kept.map(cardKey)); return shuffled(buildDeck(`draw-${Date.now()}`).filter(card => !excluded.has(cardKey(card)))).slice(0, count).map((card, index) => ({ ...card, id: `${card.id}-${index}-${Math.random().toString(36).slice(2)}` })); }
 function pointOnPath(progress: number) { const loop = ((progress % 1) + 1) % 1, p = loop * (PATH.length - 1), i = Math.min(PATH.length - 2, Math.floor(p)), t = p - i; return { x: PATH[i].x + (PATH[i + 1].x - PATH[i].x) * t, y: PATH[i].y + (PATH[i + 1].y - PATH[i].y) * t }; }
-function tierFor(category: Category, power: number): Tier | null { if (category === "royalFlush" || category === "fiveKind" || category === "sixKind" || category === "sevenKind")
+function tierFor(category: Category, power: number): Tier | null { if (["triplePair", "backStraight", "mountain", "sevenStraight", "doubleTriple", "backStraightFlush", "royalFlush", "fiveKind", "fourFullHouse", "sixKind", "sevenKind"].includes(category))
     return null; if (category === "fourKind" || category === "straightFlush")
     return 3; const first = category === "high" ? 8 : 6, second = category === "high" ? 11 : 10; return power <= first ? 1 : power <= second ? 2 : 3; }
+const CATEGORY_WEIGHT: Record<Category, number> = {
+    high: 0, pair: 1, twoPair: 2, triplePair: 3, triple: 4, backStraight: 5, straight: 6, mountain: 7, flush: 8, sevenStraight: 9, fullHouse: 10, doubleTriple: 11, fourKind: 12, straightFlush: 13, backStraightFlush: 14, royalFlush: 15, fiveKind: 16, fourFullHouse: 17, sixKind: 18, sevenKind: 19,
+};
+function categoryScore(category: Category, power = 0, kicker = 0) { return CATEGORY_WEIGHT[category] * 1000000 + power * 10000 + kicker; }
 function baseEvaluation(cards: Card[]): {
     category: Category;
     power: number;
     score: number;
 } {
-    const ranks = cards.map(c => c.rank).sort((a, b) => a - b), countsMap = ranks.reduce<Record<number, number>>((m, r) => ({ ...m, [r]: (m[r] || 0) + 1 }), {}), groups = Object.entries(countsMap).map(([rank, count]) => ({ rank: Number(rank), count })).sort((a, b) => b.count - a.count || b.rank - a.rank), flush = cards.every(c => c.suit === cards[0].suit), straight = new Set(ranks).size === 5 && (ranks[4] - ranks[0] === 4 || ranks.join(",") === "2,3,4,5,14"), straightHigh = ranks.join(",") === "2,3,4,5,14" ? 5 : ranks[4];
-    let category: Category = "high", power = ranks[4], weight = 0;
+    const ranks = cards.map(c => c.rank).sort((a, b) => a - b), rankKey = ranks.join(","), countsMap = ranks.reduce<Record<number, number>>((m, r) => ({ ...m, [r]: (m[r] || 0) + 1 }), {}), groups = Object.entries(countsMap).map(([rank, count]) => ({ rank: Number(rank), count })).sort((a, b) => b.count - a.count || b.rank - a.rank), flush = cards.every(c => c.suit === cards[0].suit), back = rankKey === "2,3,4,5,14", mountain = rankKey === "10,11,12,13,14", straight = new Set(ranks).size === 5 && (ranks[4] - ranks[0] === 4 || back), straightHigh = back ? 5 : ranks[4];
+    let category: Category = "high", power = ranks[4];
     if (flush && straight) {
-        category = straightHigh === 14 && ranks[0] === 10 ? "royalFlush" : "straightFlush";
+        category = mountain ? "royalFlush" : back ? "backStraightFlush" : "straightFlush";
         power = straightHigh;
-        weight = category === "royalFlush" ? 9 : 8;
     }
     else if (groups[0].count === 4) {
         category = "fourKind";
         power = groups[0].rank;
-        weight = 7;
     }
     else if (groups[0].count === 3 && groups[1]?.count === 2) {
         category = "fullHouse";
         power = groups[0].rank;
-        weight = 6;
     }
     else if (flush) {
         category = "flush";
-        weight = 5;
     }
     else if (straight) {
-        category = "straight";
+        category = back ? "backStraight" : mountain ? "mountain" : "straight";
         power = straightHigh;
-        weight = 4;
     }
     else if (groups[0].count === 3) {
         category = "triple";
         power = groups[0].rank;
-        weight = 3;
     }
     else if (groups[0].count === 2 && groups[1]?.count === 2) {
         category = "twoPair";
         power = Math.max(groups[0].rank, groups[1].rank);
-        weight = 2;
     }
     else if (groups[0].count === 2) {
         category = "pair";
         power = groups[0].rank;
-        weight = 1;
     }
-    return { category, power, score: weight * 1000000 + power * 10000 + ranks.reduce((s, r) => s + r, 0) };
+    return { category, power, score: categoryScore(category, power, ranks.reduce((s, r) => s + r, 0)) };
 }
 function evaluateFive(cards: Card[]) { const jokers = cards.filter(card => card.rank === 15), normal = cards.filter(card => card.rank !== 15), counts = normal.reduce<Record<number, number>>((map, card) => ({ ...map, [card.rank]: (map[card.rank] || 0) + 1 }), {}), fiveRank = Object.entries(counts).find(([, count]) => count + jokers.length >= 5); if (fiveRank)
-    return { category: "fiveKind" as Category, power: Number(fiveRank[0]), score: 10000000 + Number(fiveRank[0]) }; if (jokers.length === 3) {
+    return { category: "fiveKind" as Category, power: Number(fiveRank[0]), score: categoryScore("fiveKind", Number(fiveRank[0])) }; if (jokers.length === 3) {
     const sameSuit = normal.length > 0 && normal.every(card => card.suit === normal[0].suit), ranks = new Set(normal.map(card => card.rank)), royal = [10, 11, 12, 13, 14];
     if (sameSuit && [...ranks].every(rank => royal.includes(rank)))
-        return { category: "royalFlush" as Category, power: 14, score: 9014000 };
+        return { category: "royalFlush" as Category, power: 14, score: categoryScore("royalFlush", 14) };
     const windows = [[14, 2, 3, 4, 5], ...Array.from({ length: 9 }, (_, start) => Array.from({ length: 5 }, (__, offset) => start + offset + 2))], straightHigh = sameSuit ? windows.map((window, index) => ({ window, high: index === 0 ? 5 : window[4] })).filter(({ window }) => [...ranks].every(rank => window.includes(rank))).sort((a, b) => b.high - a.high)[0]?.high : undefined;
-    if (straightHigh)
-        return { category: "straightFlush" as Category, power: straightHigh, score: 8000000 + straightHigh * 10000 };
+    if (straightHigh) {
+        const category: Category = straightHigh === 5 ? "backStraightFlush" : "straightFlush";
+        return { category, power: straightHigh, score: categoryScore(category, straightHigh) };
+    }
     const power = Math.max(...normal.map(card => card.rank));
-    return { category: "fourKind" as Category, power, score: 7000000 + power * 10000 };
+    return { category: "fourKind" as Category, power, score: categoryScore("fourKind", power) };
 } if (!jokers.length)
     return baseEvaluation(cards); let best: {
     category: Category;
@@ -271,30 +309,57 @@ function fiveCardSets(cards: Card[]) { const sets: Card[][] = []; for (let a = 0
             for (let d = c + 1; d < cards.length - 1; d++)
                 for (let e = d + 1; e < cards.length; e++)
                     sets.push([cards[a], cards[b], cards[c], cards[d], cards[e]]); return sets; }
+function sevenCardSpecials(cards: Card[]) {
+    const normal = cards.filter(card => card.rank !== 15), jokers = cards.length - normal.length, counts = normal.reduce<Record<number, number>>((map, card) => ({ ...map, [card.rank]: (map[card.rank] || 0) + 1 }), {}), ranks = Array.from({ length: 13 }, (_, index) => index + 2), candidates: Array<{ category: Category; power: number; score: number }> = [];
+    const add = (category: Category, power: number) => candidates.push({ category, power, score: categoryScore(category, power) });
+    for (const rank of ranks) {
+        const count = counts[rank] || 0;
+        if (count + jokers >= 7) add("sevenKind", rank);
+        else if (count + jokers >= 6) add("sixKind", rank);
+    }
+    for (const fourRank of ranks)
+        for (const tripleRank of ranks) {
+            if (fourRank === tripleRank) continue;
+            const allowed = normal.every(card => card.rank === fourRank || card.rank === tripleRank), fourCount = counts[fourRank] || 0, tripleCount = counts[tripleRank] || 0, missing = Math.max(0, 4 - fourCount) + Math.max(0, 3 - tripleCount);
+            if (allowed && fourCount <= 4 && tripleCount <= 3 && missing === jokers) add("fourFullHouse", fourRank);
+        }
+    for (let first = 0; first < ranks.length; first++)
+        for (let second = first + 1; second < ranks.length; second++) {
+            const a = ranks[first], b = ranks[second], countA = counts[a] || 0, countB = counts[b] || 0, missing = Math.max(0, 3 - countA) + Math.max(0, 3 - countB);
+            if (countA <= 3 && countB <= 3 && missing <= jokers) add("doubleTriple", Math.max(a, b));
+        }
+    const sevenWindows = [[14, 2, 3, 4, 5, 6, 7], ...Array.from({ length: 7 }, (_, start) => Array.from({ length: 7 }, (__, offset) => start + offset + 2))];
+    for (const window of sevenWindows) {
+        const unique = new Set(normal.map(card => card.rank)), allowed = normal.every(card => window.includes(card.rank));
+        if (allowed && unique.size === normal.length && window.filter(rank => !unique.has(rank)).length === jokers) add("sevenStraight", window.includes(14) && window.includes(2) ? 7 : Math.max(...window));
+    }
+    for (let a = 0; a < ranks.length - 2; a++)
+        for (let b = a + 1; b < ranks.length - 1; b++)
+            for (let c = b + 1; c < ranks.length; c++) {
+                const chosen = [ranks[a], ranks[b], ranks[c]], chosenCounts = chosen.map(rank => counts[rank] || 0), outside = normal.filter(card => !chosen.includes(card.rank)).length, missing = chosenCounts.reduce((sum, count) => sum + Math.max(0, 2 - count), 0);
+                if (outside <= 1 && chosenCounts.every(count => count <= 2) && missing <= jokers) add("triplePair", Math.max(...chosen));
+            }
+    return candidates;
+}
 function evaluate(cards: Card[]): Result {
-    const jokers = cards.filter(card => card.rank === 15), rankCounts = cards.filter(card => card.rank !== 15).reduce<Record<number, number>>((map, card) => ({ ...map, [card.rank]: (map[card.rank] || 0) + 1 }), {}), sevenEntry = jokers.length === 3 ? Object.entries(rankCounts).find(([, count]) => count === 4) : undefined, sixEntry = sevenEntry ? undefined : Object.entries(rankCounts).find(([, count]) => count + jokers.length >= 6);
     let best: {
         category: Category;
         power: number;
         score: number;
     } = { category: "high", power: 2, score: 0 }, bestCards = cards.slice(0, 5);
-    if (sevenEntry) {
-        best = { category: "sevenKind", power: Number(sevenEntry[0]), score: 12000000 + Number(sevenEntry[0]) };
-        bestCards = cards.filter(card => card.rank === 15 || card.rank === best.power);
-    }
-    else if (sixEntry) {
-        best = { category: "sixKind", power: Number(sixEntry[0]), score: 11000000 + Number(sixEntry[0]) };
-        bestCards = cards.filter(card => card.rank === 15 || card.rank === best.power);
-    }
-    else
-        for (const subset of fiveCardSets(cards)) {
-            const candidate = evaluateFive(subset);
-            if (candidate.score > best.score) {
-                best = candidate;
-                bestCards = subset;
-            }
+    for (const subset of fiveCardSets(cards)) {
+        const candidate = evaluateFive(subset);
+        if (candidate.score > best.score) {
+            best = candidate;
+            bestCards = subset;
         }
-    const job = JOBS[best.category], tier = tierFor(best.category, best.power), damageMult = best.category === "triple" ? tier === 1 ? .765 : tier === 2 ? 1 : tier === 3 ? 1.39 : 1 : tier === 1 ? .85 : tier === 2 ? 1 : tier === 3 ? 1.25 : 1, fixedUtility = best.category === "triple" || best.category === "flush" || best.category === "fullHouse", speedMult = fixedUtility ? 1 : tier === 1 ? .9 : tier === 2 ? 1 : tier === 3 ? 1.12 : 1, legendary = best.category === "fourKind" || best.category === "straightFlush", transcendent = best.category === "royalFlush" || best.category === "fiveKind", tierLabel = legendary ? T.legend : transcendent ? T.transcendent : tier === 1 ? T.beginner : tier === 2 ? T.middle : tier === 3 ? T.elite : T.unique, effect = best.category === "flush" ? "alchemy" : best.category === "royalFlush" ? "globalDot" : best.category === "fiveKind" ? "purge" : best.category === "sixKind" ? "jackpot" : best.category === "sevenKind" ? "ending" : "single";
+    }
+    for (const candidate of sevenCardSpecials(cards))
+        if (candidate.score > best.score) {
+            best = candidate;
+            bestCards = cards;
+        }
+    const job = JOBS[best.category], tier = tierFor(best.category, best.power), damageMult = best.category === "triple" ? tier === 1 ? .765 : tier === 2 ? 1 : tier === 3 ? 1.39 : 1 : tier === 1 ? .85 : tier === 2 ? 1 : tier === 3 ? 1.25 : 1, fixedUtility = best.category === "triple" || best.category === "flush" || best.category === "fullHouse", speedMult = fixedUtility ? 1 : tier === 1 ? .9 : tier === 2 ? 1 : tier === 3 ? 1.12 : 1, legendary = ["fourKind", "straightFlush", "triplePair", "backStraight", "mountain", "sevenStraight"].includes(best.category), transcendent = ["royalFlush", "fiveKind", "doubleTriple", "backStraightFlush"].includes(best.category), tierLabel = legendary ? T.legend : transcendent ? T.transcendent : tier === 1 ? T.beginner : tier === 2 ? T.middle : tier === 3 ? T.elite : T.unique, effect = best.category === "flush" ? "alchemy" : best.category === "royalFlush" ? "globalDot" : best.category === "fiveKind" ? "purge" : best.category === "sixKind" ? "jackpot" : best.category === "sevenKind" ? "ending" : best.category === "triplePair" ? "support" : best.category === "fourFullHouse" ? "returner" : "single";
     return { category: best.category, label: job.label, job: job.job, image: job.image, tier, tierLabel, powerRank: best.power, damage: Math.max(job.base[0] > 0 ? 1 : 0, Math.round(job.base[0] * damageMult)), range: Number(job.base[1].toFixed(2)), speed: Number((job.base[2] * speedMult).toFixed(2)), effect, bestCardIds: bestCards.map(card => card.id) };
 }
 function roleDescription(unit: Result, locale: Locale = activeLocale) { if (locale !== "ko")
@@ -302,23 +367,30 @@ function roleDescription(unit: Result, locale: Locale = activeLocale) { if (loca
     case "high": return "적 처치 시 1G 추가 · 다른 징집병 1기당 공격력 33% 증가";
     case "pair": return "2초간 받는 피해 100% 추가 표식을 남긴다";
     case "twoPair": return "사거리 내 체력이 가장 낮은 적 우선 공격";
+    case "triplePair": return "주변 3칸 아군 공격속도 20% 증가 · 중첩 불가 · 공격하지 않음";
     case "triple": return "5초마다 강력한 공격 · 사거리 4칸 · 2.5칸 범위 폭발";
+    case "backStraight": return "가장 먼 적 조준 · 최대 7기 관통 · 관통마다 피해 10% 감소";
     case "straight": return "장거리 · 치명타 확률 50% · 치명타 피해 5배 · 보스 추가피해 50%";
+    case "mountain": return "1.2칸 범위 공격 · 적을 1초간 완전히 정지";
     case "flush": return "슬로우 및 중독 장판";
+    case "sevenStraight": return "빠른 포격 · 2칸 범위 폭발";
     case "fullHouse": return `모든 아군 공격력 ${unit.tier === 1 ? 15 : unit.tier === 2 ? 25 : 40}% 증가`;
+    case "doubleTriple": return "주변 2칸 초급·중급 유닛을 정예 능력치로 강화";
     case "fourKind": return "보스 100% 추가피해 · 사거리 3칸";
     case "straightFlush": return "매우 강한 단일 피해 · 사거리 5칸";
+    case "backStraightFlush": return "용기사보다 강력한 단일 피해 · 사거리 5칸";
     case "royalFlush": return "전역 지속 피해";
     case "fiveKind": return "배치시 전체 적 소멸";
+    case "fourFullHouse": return "사용 시 업그레이드 비용 60% 감소 · 미사용 시 특별한 결말";
     case "sixKind": return "소환 즉시 5,000G 획득";
     case "sevenKind": return "???";
 } }
 export default function Home() {
     const [selectedRerollCount, setSelectedRerollCount] = useState(0);
     const [hand, setHand] = useState<Card[]>(STARTING_HAND), [selected, setSelected] = useState<string[]>([]), [inventory, setInventory] = useState<Unit[]>([]), [selectedInventory, setSelectedInventory] = useState<string | null>(null), [towers, setTowers] = useState<Tower[]>([]), [selectedTower, setSelectedTower] = useState<string | null>(null), [saleConfirmId, setSaleConfirmId] = useState<string | null>(null), [enemies, setEnemies] = useState<Enemy[]>([]), [hitFx, setHitFx] = useState<HitFx[]>([]), [attackFx, setAttackFx] = useState<AttackFx[]>([]), [alchemyPools, setAlchemyPools] = useState<AlchemyPool[]>([]), [running, setRunning] = useState(false), [gameOver, setGameOver] = useState(false), [won, setWon] = useState(false), [gold, setGold] = useState(50), [attackLevel, setAttackLevel] = useState(0), [attackSpeedLevel, setAttackSpeedLevel] = useState(0), [wave, setWave] = useState(1), [kills, setKills] = useState(0), [spawned, setSpawned] = useState(0), [cooldown, setCooldown] = useState(0), [message, setMessage] = useState(T.hint), [waveCue, setWaveCue] = useState<string | null>(null), [tutorialStep, setTutorialStep] = useState(0), [soundOn, setSoundOn] = useState(true), [bgmOn, setBgmOn] = useState(false), [settingsOpen, setSettingsOpen] = useState(false), [locale, setLocale] = useState<Locale>("ko"), [languageChosen, setLanguageChosen] = useState(false);
-    const [endingActive, setEndingActive] = useState(false), [saintessEndingActive, setSaintessEndingActive] = useState(false), [directEndingActive, setDirectEndingActive] = useState(false), [hiddenIntroActive, setHiddenIntroActive] = useState(false), [gameStarted, setGameStarted] = useState(false), [showMonsterImages, setShowMonsterImages] = useState(true);
+    const [endingActive, setEndingActive] = useState(false), [saintessEndingActive, setSaintessEndingActive] = useState(false), [directEndingActive, setDirectEndingActive] = useState(false), [returnerEndingActive, setReturnerEndingActive] = useState(false), [returnerEndingMode, setReturnerEndingMode] = useState<"solo" | "paradox">("solo"), [returnerSummons, setReturnerSummons] = useState(0), [returnerDiscount, setReturnerDiscount] = useState(false), [hiddenIntroActive, setHiddenIntroActive] = useState(false), [gameStarted, setGameStarted] = useState(false), [showMonsterImages, setShowMonsterImages] = useState(true);
     activeLocale = locale;
-    const result = useMemo(() => evaluate(hand), [hand, locale]), attackMultiplier = 1 + attackLevel * .025, attackSpeedMultiplier = 1 + attackSpeedLevel * .025, upgradeCost = (attackLevel + 1) * 5, speedUpgradeCost = (attackSpeedLevel + 1) * 5, initialDealRef = useRef(false), lastFxAt = useRef(0), gameAudioRef = useRef<ReturnType<typeof createGameAudio> | null>(null), alchemyPoolsRef = useRef<AlchemyPool[]>([]), alchemyLastCastRef = useRef<Map<string, number>>(new Map()), lastAttackAtRef = useRef<Map<string, number>>(new Map()), selectedPlaced = towers.find(t => t.id === selectedTower);
+    const result = useMemo(() => evaluate(hand), [hand, locale]), attackMultiplier = 1 + attackLevel * .025, attackSpeedMultiplier = 1 + attackSpeedLevel * .025, upgradeDiscount = returnerDiscount ? .4 : 1, upgradeCost = Math.max(1, Math.ceil((attackLevel + 1) * 5 * upgradeDiscount)), speedUpgradeCost = Math.max(1, Math.ceil((attackSpeedLevel + 1) * 5 * upgradeDiscount)), initialDealRef = useRef(false), lastFxAt = useRef(0), gameAudioRef = useRef<ReturnType<typeof createGameAudio> | null>(null), alchemyPoolsRef = useRef<AlchemyPool[]>([]), alchemyLastCastRef = useRef<Map<string, number>>(new Map()), lastAttackAtRef = useRef<Map<string, number>>(new Map()), selectedPlaced = towers.find(t => t.id === selectedTower);
     const [gameSpeed, setGameSpeed] = useState<1 | 2 | 3>(1), [playbackPaused, setPlaybackPaused] = useState(false), [bossWaveHold, setBossWaveHold] = useState(0), gameClockRef = useRef(0), lastTickAtRef = useRef(0), bossWaveReleaseRef = useRef(0);
     const baseCopy = UI[locale], copy = { ...baseCopy, start: wave === 1 && spawned === 0 ? baseCopy.begin : baseCopy.start, selectedReroll: `${baseCopy.selectedReroll} · ×${selectedRerollCount + 1}`, placeHint: selectedPlaced ? roleDescription(selectedPlaced, locale) : baseCopy.placeHint };
     const selectedInventoryUnit = inventory.find(unit => unit.id === selectedInventory), livingEnemies = enemies.filter(enemy => enemy.hp > 0), liveEnemyCount = livingEnemies.length, activeBosses = livingEnemies.filter(enemy => enemy.boss), population = livingEnemies.reduce((total, enemy) => total + (enemy.boss ? 20 : 1), 0);
@@ -353,8 +425,8 @@ export default function Home() {
         };
     }, [showMonsterImages, wave]);
     useEffect(() => () => { void gameAudioRef.current?.dispose(); }, []);
-    useEffect(() => { if (!running || wave !== HIDDEN_WAVE || spawned < waveTarget || liveEnemyCount > 0 || saintessEndingActive)
-        return; setWon(true); setRunning(false); setPlaybackPaused(true); setDirectEndingActive(true); setMessage("ABSOLUTE TRIUMPH"); }, [running, wave, spawned, waveTarget, liveEnemyCount, saintessEndingActive]);
+    useEffect(() => { if (!running || wave !== HIDDEN_WAVE || spawned < waveTarget || liveEnemyCount > 0 || saintessEndingActive || returnerEndingActive)
+        return; setWon(true); setRunning(false); setPlaybackPaused(true); if (inventory.some(unit => unit.effect === "returner")) { setReturnerEndingMode("solo"); setReturnerEndingActive(true); setMessage("THE OTHERWORLDER AWAKENS"); } else { setDirectEndingActive(true); setMessage("ABSOLUTE TRIUMPH"); } }, [running, wave, spawned, waveTarget, liveEnemyCount, saintessEndingActive, returnerEndingActive, inventory]);
     useEffect(() => { const saintesses = inventory.filter(unit => unit.effect === "purge"); if (wave !== HIDDEN_WAVE || saintesses.length < 5 || saintessEndingActive)
         return; const consumed = new Set(saintesses.slice(0, 5).map(unit => unit.id)); setInventory(units => units.filter(unit => !consumed.has(unit.id))); setSelectedInventory(null); setEnemies([]); setRunning(false); setPlaybackPaused(true); setWon(true); setSaintessEndingActive(true); setMessage("성녀 5기가 마왕을 봉인했습니다"); playSound("saintess"); }, [inventory, wave, saintessEndingActive]);
     useEffect(() => { if (population < 200 || gameOver)
@@ -386,7 +458,7 @@ export default function Home() {
                 setAlchemyPools(activePools);
             }
             let defeated = 0, bossDefeated = 0, earnedGold = 0, bossGold = 0;
-            const damageMap = new Map<number, number>(), hitKinds = new Map<number, "direct" | "alchemyDot" | "fateDot">(), slowMap = new Map<number, number>(), criticalHits = new Set<number>(), cursedHits = new Set<number>(), positions = new Map(current.map(enemy => [enemy.id, pointOnPath(enemy.progress)])), enemyHp = new Map(current.map(enemy => [enemy.id, enemy.hp])), conscriptKillBonuses = new Map<number, number>(), markExpirations = new Map(current.filter(enemy => (enemy.markExpiresAt || 0) > now).map(enemy => [enemy.id, enemy.markExpiresAt!])), attackCandidates: AttackFx[] = [];
+            const damageMap = new Map<number, number>(), hitKinds = new Map<number, "direct" | "alchemyDot" | "fateDot">(), slowMap = new Map<number, number>(), freezeExpirations = new Map(current.filter(enemy => (enemy.frozenUntil || 0) > now).map(enemy => [enemy.id, enemy.frozenUntil!])), criticalHits = new Set<number>(), cursedHits = new Set<number>(), positions = new Map(current.map(enemy => [enemy.id, pointOnPath(enemy.progress)])), enemyHp = new Map(current.map(enemy => [enemy.id, enemy.hp])), conscriptKillBonuses = new Map<number, number>(), markExpirations = new Map(current.filter(enemy => (enemy.markExpiresAt || 0) > now).map(enemy => [enemy.id, enemy.markExpiresAt!])), attackCandidates: AttackFx[] = [];
             const add = (id: number, damage: number, kind: "direct" | "alchemyDot" | "fateDot" = "direct", ownMultiplier = 1, source?: Category) => { const markedMultiplier = markExpirations.has(id) ? 2 : 1, previousDamage = damageMap.get(id) || 0, appliedDamage = damage * markedMultiplier * ownMultiplier; damageMap.set(id, previousDamage + appliedDamage); if (source === "high" && previousDamage < (enemyHp.get(id) || 0) && previousDamage + appliedDamage >= (enemyHp.get(id) || 0)) conscriptKillBonuses.set(id, 1); if (kind === "direct" || !hitKinds.has(id))
                 hitKinds.set(id, kind); };
             for (const pool of activePools)
@@ -399,14 +471,16 @@ export default function Home() {
                 }
             const supportBuff = (tower: Tower) => {
                 const priestDamageBuff = priestAttackBuff(towers), conscriptStacks = conscriptBuffStacks(tower, towers);
-                return { damage: priestDamageBuff + conscriptStacks * .33, speed: 0 };
+                return { damage: priestDamageBuff + conscriptStacks * .33, speed: hasFlagBuff(tower, towers) ? .2 : 0 };
             };
             const activeTowerIds = new Set(towers.map(tower => tower.id));
             for (const id of lastAttackAtRef.current.keys())
                 if (!activeTowerIds.has(id))
                     lastAttackAtRef.current.delete(id);
             for (const tower of towers) {
-                const slot = SLOTS[tower.slot], buff = supportBuff(tower), attackRate = tower.speed * attackSpeedMultiplier * (1 + buff.speed), attackInterval = 500 / Math.max(.01, attackRate), lastAttackAt = lastAttackAtRef.current.get(tower.id) || 0, baseDamage = tower.damage * attackMultiplier * (1 + buff.damage), inRange = current.filter(enemy => { const p = positions.get(enemy.id)!; return Math.hypot(slot.x - p.x, slot.y - p.y) <= tower.range; }).sort((a, b) => b.progress - a.progress);
+                const stats = combatStats(tower, towers), slot = SLOTS[tower.slot], buff = supportBuff(tower), attackRate = stats.speed * attackSpeedMultiplier * (1 + buff.speed), rawAttackInterval = 500 / Math.max(.01, attackRate), attackInterval = tower.category === "mountain" ? Math.max(ICE_MIN_INTERVAL_MS, rawAttackInterval) : rawAttackInterval, lastAttackAt = lastAttackAtRef.current.get(tower.id) || 0, baseDamage = stats.damage * attackMultiplier * (1 + buff.damage), inRange = current.filter(enemy => { const p = positions.get(enemy.id)!; return Math.hypot(slot.x - p.x, slot.y - p.y) <= stats.range; }).sort((a, b) => b.progress - a.progress);
+                if (tower.category === "triplePair" || tower.category === "fourFullHouse" || attackRate <= 0)
+                    continue;
                 if (now - lastAttackAt < attackInterval)
                     continue;
                 if (tower.category === "royalFlush") {
@@ -425,7 +499,7 @@ export default function Home() {
                     continue;
                 lastAttackAtRef.current.set(tower.id, now);
                 const visual = positions.get(inRange[0].id)!;
-                attackCandidates.push({ id: `attack-${tower.id}-${now}`, towerId: tower.id, expiresAt: now + 320, category: tower.category, x: slot.x, y: slot.y, tx: visual.x, ty: visual.y, radius: tower.category === "triple" ? MAGE_BLAST_RADIUS : tower.category === "flush" ? ALCHEMY_POOL_RADIUS : 5 });
+                attackCandidates.push({ id: `attack-${tower.id}-${now}`, towerId: tower.id, expiresAt: now + 320, category: tower.category, x: slot.x, y: slot.y, tx: visual.x, ty: visual.y, radius: tower.category === "triple" ? MAGE_BLAST_RADIUS : tower.category === "flush" ? ALCHEMY_POOL_RADIUS : tower.category === "sevenStraight" ? ARTILLERY_BLAST_RADIUS : tower.category === "mountain" ? ICE_BLAST_RADIUS : 5 });
                 if (tower.category === "pair") {
                     const target = inRange[0];
                     markExpirations.set(target.id, now + 2000);
@@ -443,6 +517,32 @@ export default function Home() {
                     for (const enemy of current) {
                         const p = positions.get(enemy.id)!;
                         if (Math.hypot(p.x - center.x, p.y - center.y) <= radius)
+                            add(enemy.id, baseDamage);
+                    }
+                    continue;
+                }
+                if (tower.category === "backStraight") {
+                    const target = inRange.slice().sort((a, b) => Math.hypot(slot.x - positions.get(b.id)!.x, slot.y - positions.get(b.id)!.y) - Math.hypot(slot.x - positions.get(a.id)!.x, slot.y - positions.get(a.id)!.y))[0], end = positions.get(target.id)!;
+                    attackCandidates[attackCandidates.length - 1] = { ...attackCandidates[attackCandidates.length - 1], tx: end.x, ty: end.y };
+                    current.filter(enemy => distanceToSegment(positions.get(enemy.id)!, slot, end) <= RANGE_PER_CELL * .32 && Math.hypot(slot.x - positions.get(enemy.id)!.x, slot.y - positions.get(enemy.id)!.y) <= stats.range).sort((a, b) => Math.hypot(slot.x - positions.get(a.id)!.x, slot.y - positions.get(a.id)!.y) - Math.hypot(slot.x - positions.get(b.id)!.x, slot.y - positions.get(b.id)!.y)).slice(0, 7).forEach((enemy, index) => add(enemy.id, baseDamage * (1 - index * .1)));
+                    continue;
+                }
+                if (tower.category === "mountain") {
+                    const center = positions.get(inRange[0].id)!;
+                    for (const enemy of current) {
+                        const p = positions.get(enemy.id)!;
+                        if (Math.hypot(p.x - center.x, p.y - center.y) <= ICE_BLAST_RADIUS) {
+                            add(enemy.id, baseDamage);
+                            freezeExpirations.set(enemy.id, Math.max(freezeExpirations.get(enemy.id) || 0, now + ICE_FREEZE_MS));
+                        }
+                    }
+                    continue;
+                }
+                if (tower.category === "sevenStraight") {
+                    const center = positions.get(inRange[0].id)!;
+                    for (const enemy of current) {
+                        const p = positions.get(enemy.id)!;
+                        if (Math.hypot(p.x - center.x, p.y - center.y) <= ARTILLERY_BLAST_RADIUS)
                             add(enemy.id, baseDamage);
                     }
                     continue;
@@ -479,7 +579,7 @@ export default function Home() {
                 setHitFx([...damageMap.entries()].filter(([, damage]) => damage > .25).slice(0, 10).map(([id, damage], index) => { const p = positions.get(id)!; return { id: `${now}-${id}-${index}`, x: p.x, y: p.y, amount: Math.max(1, Math.round(damage)), critical: criticalHits.has(id) }; }));
             }
             setAttackFx(existing => { const active = existing.filter(fx => fx.expiresAt > now), nextFx = [...active, ...attackCandidates].slice(-160); return nextFx.length === existing.length && !attackCandidates.length ? existing : nextFx; });
-            const next = current.map(enemy => { const slow = slowMap.get(enemy.id) || 1, pace = .0046 * enemy.speed * slow * (enemy.boss ? BALANCE.bossMoveScale : 1), damage = damageMap.get(enemy.id) || 0, hitKind = damage > 0 ? (hitKinds.get(enemy.id) || "direct") : undefined, markExpiresAt = markExpirations.get(enemy.id); return { ...enemy, markExpiresAt, marked: !!markExpiresAt && markExpiresAt > now, slowed: slowMap.has(enemy.id), cursed: cursedHits.has(enemy.id), hitKind, hitPulse: hitKind === "direct" ? !enemy.hitPulse : enemy.hitPulse, progress: (enemy.progress + pace) % 1, hp: enemy.hp - damage }; }).filter(enemy => { if (enemy.hp <= 0) {
+            const next = current.map(enemy => { const slow = slowMap.get(enemy.id) || 1, frozenUntil = freezeExpirations.get(enemy.id), frozen = !!frozenUntil && frozenUntil > now, pace = frozen ? 0 : .0046 * enemy.speed * slow * (enemy.boss ? BALANCE.bossMoveScale : 1), damage = damageMap.get(enemy.id) || 0, hitKind = damage > 0 ? (hitKinds.get(enemy.id) || "direct") : undefined, markExpiresAt = markExpirations.get(enemy.id); return { ...enemy, markExpiresAt, frozenUntil, marked: !!markExpiresAt && markExpiresAt > now, slowed: frozen || slowMap.has(enemy.id), cursed: cursedHits.has(enemy.id), hitKind, hitPulse: hitKind === "direct" ? !enemy.hitPulse : enemy.hitPulse, progress: (enemy.progress + pace) % 1, hp: enemy.hp - damage }; }).filter(enemy => { if (enemy.hp <= 0) {
                 defeated++;
                 const killBonus = conscriptKillBonuses.get(enemy.id) || 0;
                 earnedGold += enemy.reward + killBonus;
@@ -568,7 +668,9 @@ export default function Home() {
         setCooldown(5);
         playSound("jackpot");
         return;
-    } const unit: Unit = { ...result, id: `unit-${Date.now()}` }; setInventory(v => [...v, unit]); setMessage(`${term(locale, result.tierLabel)} ${term(locale, result.job)} 인벤토리 보관`); setSelected([]); setCooldown(5); playSound(result.effect === "purge" ? "saintess" : "summon"); }
+    } if (result.effect === "returner" && returnerSummons >= 1) {
+        setReturnerSummons(v => v + 1); setSelected([]); setRunning(false); setPlaybackPaused(true); setWon(true); setReturnerEndingMode("paradox"); setReturnerEndingActive(true); setMessage("OTHERWORLDERS' COMPETE"); playSound("jackpot"); return;
+    } const unit: Unit = { ...result, id: `unit-${Date.now()}` }; setInventory(v => [...v, unit]); if (result.effect === "returner") setReturnerSummons(v => v + 1); setMessage(`${term(locale, result.tierLabel)} ${term(locale, result.job)} ${copy.inventory} 보관`); setSelected([]); setCooldown(5); playSound(result.effect === "purge" ? "saintess" : "summon"); }
     function chooseInventory(id: string) { setSelectedInventory(v => v === id ? null : id); setSelectedTower(null); setSaleConfirmId(null); }
     function confirmRareSale(unit: Unit | Tower) { const protectedUnit = ["fourKind", "straightFlush", "royalFlush", "fiveKind"].includes(unit.category); if (protectedUnit && saleConfirmId !== unit.id) {
         setSaleConfirmId(unit.id);
@@ -579,7 +681,7 @@ export default function Home() {
         return; if (!running && wave === 1 && spawned === 0) {
         setMessage("첫 웨이브를 시작한 뒤 유닛을 판매할 수 있습니다");
         return;
-    } if (!confirmRareSale(selectedInventoryUnit))
+    } if (selectedInventoryUnit.effect === "returner") { setMessage(`${term(locale, selectedInventoryUnit.job)}은 판매할 수 없습니다`); return; } if (!confirmRareSale(selectedInventoryUnit))
         return; const value = sellValue(selectedInventoryUnit); setInventory(v => v.filter(unit => unit.id !== selectedInventoryUnit.id)); setSelectedInventory(null); setGold(v => v + value); setMessage(`${term(locale, selectedInventoryUnit.job)} ${copy.sell} +${value}G`); playSound("sell"); }
     function useSlot(slot: number) { if (isPathSlot(slot))
         return; const target = towers.find(t => t.slot === slot); if (selectedInventory) {
@@ -606,6 +708,9 @@ export default function Home() {
             setMessage(`${term(locale, unit.job)}: ${term(locale, T.purgeEffect)} +${reward}G`);
             playSound("saintess");
             return;
+        }
+        if (unit.effect === "returner") {
+            setReturnerDiscount(true); setInventory(v => v.filter(u => u.id !== unit.id)); setSelectedInventory(null); setMessage(`${term(locale, unit.job)} 사용 · 모든 강화 비용 60% 감소`); playSound("upgrade"); return;
         }
         setTowers(v => [...v.filter(t => t.id !== target?.id), { ...unit, slot }]);
         setInventory(v => [...v.filter(u => u.id !== unit.id), ...(target ? [(({ slot: _, ...stored }) => stored)(target)] : [])]);
@@ -647,13 +752,13 @@ export default function Home() {
         setMessage(T.noGold);
         return;
     } setGold(v => v - speedUpgradeCost); setAttackSpeedLevel(v => v + 1); setMessage(`전체 공격속도 LV.${attackSpeedLevel + 1} 강화 완료`); playSound("upgrade"); }
-    function restart() { setHand(dealHand()); setSelected([]); setSelectedRerollCount(0); setInventory([]); setSelectedInventory(null); setTowers([]); setSelectedTower(null); setSaleConfirmId(null); setEnemies([]); setHitFx([]); setAttackFx([]); setAlchemyPools([]); alchemyPoolsRef.current = []; alchemyLastCastRef.current.clear(); lastAttackAtRef.current.clear(); lastFxAt.current = 0; gameClockRef.current = 0; lastTickAtRef.current = 0; bossWaveReleaseRef.current = 0; setBossWaveHold(0); setGameSpeed(1); setPlaybackPaused(false); setRunning(false); setGameStarted(false); setGameOver(false); setWon(false); setEndingActive(false); setSaintessEndingActive(false); setDirectEndingActive(false); setHiddenIntroActive(false); setSettingsOpen(false); setGold(50); setAttackLevel(0); setAttackSpeedLevel(0); setWave(1); setKills(0); setSpawned(0); setCooldown(0); setMessage(T.hint); }
+    function restart() { setHand(dealHand()); setSelected([]); setSelectedRerollCount(0); setInventory([]); setSelectedInventory(null); setTowers([]); setSelectedTower(null); setSaleConfirmId(null); setEnemies([]); setHitFx([]); setAttackFx([]); setAlchemyPools([]); alchemyPoolsRef.current = []; alchemyLastCastRef.current.clear(); lastAttackAtRef.current.clear(); lastFxAt.current = 0; gameClockRef.current = 0; lastTickAtRef.current = 0; bossWaveReleaseRef.current = 0; setBossWaveHold(0); setGameSpeed(1); setPlaybackPaused(false); setRunning(false); setGameStarted(false); setGameOver(false); setWon(false); setEndingActive(false); setSaintessEndingActive(false); setDirectEndingActive(false); setReturnerEndingActive(false); setReturnerEndingMode("solo"); setReturnerSummons(0); setReturnerDiscount(false); setHiddenIntroActive(false); setSettingsOpen(false); setGold(50); setAttackLevel(0); setAttackSpeedLevel(0); setWave(1); setKills(0); setSpawned(0); setCooldown(0); setMessage(T.hint); }
     useEffect(() => {
         function handleGameShortcut(event: KeyboardEvent) {
             const target = event.target as HTMLElement | null;
             if (event.repeat || event.ctrlKey || event.altKey || event.metaKey || target?.closest("input,textarea,select,[contenteditable='true']"))
                 return;
-            if (!languageChosen || settingsOpen || tutorialStep < TUTORIALS[locale].length || gameOver || won || endingActive || saintessEndingActive || directEndingActive || hiddenIntroActive)
+            if (!languageChosen || settingsOpen || tutorialStep < TUTORIALS[locale].length || gameOver || won || endingActive || saintessEndingActive || directEndingActive || returnerEndingActive || hiddenIntroActive)
                 return;
             const digit = /^Digit([1-7])$/.exec(event.code);
             if (digit) {
@@ -691,7 +796,7 @@ export default function Home() {
         }
         window.addEventListener("keydown", handleGameShortcut);
         return () => window.removeEventListener("keydown", handleGameShortcut);
-    }, [gameStarted, cooldown, hand, languageChosen, settingsOpen, tutorialStep, locale, gameOver, won, endingActive, saintessEndingActive, directEndingActive, hiddenIntroActive, selectedTower, selectedInventory, gold, playbackPaused, running, selected, selectedRerollCount, attackLevel, attackSpeedLevel]);
+    }, [gameStarted, cooldown, hand, languageChosen, settingsOpen, tutorialStep, locale, gameOver, won, endingActive, saintessEndingActive, directEndingActive, returnerEndingActive, hiddenIntroActive, selectedTower, selectedInventory, gold, playbackPaused, running, selected, selectedRerollCount, attackLevel, attackSpeedLevel]);
     const guide: [
         [
             Category,
@@ -701,11 +806,11 @@ export default function Home() {
             Category,
             string
         ]>
-    ] = [["high", T.conscript], ["pair", T.rogue], ["twoPair", T.warrior], ["triple", T.mage], ["straight", T.elf], ["flush", T.alchemist], ["fullHouse", T.priest], ["fourKind", T.royal], ["straightFlush", T.dragoon], ["royalFlush", T.fate], ["fiveKind", T.saintess], ["sixKind", T.jackpot], ["sevenKind", T.mystery]];
+    ] = [["high", T.conscript], ["pair", T.rogue], ["twoPair", T.warrior], ["triplePair", T.standardBearer], ["triple", T.mage], ["backStraight", T.crossbowman], ["straight", T.elf], ["mountain", T.iceMage], ["flush", T.alchemist], ["sevenStraight", T.artillery], ["fullHouse", T.priest], ["doubleTriple", T.lineCaptain], ["fourKind", T.royal], ["straightFlush", T.dragoon], ["backStraightFlush", T.whiteKnight], ["royalFlush", T.fate], ["fiveKind", T.saintess], ["fourFullHouse", T.returner], ["sixKind", T.jackpot], ["sevenKind", T.mystery]];
     const tutorials = TUTORIALS[locale];
     return <main className="game-shell"><section className={`game-frame ${selectedPlaced ? "unit-command-open" : ""}`} aria-label={term(locale, T.brand)}><header className="topbar"><div className="brand-mark">{SYMBOL.spade}</div><div className="brand-copy"><strong>{term(locale, T.brand)}</strong><span>POKER RANDOM DEFENSE</span></div><div className="spawn-counter"><span>{locale === "ko" ? "남은 진입" : locale === "en" ? "TO SPAWN" : locale === "zh" ? "剩余进场" : "残り出現"}</span><b>{remainingToSpawn}</b><i>·</i><span>{locale === "ko" ? "몬스터" : locale === "en" ? "MONSTERS" : locale === "zh" ? "怪物" : "モンスター"}</span><strong>{population}/200</strong>{liveEnemyCount > 0 && <><i>·</i><em className="monster-brief"><span>{isHiddenWave ? "???" : isBossWave ? "BOSS WAVE" : monster[0]}</span><small>{isHiddenWave ? "HIDDEN" : isBossWave ? `RANK ${wave / 10}` : monsterTrait(monster)}</small></em></>}</div><div className="wave-chip"><span>WAVE</span><strong>{isHiddenWave ? "???" : String(wave).padStart(3, "0")}</strong></div><div className="resources"><span className="gold-resource" aria-label={`${gold.toLocaleString()} 골드`}><i className="topbar-coin" aria-hidden="true"/><b>{gold.toLocaleString()}G</b></span><button className="settings-toggle" aria-label="Settings" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(true)}>⚙</button></div></header>
     <div className="battle-wrap"><div className="battlefield"><div className="forest-noise"/><div className="loop-segment loop-top"/><div className="loop-segment loop-right"/><div className="loop-segment loop-bottom"/><div className="loop-segment loop-left"/><div className="inner-ground"><span>DEFENSE<br />ZONE</span></div>{activeBosses.map(boss => { const p = pointOnPath(boss.progress), secondsLeft = Math.max(0, Math.ceil(((boss.bossDeadline ?? gameClockRef.current) - gameClockRef.current) / 1000)); return <div key={`boss-hud-${boss.id}`} className="boss-health" style={{ left: `${p.x}%`, top: `${p.y}%` }}><em className="boss-timer">BOSS {formatTimer(secondsLeft)}</em><span>RANK {boss.bossRank} · {boss.name}</span><i><b style={{ width: `${Math.max(0, boss.hp / boss.maxHp) * 100}%` }}/></i><strong>{Math.ceil(boss.hp).toLocaleString()}</strong></div>; })}{SLOTS.map((slot, index) => { const tower = towers.find(t => t.slot === index), blocked = isPathSlot(index), targetState = !blocked && (selectedInventory || selectedTower) && tower?.id !== selectedTower ? (tower ? "swap-target" : "move-target") : ""; return <button type="button" key={index} disabled={blocked} aria-label={blocked ? "몬스터 이동로" : tower ? `${tower.job} 배치칸` : `${index + 1}번 빈 배치칸`} onClick={() => useSlot(index)} className={`grid-slot ${blocked ? "blocked" : ""} ${tower ? "tower-slot occupied" : ""} ${tower?.effect || ""} ${tower?.category === "fullHouse" ? "priest-aura" : ""} ${tower && isPriestBuffed(tower) ? "priest-buffed" : ""} ${tower?.id === selectedTower ? "selected" : ""} ${tower && attackFx.some(fx => fx.towerId === tower.id) ? "attacking" : ""} ${targetState}`} style={{ left: `${slot.x}%`, top: `${slot.y}%` }}>{tower ? <><img src={attackFx.some(fx => fx.towerId === tower.id) ? tower.image.replace("/units/", "/units/attack/") : `${tower.image}?idle=1`} alt=""/><span className="unit-glyph" aria-hidden="true">{UNIT_GLYPH[tower.category]}</span><span className={`tier-dot tier-${tower.tier || 3}`}>{term(locale, tower.tierLabel)}</span></> : !blocked && <span className="slot-plus">+</span>}</button>; })}{selectedPlaced && <div className="range-preview" style={{ left: `${SLOTS[selectedPlaced.slot].x}%`, top: `${SLOTS[selectedPlaced.slot].y}%`, width: `${selectedPlaced.range * 2}%` }}/>}{alchemyPools.map(pool => <span key={pool.id} className="alchemy-pool" style={{ left: `${pool.x}%`, top: `${pool.y}%`, width: `${pool.radius * 2}%` }}/>)}{attackFx.map(fx => { const dx = fx.tx - fx.x, dy = fx.ty - fx.y, length = Math.hypot(dx, dy), angle = Math.atan2(dy, dx) * 180 / Math.PI; return <span key={fx.id} className={`attack-fx attack-${fx.category}`}><i className="attack-trace" style={{ left: `${fx.x}%`, top: `${fx.y}%`, width: `${length}%`, transform: `rotate(${angle}deg)` }}/><b className="attack-impact" style={{ left: `${fx.tx}%`, top: `${fx.ty}%`, width: `${fx.radius * 2}%` }}/></span>; })}{enemies.map(e => { const p = pointOnPath(e.progress); return <div key={e.id} title={`${e.boss ? "보스 · " : ""}${e.name} · HP ${Math.ceil(e.hp)}`} className={`enemy palette-${e.palette} ${e.boss ? `boss boss-rank-${e.bossRank}` : ""} ${e.hidden ? "hidden-boss" : ""} ${e.marked ? "marked" : ""} ${e.slowed ? "slowed" : ""} ${e.cursed ? "cursed" : ""} ${e.hitPulse ? "hit-flash-a" : "hit-flash-b"}`} style={{ left: `${p.x}%`, top: `${p.y}%`, backgroundColor: e.color }}>{e.image && <img className="enemy-special-image" src={e.image} alt=""/>}<span className="enemy-face">{e.boss ? "B" : String(e.kind + 1).padStart(2, "0")}</span>{e.boss && <b className="boss-badge">BOSS</b>}{e.marked && <b className="status-mark">!</b>}{e.slowed && <b className="status-slow">*</b>}{e.cursed && <b className="status-curse">◆</b>}<i style={{ width: `${Math.max(0, e.hp / e.maxHp) * 100}%` }}/></div>; })}{hitFx.map(fx => <span key={fx.id} className={`hit-number ${fx.critical ? "critical" : ""}`} style={{ left: `${fx.x}%`, top: `${fx.y}%` }}>{fx.critical ? "CRIT " : "-"}{fx.amount}</span>)}{waveCue && <div className={`wave-cue ${isBossWave ? "boss-cue" : ""}`}>{waveCue}<small>{isBossWave ? copy.bossEquivalent : "30 ENEMIES INCOMING"}</small></div>}{gameStarted && !selectedPlaced && <div className="battle-message" aria-live="polite">{cooldown > 0 ? `NEXT HAND ${cooldown}s` : selectedInventory ? "배치할 칸을 선택하세요" : message}</div>}{selectedPlaced && <aside className="field-unit-actions" aria-label={`${selectedPlaced.job} 조작창`}><button className="command-close" onClick={() => setSelectedTower(null)} aria-label="유닛 선택 해제">×</button><div className="command-unit"><img src={selectedPlaced.image} alt=""/><span><small>{term(locale, selectedPlaced.tierLabel)} · #{selectedPlaced.slot + 1}</small><strong>{term(locale, selectedPlaced.job)}</strong>{isPriestBuffed(selectedPlaced) && <em>사제 버프 적용 중</em>}</span></div><div className="command-stats"><span><small>{copy.attack}</small><b>{Math.round(selectedPlaced.damage * attackMultiplier * 10) / 10}</b></span><span><small>{copy.range}</small><b>{selectedPlaced.range}</b></span><span><small>{copy.speed}</small><b>{(selectedPlaced.speed * attackSpeedMultiplier).toFixed(2)}</b></span></div><p>{copy.placeHint}</p><div className="command-actions"><button onClick={recallTower}>{copy.recall}</button><button className="sell" onClick={sellTower}>{copy.sell} <b>+{sellValue(selectedPlaced)}G</b></button></div></aside>}</div></div>
-    <div className={`unit-dock ${selectedInventoryUnit ? "has-selection" : ""}`}><section className={`unit-inventory ${selectedInventoryUnit ? "has-selection" : ""}`}><div className="inventory-title"><strong>{copy.inventory}</strong><span>{inventory.length}</span></div><div className="inventory-list">{inventory.length === 0 ? <p>{copy.emptyInventory}</p> : inventory.map(unit => <button key={unit.id} onClick={() => chooseInventory(unit.id)} className={selectedInventory === unit.id ? "active" : ""}><img src={unit.image} alt=""/><span className="inventory-unit-label">{term(locale, unit.job)} / {unit.effect === "purge" ? copy.use : term(locale, unit.tierLabel)}</span></button>)}</div>{selectedInventoryUnit && <div className="inventory-selection"><img src={selectedInventoryUnit.image} alt=""/><div><strong>{term(locale, selectedInventoryUnit.job)}</strong><small>{term(locale, selectedInventoryUnit.tierLabel)} · {copy.sell} {sellValue(selectedInventoryUnit)}G</small></div><span>{copy.placeHint}</span><button onClick={sellInventoryUnit} aria-label={`${selectedInventoryUnit.job} ${sellValue(selectedInventoryUnit)}골드에 판매`}>{copy.sell} <b>+{sellValue(selectedInventoryUnit)}G</b></button></div>}</section><section className="upgrade-panel" aria-label={`${copy.totalAttack} / ${copy.totalSpeed}`}><strong className="upgrade-title">{copy.totalAttack} / {copy.totalSpeed}</strong><div className="army-upgrade"><div className="upgrade-row"><div><span>{copy.totalAttack}</span><strong>LV.{attackLevel} · +{attackLevel * 2.5}%</strong></div><button disabled={!gameStarted || gold < upgradeCost} onClick={upgradeAttack}><span className="upgrade-action-main">{copy.attackUp} <b>{upgradeCost}G</b></span><small className="upgrade-action-level">LV.{attackLevel} · +{attackLevel * 2.5}%</small></button></div><div className="upgrade-row speed-row"><div><span>{copy.totalSpeed}</span><strong>LV.{attackSpeedLevel} · +{attackSpeedLevel * 2.5}%</strong></div><button disabled={!gameStarted || attackSpeedLevel >= MAX_ATTACK_SPEED_LEVEL || gold < speedUpgradeCost} onClick={upgradeAttackSpeed}><span className="upgrade-action-main">{copy.speedUp} <b>{attackSpeedLevel >= MAX_ATTACK_SPEED_LEVEL ? "MAX" : `${speedUpgradeCost}G`}</b></span><small className="upgrade-action-level">LV.{attackSpeedLevel} · +{attackSpeedLevel * 2.5}%</small></button></div></div></section>
+    <div className={`unit-dock ${selectedInventoryUnit ? "has-selection" : ""}`}><section className={`unit-inventory ${selectedInventoryUnit ? "has-selection" : ""}`}><div className="inventory-title"><strong>{copy.inventory}</strong><span>{inventory.length}</span></div><div className="inventory-list">{inventory.length === 0 ? <p>{copy.emptyInventory}</p> : inventory.map(unit => <button key={unit.id} onClick={() => chooseInventory(unit.id)} className={selectedInventory === unit.id ? "active" : ""}><img src={unit.image} alt=""/><span className="inventory-unit-label">{term(locale, unit.job)} / {unit.effect === "purge" || unit.effect === "returner" ? copy.use : term(locale, unit.tierLabel)}</span></button>)}</div>{selectedInventoryUnit && <div className="inventory-selection"><img src={selectedInventoryUnit.image} alt=""/><div><strong>{term(locale, selectedInventoryUnit.job)}</strong><small>{term(locale, selectedInventoryUnit.tierLabel)} · {selectedInventoryUnit.effect === "returner" ? "강화 비용 -60%" : `${copy.sell} ${sellValue(selectedInventoryUnit)}G`}</small></div><span>{selectedInventoryUnit.effect === "returner" ? "빈 배치 칸을 눌러 사용" : copy.placeHint}</span><button disabled={selectedInventoryUnit.effect === "returner"} onClick={sellInventoryUnit} aria-label={`${selectedInventoryUnit.job} ${sellValue(selectedInventoryUnit)}골드에 판매`}>{selectedInventoryUnit.effect === "returner" ? copy.use : copy.sell} {selectedInventoryUnit.effect !== "returner" && <b>+{sellValue(selectedInventoryUnit)}G</b>}</button></div>}</section><section className="upgrade-panel" aria-label={`${copy.totalAttack} / ${copy.totalSpeed}`}><strong className="upgrade-title">{copy.totalAttack} / {copy.totalSpeed}</strong><div className="army-upgrade"><div className="upgrade-row"><div><span>{copy.totalAttack}</span><strong>LV.{attackLevel} · +{attackLevel * 2.5}%</strong></div><button disabled={!gameStarted || gold < upgradeCost} onClick={upgradeAttack}><span className="upgrade-action-main">{copy.attackUp} <b>{upgradeCost}G</b></span><small className="upgrade-action-level">LV.{attackLevel} · +{attackLevel * 2.5}%</small></button></div><div className="upgrade-row speed-row"><div><span>{copy.totalSpeed}</span><strong>LV.{attackSpeedLevel} · +{attackSpeedLevel * 2.5}%</strong></div><button disabled={!gameStarted || attackSpeedLevel >= MAX_ATTACK_SPEED_LEVEL || gold < speedUpgradeCost} onClick={upgradeAttackSpeed}><span className="upgrade-action-main">{copy.speedUp} <b>{attackSpeedLevel >= MAX_ATTACK_SPEED_LEVEL ? "MAX" : `${speedUpgradeCost}G`}</b></span><small className="upgrade-action-level">LV.{attackSpeedLevel} · +{attackSpeedLevel * 2.5}%</small></button></div></div></section>
     </div>
     <div className="playback-control field-playback"><button className={playbackPaused ? "paused" : ""} aria-label={copy.playback} onClick={cyclePlayback}>{playbackPaused ? "Ⅱ" : `${gameSpeed}×`}</button></div>
     <div className="monster-image-control"><button className={showMonsterImages ? "on" : "off"} aria-label="Monster images on or off" aria-pressed={!showMonsterImages} onClick={() => setShowMonsterImages(value => !value)}>{showMonsterImages ? "IMG ON" : "IMG OFF"}</button></div>
@@ -719,16 +824,17 @@ export default function Home() {
         <button className={running ? "pause" : "start"} onClick={toggleRunning}>{running ? `II ${copy.pause}` : `\u25B6 ${copy.start}`}</button>
       </div>
     </section>
-    <details className="poker-guide" data-locale={locale}><summary>{copy.guide}<span>{copy.open}</span></summary><div className="guide-grid job-guide" tabIndex={0} onWheel={event => event.stopPropagation()}>{guide.map(([category, job]) => <span key={category}><b>{term(locale, JOBS[category].label)}</b><small>{term(locale, job)}{category === "fourKind" || category === "straightFlush" ? ` / ${term(locale, T.legend)}` : category === "royalFlush" || category === "fiveKind" ? ` / ${term(locale, T.transcendent)}` : category !== "sixKind" && category !== "sevenKind" ? ` / ${term(locale, T.beginner)} ${term(locale, T.middle)} ${term(locale, T.elite)}` : ""}</small></span>)}</div><button className="tutorial-reopen" onClick={() => setTutorialStep(0)}>{copy.tutorialAgain}</button></details>
+    <details className="poker-guide" data-locale={locale}><summary>{copy.guide}<span>{copy.open}</span></summary><div className="guide-grid job-guide" tabIndex={0} onWheel={event => event.stopPropagation()}>{guide.map(([category, job]) => <span key={category}><b>{term(locale, JOBS[category].label)}</b><small>{term(locale, job)}{["fourKind", "straightFlush", "triplePair", "backStraight", "mountain", "sevenStraight"].includes(category) ? ` / ${term(locale, T.legend)}` : ["royalFlush", "fiveKind", "doubleTriple", "backStraightFlush"].includes(category) ? ` / ${term(locale, T.transcendent)}` : category !== "sixKind" && category !== "sevenKind" && category !== "fourFullHouse" ? ` / ${term(locale, T.beginner)} ${term(locale, T.middle)} ${term(locale, T.elite)}` : ""}</small></span>)}</div><button className="tutorial-reopen" onClick={() => setTutorialStep(0)}>{copy.tutorialAgain}</button></details>
     {!languageChosen && <div className="language-start"><div><strong>CHOOSE YOUR LANGUAGE</strong><div>{LOCALE_ORDER.map(language => <button key={language} onClick={() => { setLocale(language); setLanguageChosen(true); setTutorialStep(0); }}>{LOCALE_LABEL[language]}</button>)}</div></div></div>}
     {languageChosen && tutorialStep < tutorials.length && <div className="tutorial-overlay"><div className="tutorial-card"><small>QUICK GUIDE · {tutorialStep + 1}/{tutorials.length}</small><strong>{tutorials[tutorialStep].title}</strong><p>{tutorials[tutorialStep].body}</p><div><button onClick={() => setTutorialStep(tutorials.length)}>{copy.skip}</button><button className="next" onClick={() => setTutorialStep(v => v + 1)}>{tutorialStep === tutorials.length - 1 ? copy.begin : copy.next}</button></div></div></div>}
     {settingsOpen && <div className="settings-overlay" role="dialog" aria-modal="true" aria-label="Settings" onClick={() => setSettingsOpen(false)}><section className="settings-panel" onClick={event => event.stopPropagation()}><button className="settings-close" aria-label="Close settings" onClick={() => setSettingsOpen(false)}>×</button><strong>SETTINGS</strong><button className={bgmOn ? "on" : "off"} onClick={() => setBgmOn(value => !value)}><span>BGM</span><b>{bgmOn ? "ON" : "OFF"}</b></button><button className={soundOn ? "on" : "off"} onClick={toggleSound}><span>{locale === "ko" ? "환경 소리" : locale === "en" ? "SFX" : locale === "zh" ? "环境音效" : "環境音"}</span><b>{soundOn ? "ON" : "OFF"}</b></button><button className="settings-restart" onClick={restart}>{copy.retry}</button></section></div>}
     {gameOver && <div className="game-over"><div><span>{T.gameOver}</span><strong>WAVE {wave}</strong><p>{kills}{copy.defeated}</p><button onClick={restart}>{T.retry}</button></div></div>}
     <HiddenWaveIntro active={hiddenIntroActive} label={baseCopy.demonArrival} className="hidden-wave-intro"/>
-    {won && !endingActive && !saintessEndingActive && !directEndingActive && <div className="game-over victory"><div><span>{copy.victory}</span><strong>{copy.clear}</strong><p>{kills}{copy.defeated}</p><button onClick={restart}>{T.retry}</button></div></div>}
+    {won && !endingActive && !saintessEndingActive && !directEndingActive && !returnerEndingActive && <div className="game-over victory"><div><span>{copy.victory}</span><strong>{copy.clear}</strong><p>{kills}{copy.defeated}</p><button onClick={restart}>{T.retry}</button></div></div>}
     {endingActive && <div className="seven-card-ending-overlay"><iframe title="Seven Card Hidden Ending" src={`${ASSET_BASE}/seven-card-preview/?embedded=1`}/><button type="button" onClick={restart}>PLAY AGAIN?</button></div>}
     {saintessEndingActive && <div className="seven-card-ending-overlay long-ending-overlay"><iframe title="Saintess Hidden Ending" src={`${ASSET_BASE}/saintess-ending-preview/?embedded=1&locale=${locale}`}/><button type="button" onClick={restart}>PLAY AGAIN?</button></div>}
     {directEndingActive && <div className="seven-card-ending-overlay long-ending-overlay"><iframe title="ABSOLUTE TRIUMPH" src={`${ASSET_BASE}/demon-triumph-preview/?embedded=1&locale=${locale}`}/><button type="button" onClick={restart}>PLAY AGAIN?</button></div>}
+    {returnerEndingActive && <div className="seven-card-ending-overlay long-ending-overlay"><iframe title={returnerEndingMode === "solo" ? "THE OTHERWORLDER AWAKENS" : "OTHERWORLDERS' COMPETE"} src={`${ASSET_BASE}/returner-ending-preview/?embedded=1&mode=${returnerEndingMode}`}/><button type="button" onClick={restart}>PLAY AGAIN?</button></div>}
     <footer className="creator-credit">Made by Arlandstrm with AI · {APP_VERSION}</footer>
   </section></main>;
 }
