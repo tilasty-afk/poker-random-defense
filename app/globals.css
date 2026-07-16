@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-:root { --ink:#0d1210; --stone:#262924; --stone2:#343730; --parchment:#d8c694; --cream:#f4e6b4; --gold:#d79532; --ember:#ef7b2d; --blood:#9b3a2f; --moss:#52643e; --forest:#162b21; --game-speed:1; }
+:root { color-scheme:only light; --ink:#0d1210; --stone:#262924; --stone2:#343730; --parchment:#d8c694; --cream:#f4e6b4; --gold:#d79532; --ember:#ef7b2d; --blood:#9b3a2f; --moss:#52643e; --forest:#162b21; --game-speed:1; }
 * { box-sizing:border-box; }
 html { background:#070a08; color:var(--cream); }
 body { margin:0; min-height:100vh; font-family:"Courier New", "Malgun Gothic", monospace; background:radial-gradient(circle at 50% 0,#283328 0,#111713 45%,#070a08 100%); }
@@ -8,6 +8,7 @@ button, summary { font:inherit; }
 button { -webkit-tap-highlight-color:transparent; }
 button:focus-visible,summary:focus-visible { outline:2px solid #f0c75e; outline-offset:2px; }
 .game-shell { min-height:100vh; padding:0; }
+
 .game-frame { position:relative; width:100%; max-width:1180px; min-height:100vh; margin:0 auto; background:var(--ink); border:0 solid #756347; box-shadow:0 0 48px #000; overflow:hidden; }
 .topbar { min-height:64px; display:grid; grid-template-columns:42px minmax(0,1fr) auto; grid-template-areas:"mark brand resource" "mark progress wave"; gap:2px 8px; align-items:center; padding:8px 10px; background:linear-gradient(#262721,#151814); border-bottom:3px solid #756347; box-shadow:inset 0 -2px #060806; }
 .brand-mark { grid-area:mark; display:grid; place-items:center; width:38px; height:45px; background:var(--blood); color:var(--cream); font-size:24px; border:2px solid var(--gold); box-shadow:3px 3px #080a08; clip-path:polygon(10% 0,90% 0,100% 18%,85% 100%,50% 88%,15% 100%,0 18%); }
@@ -458,59 +459,17 @@ html.enemy-images-off .grid-slot.tower-slot,html.enemy-images-off .enemy{animati
 .joker-invert{font-size:clamp(7px,2.4vw,12px)!important;text-shadow:1px 1px #000!important}
 .poker-card:has(.joker-invert)>em{background:#080808cc}
 
-/* Mobile embedded browsers may apply a non-standard forced dark palette to
-   CSS colors.  Raster color tiles keep the game palette deterministic. */
-@media (max-width:759px){
-  .game-frame,.game-frame *{
-    -webkit-print-color-adjust:exact!important;
-    print-color-adjust:exact!important;
-    forced-color-adjust:none!important;
-  }
-  .poker-card:not(:has(.joker-black)):not(:has(.joker-color)):not(:has(.joker-invert)){
-    color:#17130f!important;
-    background-color:#f2e5bd!important;
-    background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAARSURBVBhXY/j0dO9/EGaAMQCAwA5N5duwvwAAAABJRU5ErkJggg==")!important;
-  }
-  .poker-card.best:not(:has(.joker-black)):not(:has(.joker-color)):not(:has(.joker-invert)){
-    background-color:#ffe594!important;
-    background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAARSURBVBhXY/j/dMp/EGaAMQB9cA3dn6ncZAAAAABJRU5ErkJggg==")!important;
-    filter:none!important;
-  }
-  .poker-card:not(.best):not(.active):not(:has(.joker-black)):not(:has(.joker-color)):not(:has(.joker-invert)){
-    filter:none!important;
-  }
-  .poker-card:has(>span.red-suit)>b,.poker-card .red-suit,.poker-card .red-pips{color:#b42127!important}
-  .poker-card:not(:has(>span.red-suit))>b{color:#17130f!important}
-  .actions .primary-action{
-    color:#21130b!important;
-    background-color:#d86f25!important;
-    background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAARSURBVBhXY7iRr/ofhBlgDABWyAmtL/wyMAAAAABJRU5ErkJggg==")!important;
-  }
-  .actions>button:not(.primary-action):not(.heart-start){
-    color:#f4e6b4!important;
-    background-color:#20241f!important;
-    background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAARSURBVBhXY1BQkf8PwgwwBgAsqgWJvGGSPAAAAABJRU5ErkJggg==")!important;
-  }
-  .unit-dock .army-upgrade .upgrade-row:not(.speed-row) button{
-    color:#21180d!important;
-    background-color:#d99b3b!important;
-    background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAARSURBVBhXY7g52/o/CDPAGABgZgq5DpB4awAAAABJRU5ErkJggg==")!important;
-  }
-  .unit-dock .army-upgrade .speed-row button{
-    color:#172b25!important;
-    background-color:#75aa98!important;
-    background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAARSURBVBhXYyhdNeM/CDPAGABekgrZvo8EUwAAAABJRU5ErkJggg==")!important;
-  }
-  .playback-control button:not(.paused){
-    color:#25170c!important;
-    background-color:#d99b3b!important;
-    background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAARSURBVBhXY7g52/o/CDPAGABgZgq5DpB4awAAAABJRU5ErkJggg==")!important;
-  }
-  .loop-segment{
-    background-color:#7f8580!important;
-    background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAARSURBVBhXY6hvbfgPwgwwBgBXiAoNRCuwRAAAAABJRU5ErkJggg==")!important;
-  }
-}
+/* Fixed rarity frames: legendary purple, transcendent red, special neon green. */
+.grid-slot.tower-slot:has(.tier-dot.tier-5),
+.inventory-list button.tier-5,
+.hand-glance:has(.tier-badge.tier-5),
+.hand-result:has(.tier-badge.tier-5){border-color:#ff3545!important;box-shadow:inset 0 0 10px #ff263a99,0 0 5px #fff,0 0 15px #f20f2f!important}
+.grid-slot.tower-slot:has(.tier-dot.tier-6),
+.inventory-list button.tier-6,
+.hand-glance:has(.tier-badge.tier-6),
+.hand-result:has(.tier-badge.tier-6){border:3px solid #37ff78!important;box-shadow:inset 0 0 10px #2cff7188,0 0 5px #d9ffe5,0 0 15px #00e85a!important}
+.tier-badge.tier-6{color:#071b0d;background:#42ed78!important;border-color:#a4ffbd;box-shadow:0 0 9px #24ff68}
+
 .seven-card-ending-overlay{position:fixed;z-index:1000;inset:0;background:#020403}
 .seven-card-ending-overlay iframe{display:block;width:100%;height:100%;border:0;background:#020403}
 .seven-card-ending-overlay>button{position:absolute;z-index:2;left:50%;top:67%;min-width:150px;min-height:42px;padding:8px 18px;transform:translate(-50%,-50%);opacity:0;pointer-events:none;color:#fff1b0;background:linear-gradient(#2d2719e8,#0d1210ee);border:2px solid #e9bd58;box-shadow:0 0 20px #ffc64388,inset 0 0 12px #f3c65e33;font:900 13px "Courier New",monospace;letter-spacing:.05em;text-shadow:1px 1px #000;animation:ending-replay-in .45s 4.7s ease-out forwards}

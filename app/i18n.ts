@@ -101,7 +101,8 @@ const COMPACT_ROLE_COPY: Record<Exclude<Locale, "ko">, Record<string, string>> =
 export function roleCopy(locale: Locale, category: string, tier: number) {
   const n = Math.max(0, Math.min(2, tier - 1));
   if (locale !== "ko") {
-    const compact = COMPACT_ROLE_COPY[locale][category] ?? "";
+    const source = COMPACT_ROLE_COPY[locale][category] ?? "";
+    const compact = category === "high" ? source.replace("33%", "100%") : source;
     const priestBuff = tier === 1 ? 15 : tier === 2 ? 25 : 40;
     return compact.replace("{v}", String(priestBuff));
   }
