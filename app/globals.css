@@ -296,7 +296,7 @@ html.enemy-images-off .enemy .enemy-face::after{content:var(--enemy-wave);font-s
   .mobile-barracks-sell{
     position:fixed;z-index:60;
     top:calc(env(safe-area-inset-top) + 64px + var(--mobile-board) + 17px);
-    left:calc(42vw - 47px);
+    left:calc(50vw - 49px);
     display:flex;width:44px;height:38px;padding:2px;
     flex-direction:column;align-items:center;justify-content:center;gap:2px;
     color:#ffe5a6;background:#7a3027;border:1px solid #e17859;
@@ -304,6 +304,20 @@ html.enemy-images-off .enemy .enemy-face::after{content:var(--enemy-wave);font-s
   }
   .mobile-barracks-sell b{display:block;color:#ffc25d;font-size:9px;line-height:1}
   .mobile-barracks-sell:disabled{color:#867b69;background:#292824;border-color:#5f594d;opacity:.72}
+  .unit-dock .inventory-list::after,.unit-dock.has-selection .inventory-list::after{content:"";flex:0 0 52px;height:1px}
+
+  /* Mobile cards use a single compact rank/suit mark: K♤, Q◇, 7♧, etc. */
+  .poker-card .card-center{display:none!important}
+  .poker-card>span{
+    position:absolute!important;inset:0!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;gap:1px!important;
+    width:auto!important;height:auto!important;
+    font-size:clamp(19px,5.8vw,26px)!important;line-height:1!important;letter-spacing:-1px!important;
+  }
+  .poker-card>span small{display:inline!important;font:inherit!important;font-size:.72em!important;line-height:1!important}
+  .poker-card:has(.joker-black)>span,.poker-card:has(.joker-color)>span,.poker-card:has(.joker-invert)>span{font-size:0!important;letter-spacing:0!important}
+  .poker-card:has(.joker-black)>span::before,.poker-card:has(.joker-color)>span::before,.poker-card:has(.joker-invert)>span::before{font-size:10px!important;line-height:1!important}
+  .poker-card:has(.joker-black)>span small,.poker-card:has(.joker-color)>span small,.poker-card:has(.joker-invert)>span small{display:none!important}
 }
 
 .field-playback{z-index:28}.field-playback button{width:50px;height:50px;font-size:14px}
