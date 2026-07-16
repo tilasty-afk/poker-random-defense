@@ -288,6 +288,27 @@ html.enemy-images-off .enemy .enemy-face::after{content:var(--enemy-wave);font-s
 }
 @media (max-width:759px){.actions{width:100%;align-self:flex-start}.corner-controls{top:calc(env(safe-area-inset-top) + 53px);right:5px;bottom:auto;flex-direction:column;align-items:center}.boss-health{width:min(130px,35%);transform:translate(-50%,calc(-100% - 25px));padding:3px 5px}.boss-timer{font-size:12px;padding:3px 6px}.boss-health span,.boss-health strong{font-size:7px}}
 
+/* Keep the selected barracks unit's sell/use control visible in every mobile layout. */
+@media (max-width:759px){
+  .unit-dock.has-selection .unit-inventory{position:relative!important;overflow:hidden!important}
+  .unit-dock.has-selection .inventory-list{padding-right:50px!important}
+  .unit-dock.has-selection .inventory-selection{
+    position:absolute!important;z-index:50!important;
+    top:13px!important;right:2px!important;bottom:2px!important;left:auto!important;
+    display:block!important;visibility:visible!important;opacity:1!important;
+    width:46px!important;height:auto!important;margin:0!important;padding:0!important;
+    overflow:visible!important;pointer-events:auto;
+  }
+  .unit-dock.has-selection .inventory-selection>button{
+    display:flex!important;visibility:visible!important;width:100%!important;height:100%!important;
+    min-width:0!important;min-height:0!important;padding:2px!important;
+    align-items:center!important;justify-content:center!important;flex-direction:column!important;
+    color:#ffe5a6!important;background:#7a3027!important;border:1px solid #e17859!important;
+    font-size:8px!important;line-height:1.05!important;white-space:normal!important;
+  }
+  .unit-dock.has-selection .inventory-selection>button b{display:block!important;font-size:9px!important;line-height:1!important}
+}
+
 .field-playback{z-index:28}.field-playback button{width:50px;height:50px;font-size:14px}
 .monster-image-control{display:none;z-index:29}.monster-image-control button{width:58px;height:38px;padding:2px;color:#f3dfa5;background:#242820;border:2px solid #8d7b54;font-size:10px;font-weight:1000;line-height:1;box-shadow:2px 2px #050605}.monster-image-control button.off{color:#fff;background:#913e2c;border-color:#ff9d6e}
 @media (min-width:760px){

@@ -396,7 +396,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /button\.paused\) \.field-unit-actions button\.sell/);
   assert.doesNotMatch(page, /earlyHpMultiplier|earlySpawnMultiplier|hardRamp/);
   assert.match(page, /enemy\.boss \? 20 : 1/);
-  assert.match(page, /const APP_VERSION = "v0\.2012"/);
+  assert.match(page, /const APP_VERSION = "v0\.2014"/);
   assert.match(page, /\[showMonsterImages, setShowMonsterImages\] = useState\(true\)/);
   assert.match(page, /classList\.toggle\("enemy-images-off", !showMonsterImages\)/);
   assert.match(page, /--enemy-wave/);
