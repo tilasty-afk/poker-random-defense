@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
-:root { color-scheme:only light; --ink:#0d1210; --stone:#262924; --stone2:#343730; --parchment:#d8c694; --cream:#f4e6b4; --gold:#d79532; --ember:#ef7b2d; --blood:#9b3a2f; --moss:#52643e; --forest:#162b21; --game-speed:1; }
+:root { color-scheme:dark; --ink:#0d1210; --stone:#262924; --stone2:#343730; --parchment:#d8c694; --cream:#f4e6b4; --gold:#d79532; --ember:#ef7b2d; --blood:#9b3a2f; --moss:#52643e; --forest:#162b21; --game-speed:1; }
 * { box-sizing:border-box; }
-html { color-scheme:only light; background:#070a08; color:var(--cream); }
+html { color-scheme:dark; background:#070a08; color:var(--cream); }
 body { margin:0; min-height:100vh; font-family:"Courier New", "Malgun Gothic", monospace; background:radial-gradient(circle at 50% 0,#283328 0,#111713 45%,#070a08 100%); }
 button, summary { font:inherit; }
 button { -webkit-tap-highlight-color:transparent; }
 button:focus-visible,summary:focus-visible { outline:2px solid #f0c75e; outline-offset:2px; }
-.game-shell { color-scheme:only light; min-height:100vh; padding:0; }
+.game-shell { color-scheme:dark; min-height:100vh; padding:0; }
 .game-frame { position:relative; width:100%; max-width:1180px; min-height:100vh; margin:0 auto; background:var(--ink); border:0 solid #756347; box-shadow:0 0 48px #000; overflow:hidden; }
 .topbar { min-height:64px; display:grid; grid-template-columns:42px minmax(0,1fr) auto; grid-template-areas:"mark brand resource" "mark progress wave"; gap:2px 8px; align-items:center; padding:8px 10px; background:linear-gradient(#262721,#151814); border-bottom:3px solid #756347; box-shadow:inset 0 -2px #060806; }
 .brand-mark { grid-area:mark; display:grid; place-items:center; width:38px; height:45px; background:var(--blood); color:var(--cream); font-size:24px; border:2px solid var(--gold); box-shadow:3px 3px #080a08; clip-path:polygon(10% 0,90% 0,100% 18%,85% 100%,50% 88%,15% 100%,0 18%); }
