@@ -135,6 +135,7 @@ html.enemy-images-off .enemy .enemy-face::after{content:var(--enemy-wave);font-s
 .game-frame:has(.playback-control button.paused) .field-unit-actions button.sell,.game-frame:has(.playback-control button.paused) .inventory-selection>button{pointer-events:none;filter:grayscale(1);opacity:.4}
 .unit-inventory { margin:8px; padding:7px; background:#191d19; border:2px solid #5f5948; box-shadow:3px 3px #050605; }
 .unit-dock { display:contents; }
+.mobile-barracks-sell{display:none}
 .upgrade-panel{margin:8px;padding:7px;background:#171a17;border:2px solid #786442;box-shadow:3px 3px #050605}.upgrade-title{display:block;margin-bottom:5px;color:#e6d3a2;font-size:11px}
 .inventory-title { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:10px; }.inventory-title span{min-width:22px;padding:2px 5px;text-align:center;color:#1e160c;background:#d0ad58;border:1px solid #5b4324}
 .inventory-list { min-height:66px; display:flex; gap:5px; overflow-x:auto; padding:2px 1px 5px; scrollbar-width:thin; }.inventory-list p{margin:auto;color:#77715f;font-size:8px}.inventory-list button{position:relative;flex:0 0 54px;height:60px;padding:2px;color:#d8c99d;background:#282b25;border:1px solid #5b5547}.inventory-list button.active{outline:2px solid var(--ember);transform:translateY(-2px)}.inventory-list img{width:38px;height:40px;object-fit:contain;image-rendering:pixelated}.inventory-list button span,.inventory-list button small{position:absolute;left:1px;right:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.inventory-list button span{bottom:9px;font-size:6px}.inventory-list button small{bottom:1px;color:#e6b95d;font-size:5px}.inventory-list button .inventory-unit-label{bottom:1px;color:#f0d083;font-size:6px;font-weight:900;text-align:center}
@@ -290,23 +291,19 @@ html.enemy-images-off .enemy .enemy-face::after{content:var(--enemy-wave);font-s
 
 /* Keep the selected barracks unit's sell/use control visible in every mobile layout. */
 @media (max-width:759px){
-  .unit-dock.has-selection .unit-inventory{position:relative!important;overflow:hidden!important}
-  .unit-dock.has-selection .inventory-list{padding-right:50px!important}
-  .unit-dock.has-selection .inventory-selection{
-    position:absolute!important;z-index:50!important;
-    top:13px!important;right:2px!important;bottom:2px!important;left:auto!important;
-    display:block!important;visibility:visible!important;opacity:1!important;
-    width:46px!important;height:auto!important;margin:0!important;padding:0!important;
-    overflow:visible!important;pointer-events:auto;
+  .unit-dock .inventory-selection{display:none!important}
+  .unit-dock .inventory-list,.unit-dock.has-selection .inventory-list{padding-right:50px!important}
+  .mobile-barracks-sell{
+    position:fixed;z-index:60;
+    top:calc(env(safe-area-inset-top) + 64px + var(--mobile-board) + 17px);
+    left:calc(42vw - 47px);
+    display:flex;width:44px;height:38px;padding:2px;
+    flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    color:#ffe5a6;background:#7a3027;border:1px solid #e17859;
+    box-shadow:2px 2px #090707;font-size:8px;font-weight:900;line-height:1.05;
   }
-  .unit-dock.has-selection .inventory-selection>button{
-    display:flex!important;visibility:visible!important;width:100%!important;height:100%!important;
-    min-width:0!important;min-height:0!important;padding:2px!important;
-    align-items:center!important;justify-content:center!important;flex-direction:column!important;
-    color:#ffe5a6!important;background:#7a3027!important;border:1px solid #e17859!important;
-    font-size:8px!important;line-height:1.05!important;white-space:normal!important;
-  }
-  .unit-dock.has-selection .inventory-selection>button b{display:block!important;font-size:9px!important;line-height:1!important}
+  .mobile-barracks-sell b{display:block;color:#ffc25d;font-size:9px;line-height:1}
+  .mobile-barracks-sell:disabled{color:#867b69;background:#292824;border-color:#5f594d;opacity:.72}
 }
 
 .field-playback{z-index:28}.field-playback button{width:50px;height:50px;font-size:14px}
