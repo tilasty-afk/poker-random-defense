@@ -118,22 +118,44 @@ function background(ctx: CanvasRenderingContext2D, elapsed: number, mode: Mode) 
   ctx.globalAlpha = 1;
 }
 
+function drawKnowledgeCircuit(ctx: CanvasRenderingContext2D, elapsed: number, power: number) {
+  if (power <= 0) return;
+  ctx.save(); ctx.translate(180, 292); ctx.globalCompositeOperation = "screen";
+  ctx.strokeStyle = `rgba(92,225,255,${power * .72})`; ctx.fillStyle = `rgba(201,249,255,${power})`; ctx.shadowColor = "#55ddff"; ctx.shadowBlur = 12;
+  for (let ring = 0; ring < 4; ring++) {
+    const radius = 62 + ring * 29; ctx.lineWidth = ring === 0 ? 3 : 1.5; ctx.setLineDash([5 + ring * 2, 5]); ctx.lineDashOffset = elapsed * .025 * (ring % 2 ? -1 : 1);
+    ctx.beginPath(); ctx.arc(0, 0, radius, 0, Math.PI * 2); ctx.stroke();
+    for (let node = 0; node < 6 + ring * 2; node++) { const angle = node * Math.PI * 2 / (6 + ring * 2) + elapsed * .00022 * (ring % 2 ? -1 : 1); ctx.fillRect(Math.cos(angle) * radius - 2, Math.sin(angle) * radius - 2, 4, 4); }
+  }
+  ctx.setLineDash([]);
+  for (let line = 0; line < 12; line++) { const angle = line * Math.PI / 6 + elapsed * .00008; ctx.globalAlpha = power * (.35 + (line % 3) * .16); ctx.beginPath(); ctx.moveTo(Math.cos(angle) * 50, Math.sin(angle) * 50); ctx.lineTo(Math.cos(angle) * 168, Math.sin(angle) * 168); ctx.stroke(); }
+  ctx.restore();
+}
+
+function drawProgressGlyphs(ctx: CanvasRenderingContext2D, elapsed: number, power: number) {
+  if (power <= 0) return;
+  const glyphs = ["GEAR", "STEEL", "MANA", "ENGINE", "AETHER", "LOGIC"];
+  ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.textAlign = "center"; ctx.font = "bold 8px 'Courier New', monospace";
+  glyphs.forEach((glyph, index) => { const angle = index * Math.PI / 3 + elapsed * .00015, radius = 132 + Math.sin(elapsed * .002 + index) * 8, x = 180 + Math.cos(angle) * radius, y = 292 + Math.sin(angle) * radius * .72; ctx.globalAlpha = power * (.55 + .35 * Math.abs(Math.sin(elapsed * .004 + index))); ctx.fillStyle = index % 2 ? "#80ecff" : "#ffffff"; ctx.shadowColor = "#42dfff"; ctx.shadowBlur = 9; ctx.fillText(glyph, x, y); });
+  ctx.restore();
+}
+
 function renderSolo(ctx: CanvasRenderingContext2D, elapsed: number, image: HTMLImageElement | null) {
   const t = elapsed / DURATION; background(ctx, elapsed, "solo");
-  // A modern city/school world dissolves behind him.
-  const cityFade = clamp(1 - (t - .45) * 3);
-  ctx.globalAlpha = cityFade * .5; ctx.fillStyle = "#284361";
-  for (let i = 0; i < 8; i++) { const h = 80 + (i * 47) % 150; ctx.fillRect(i * 49 - 10, 475 - h, 38, h); }
-  ctx.globalAlpha = 1;
-  const portal = ease((t - .25) * 3.2) * clamp(1 - (t - .79) * 5); drawPortal(ctx, elapsed, portal);
-  for (let i = 0; i < 5; i++) drawReturnerEcho(ctx, image, 180 + Math.sin(i * 2.7) * (55 + i * 8), 300 - i * 20, clamp((t - .08) * 4) * (1 - t) * .22, "#72eaff");
-  const stride = ease((t - .12) * 2.1);
-  drawAwakeningAura(ctx, elapsed, ease((t - .16) * 2.8) * clamp(1 - (t - .7) * 4));
-  if (image) { ctx.save(); ctx.globalAlpha = clamp((t - .08) * 5); ctx.shadowColor = "#72eaff"; ctx.shadowBlur = 25; ctx.drawImage(image, 82, 122 - stride * 34, 196, 294); ctx.restore(); }
-  const slash = clamp((t - .49) * 12) * clamp(1 - (t - .62) * 10);
-  if (slash > 0) { ctx.save(); ctx.globalAlpha = slash; ctx.strokeStyle = "#eaffff"; ctx.shadowColor = "#65e8ff"; ctx.shadowBlur = 25; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(180, 346, 155, -2.5, .35); ctx.stroke(); ctx.restore(); }
-  const depart = ease((t - .62) * 4); if (depart > 0) { ctx.fillStyle = `rgba(216,250,255,${depart * .85})`; ctx.fillRect(0, 0, WIDTH, HEIGHT); }
-  drawTitle(ctx, ease((t - .73) * 4.8), ["THE OTHERWORLDER", "AWAKENS"], "#7ceaff", "ONE STRANGER · A NEW WORLD");
+  const oldWorld = clamp(1 - (t - .34) * 4);
+  ctx.save(); ctx.globalAlpha = oldWorld * .46; ctx.fillStyle = "#243c5d"; ctx.fillRect(32, 352, 296, 118); ctx.fillStyle = "#8edff0";
+  for (let row = 0; row < 3; row++) for (let col = 0; col < 7; col++) ctx.fillRect(47 + col * 40, 368 + row * 27, 19, 10);
+  ctx.fillStyle = "#111a2b"; ctx.beginPath(); ctx.moveTo(18, 353); ctx.lineTo(180, 270); ctx.lineTo(342, 353); ctx.closePath(); ctx.fill(); ctx.restore();
+  const arrival = ease((t - .08) * 3.2), invention = ease((t - .3) * 3.8) * clamp(1 - (t - .72) * 5);
+  drawKnowledgeCircuit(ctx, elapsed, invention); drawProgressGlyphs(ctx, elapsed, invention);
+  const portal = ease((t - .18) * 3.8) * clamp(1 - (t - .76) * 5); drawPortal(ctx, elapsed, portal);
+  for (let i = 0; i < 7; i++) drawReturnerEcho(ctx, image, 180 + Math.sin(i * 2.31) * (42 + i * 7), 310 - i * 16, arrival * clamp(1 - (t - .55) * 4) * .2, "#72eaff");
+  drawAwakeningAura(ctx, elapsed, ease((t - .14) * 3.1) * clamp(1 - (t - .73) * 5));
+  if (image) { const rise = ease((t - .1) * 2.5); ctx.save(); ctx.globalAlpha = arrival; ctx.shadowColor = "#72eaff"; ctx.shadowBlur = 18 + invention * 38; ctx.drawImage(image, 76, 126 - rise * 34, 208, 312); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = invention * .3; ctx.drawImage(image, 72, 122 - rise * 34, 216, 324); ctx.restore(); }
+  const revelation = clamp((t - .5) * 13) * clamp(1 - (t - .66) * 8);
+  if (revelation > 0) { ctx.save(); ctx.translate(180, 286); ctx.globalCompositeOperation = "screen"; for (let ray = 0; ray < 30; ray++) { const angle = ray * Math.PI * 2 / 30; ctx.globalAlpha = revelation * (.25 + (ray % 4) * .12); ctx.strokeStyle = ray % 3 ? "#74e7ff" : "#ffffff"; ctx.lineWidth = ray % 5 === 0 ? 5 : 2; ctx.beginPath(); ctx.moveTo(Math.cos(angle) * 28, Math.sin(angle) * 28); ctx.lineTo(Math.cos(angle) * (150 + ray % 4 * 12), Math.sin(angle) * (150 + ray % 4 * 12)); ctx.stroke(); } ctx.restore(); }
+  const transition = ease((t - .64) * 5); if (transition > 0) { const flash = ctx.createRadialGradient(180, 292, 5, 180, 292, 290); flash.addColorStop(0, `rgba(255,255,255,${transition * .96})`); flash.addColorStop(.36, `rgba(97,225,255,${transition * .7})`); flash.addColorStop(1, `rgba(4,8,22,${transition * .98})`); ctx.fillStyle = flash; ctx.fillRect(0, 0, WIDTH, HEIGHT); }
+  drawTitle(ctx, ease((t - .72) * 5), ["THE OTHERWORLDER", "ARRIVES"], "#7ceaff", "MAGIC BECAME SCIENCE - A NEW AGE BEGAN");
 }
 
 function renderParadox(ctx: CanvasRenderingContext2D, elapsed: number, image: HTMLImageElement | null) {
@@ -195,10 +217,10 @@ export default function ReturnerEndingPreviewPage() {
 
   const solo = mode === "solo";
   return <main className={`${styles.previewPage} ${embedded ? styles.embedded : ""}`}>
-    <section className={styles.stage} aria-label={solo ? "The Otherworlder Awakens ending preview" : "Otherworlders' Compete rival duel ending preview"}>
+    <section className={styles.stage} aria-label={solo ? "The Otherworlder Arrives ending preview" : "Otherworlders' Compete rival duel ending preview"}>
       <canvas ref={canvasRef} width={WIDTH} height={HEIGHT}/><div className={styles.scanlines}/>
       {!embedded && finished && <button className={styles.stageReplay} type="button" onClick={() => { window.location.href = `${ASSET_BASE}/`; }}>PLAY AGAIN?</button>}
     </section>
-    {!embedded && <aside className={styles.controls}><span>SECRET ENDING · CANVAS SEQUENCE</span><strong>{solo ? "THE OTHERWORLDER AWAKENS" : "OTHERWORLDERS' COMPETE"}</strong><p>{solo ? "An unused otherworlder draws his sword and crosses from his school life into another world." : "Two otherworlders remember the same future. Only one will claim it."}</p><button type="button" onClick={() => setReplay(value => value + 1)}>REPLAY</button></aside>}
+    {!embedded && <aside className={styles.controls}><span>SECRET ENDING - CANVAS SEQUENCE</span><strong>{solo ? "THE OTHERWORLDER ARRIVES" : "OTHERWORLDERS' COMPETE"}</strong><p>{solo ? "Knowledge from another world transformed the kingdom. Steel became engines, magic became science, and a new technological age began." : "Two otherworlders remember the same future. Only one will claim it."}</p><button type="button" onClick={() => setReplay(value => value + 1)}>REPLAY</button></aside>}
   </main>;
 }

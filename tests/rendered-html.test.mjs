@@ -135,7 +135,8 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /radius: tower\.category === "triple" \? MAGE_BLAST_RADIUS/);
   assert.match(page, /radius = MAGE_BLAST_RADIUS/);
   assert.match(page, /straightFlush:[^\n]+base: \[224\.4, RANGE_PER_CELL \* 5, \.732\]/);
-  assert.match(page, /category === "fourKind" \|\| category === "straightFlush"\)\s*return 3/);
+  assert.match(page, /\["fourKind", "straightFlush", "triplePair", "backStraight", "mountain", "sevenStraight"\]\.includes\(category\)\)\s*return 4/);
+  assert.match(page, /\["royalFlush", "fiveKind", "doubleTriple", "backStraightFlush"\]\.includes\(category\)\)\s*return 5/);
   assert.match(page, /case "straightFlush": return "매우 강한 단일 피해 · 사거리 5칸"/);
   assert.match(page, /case "royalFlush": return "전역 지속 피해"/);
   assert.doesNotMatch(page, /if \(tower\.category === "straightFlush"\)/);
@@ -145,7 +146,7 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /const VISIBLE_MAX_WAVE = 200/);
   assert.match(page, /const HIDDEN_WAVE = 201/);
   assert.match(page, /const MAX_WAVE = HIDDEN_WAVE/);
-  assert.match(page, /const HIDDEN_BOSS_HP = 5000000/);
+  assert.match(page, /const HIDDEN_BOSS_HP = 25000000/);
   assert.match(page, /const MAX_MONSTER_HP_MULTIPLIER = 2/);
   assert.match(page, /hidden-demon-lord\.png/);
   assert.match(page, /NORMAL_HP_DIFFICULTY_STEPS = \[\[10, 1\.3983\].+\[100, 4\.1578\].+\[200, 4\.9316\]\]/);
@@ -163,10 +164,12 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(page, /function normalMonsterHpScaleForWave\(wave: number\) \{ return wave >= 90 \? \.9 : 1; \}/);
   assert.match(page, /const NORMAL_MONSTER_HP_MULTIPLIER = 1\.5/);
   assert.match(page, /function lateNormalMonsterHpScaleForWave\(wave: number\)[^\n]+return 1 \+ 2 \* Math\.pow\(progress, 1\.15\)/);
+  assert.match(page, /function lateWaveFortyPercentScale\(wave: number\)[^\n]+return 1 \+ \.4 \* progress/);
   assert.match(page, /function bossHpScaleForWave\(wave: number\) \{ return wave < 50 \? 1 : 1 \+ 2 \* Math\.min\(1, \(wave - 50\) \/ \(HIDDEN_WAVE - 50\)\); \}/);
   assert.match(page, /function lateBossHpScaleForWave\(wave: number\)[^\n]+return 1 \+ \.2 \* Math\.pow\(progress, 1\.35\)/);
-  assert.match(page, /normalMonsterHpScaleForWave\(wave\) \* NORMAL_MONSTER_HP_MULTIPLIER \* lateNormalMonsterHpScaleForWave\(wave\)/);
-  assert.match(page, /return Math\.round\(baseHp \* bossHpScaleForWave\(wave\) \* lateBossHpScaleForWave\(wave\)\)/);
+  assert.match(page, /normalMonsterHpScaleForWave\(wave\) \* NORMAL_MONSTER_HP_MULTIPLIER \* lateNormalMonsterHpScaleForWave\(wave\) \* lateWaveFortyPercentScale\(wave\)/);
+  assert.match(page, /if \(wave === HIDDEN_WAVE\) return HIDDEN_BOSS_HP/);
+  assert.match(page, /return Math\.round\(baseHp \* bossHpScaleForWave\(wave\) \* lateBossHpScaleForWave\(wave\) \* lateWaveFortyPercentScale\(wave\)\)/);
   assert.match(page, /isHiddenWave \|\| wave % 10 === 0 \? 1 : 30/);
   assert.match(page, /hidden: hiddenSpawn/);
   assert.match(page, /e\.hidden \? "hidden-boss"/);
@@ -396,7 +399,9 @@ test("현재 전투·연출·모바일 규칙을 고정한다", async () => {
   assert.match(css, /button\.paused\) \.field-unit-actions button\.sell/);
   assert.doesNotMatch(page, /earlyHpMultiplier|earlySpawnMultiplier|hardRamp/);
   assert.match(page, /enemy\.boss \? 20 : 1/);
-  assert.match(page, /const APP_VERSION = "v0\.2016"/);
+  assert.match(page, /const APP_VERSION = "v0\.3001"/);
+  assert.match(css, /tier-dot\.tier-4/);
+  assert.match(css, /tier-dot\.tier-5/);
   assert.match(page, /className="mobile-barracks-sell"/);
   assert.match(css, /left:calc\(50vw - 49px\)/);
   assert.match(css, /inventory-list::after/);

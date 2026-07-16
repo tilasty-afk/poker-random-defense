@@ -5,7 +5,7 @@ import HiddenWaveIntro from "./hidden-wave-intro";
 import { LOCALE_LABEL, LOCALE_ORDER, MONSTER_NAMES, TRAITS, TUTORIALS, UI, roleCopy, term, type Locale } from "./i18n";
 type Suit = "spade" | "heart" | "diamond" | "club";
 type Category = "high" | "pair" | "twoPair" | "triplePair" | "triple" | "backStraight" | "straight" | "mountain" | "flush" | "sevenStraight" | "fullHouse" | "doubleTriple" | "fourKind" | "straightFlush" | "backStraightFlush" | "royalFlush" | "fiveKind" | "fourFullHouse" | "sixKind" | "sevenKind";
-type Tier = 1 | 2 | 3;
+type Tier = 1 | 2 | 3 | 4 | 5;
 type Card = {
     id: string;
     rank: number;
@@ -160,12 +160,12 @@ const GRID_SIZE = 12;
 const VISIBLE_MAX_WAVE = 200;
 const HIDDEN_WAVE = 201;
 const MAX_WAVE = HIDDEN_WAVE;
-const HIDDEN_BOSS_HP = 5000000;
+const HIDDEN_BOSS_HP = 25000000;
 const HIDDEN_BOSS_IMAGE = `${ASSET_BASE}/sprites/enemies/hidden-demon-lord.png`;
 const MAX_MONSTER_HP_MULTIPLIER = 2;
 const NORMAL_MONSTER_HP_MULTIPLIER = 1.5;
 const MAX_ATTACK_SPEED_LEVEL = 30;
-const APP_VERSION = "v0.2016";
+const APP_VERSION = "v0.3001";
 const BALANCE = { baseHp: 100, hpPerWave: .04, hpGrowth: 1.028, baseSpeed: .76, speedPerWave: .003, maxSpeed: 1.55, damageScale: .24, bossMoveScale: .58, spawnInterval: 600 } as const;
 const NORMAL_HP_DIFFICULTY_STEPS = [[10, 1.3983], [20, 1.601], [30, 1.9387], [40, 2.4891], [50, 3.2002], [60, 3.7484], [70, 4.1104], [80, 4.2995], [90, 4.2814], [100, 4.1578], [110, 4.9272], [120, 5.0028], [130, 5.0434], [140, 5.0998], [150, 5.1259], [160, 5.1645], [170, 5.1768], [180, 5.1671], [190, 5.0801], [200, 4.9316]] as const;
 const BOSS_HP_BY_WAVE: Record<number, number> = { 10: 27000, 20: 48000, 30: 85000, 40: 145000, 50: 233000, 60: 336000, 70: 440000, 80: 556000, 90: 708000, 100: 996000, 110: 1080000, 120: 1160000, 130: 1250000, 140: 1370000, 150: 1500000, 160: 1600000, 170: 1700000, 180: 1800000, 190: 1900000, 200: 2000000 };
@@ -210,9 +210,10 @@ function hpDifficultyForWave(wave: number) { const upperIndex = NORMAL_HP_DIFFIC
 function baseHpForWave(wave: number) { const earlyGrowthWaves = Math.min(wave, 100) - 1, lateGrowthWaves = Math.max(0, wave - 100); return BALANCE.baseHp * (1 + wave * BALANCE.hpPerWave) * Math.pow(BALANCE.hpGrowth, earlyGrowthWaves) * Math.pow(1.005, lateGrowthWaves) * hpDifficultyForWave(wave); }
 function normalMonsterHpScaleForWave(wave: number) { return wave >= 90 ? .9 : 1; }
 function lateNormalMonsterHpScaleForWave(wave: number) { const progress = Math.max(0, Math.min(1, (wave - 101) / (199 - 101))); return 1 + 2 * Math.pow(progress, 1.15); }
+function lateWaveFortyPercentScale(wave: number) { const progress = Math.max(0, Math.min(1, (wave - 101) / (VISIBLE_MAX_WAVE - 101))); return 1 + .4 * progress; }
 function bossHpScaleForWave(wave: number) { return wave < 50 ? 1 : 1 + 2 * Math.min(1, (wave - 50) / (HIDDEN_WAVE - 50)); }
 function lateBossHpScaleForWave(wave: number) { const progress = Math.max(0, Math.min(1, (wave - 101) / (HIDDEN_WAVE - 101))); return 1 + .2 * Math.pow(progress, 1.35); }
-function bossHpForWave(wave: number) { const baseHp = wave === HIDDEN_WAVE ? HIDDEN_BOSS_HP : BOSS_HP_BY_WAVE[wave] ?? BOSS_HP_BY_WAVE[VISIBLE_MAX_WAVE]; return Math.round(baseHp * bossHpScaleForWave(wave) * lateBossHpScaleForWave(wave)); }
+function bossHpForWave(wave: number) { if (wave === HIDDEN_WAVE) return HIDDEN_BOSS_HP; const baseHp = BOSS_HP_BY_WAVE[wave] ?? BOSS_HP_BY_WAVE[VISIBLE_MAX_WAVE]; return Math.round(baseHp * bossHpScaleForWave(wave) * lateBossHpScaleForWave(wave) * lateWaveFortyPercentScale(wave)); }
 function spawnIntervalForWave(_wave: number) { return BALANCE.spawnInterval; }
 function goldPerKillForWave(_wave: number) { return 1; }
 function formatTimer(seconds: number) { return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`; }
@@ -221,7 +222,7 @@ const SELL_VALUES: Record<Category, [
     number,
     number
 ] | number> = { high: [2, 3, 4], pair: [3, 5, 7], twoPair: [5, 8, 11], triplePair: 30, triple: [10, 13, 15], backStraight: 30, straight: [15, 17, 20], mountain: 40, flush: [20, 30, 40], sevenStraight: 80, fullHouse: [25, 35, 50], doubleTriple: 150, fourKind: 100, straightFlush: 200, backStraightFlush: 250, royalFlush: 350, fiveKind: 500, fourFullHouse: 0, sixKind: 0, sevenKind: 0 };
-function sellValue(unit: Result) { const value = SELL_VALUES[unit.category]; return typeof value === "number" ? value : value[(unit.tier || 1) - 1]; }
+function sellValue(unit: Result) { const value = SELL_VALUES[unit.category]; return typeof value === "number" ? value : value[Math.min(3, unit.tier || 1) - 1]; }
 const STARTING_HAND: Card[] = [{ id: "s1", rank: 2, suit: "spade" }, { id: "s2", rank: 2, suit: "heart" }, { id: "s3", rank: 5, suit: "diamond" }, { id: "s4", rank: 5, suit: "club" }, { id: "s5", rank: 9, suit: "spade" }, { id: "s6", rank: 11, suit: "diamond" }, { id: "s7", rank: 13, suit: "club" }];
 function rankLabel(rank: number) { return rank === 15 ? "JOKER" : rank === 14 ? "A" : rank === 13 ? "K" : rank === 12 ? "Q" : rank === 11 ? "J" : String(rank); }
 function shuffled<T>(items: T[]) { const result = [...items]; for (let index = result.length - 1; index > 0; index--) { const swapIndex = Math.floor(Math.random() * (index + 1)); [result[index], result[swapIndex]] = [result[swapIndex], result[index]]; } return result; }
@@ -232,9 +233,10 @@ function buildDeck(prefix = "deck") { const deck: Card[] = []; for (let rank = 2
 function dealHand(): Card[] { return shuffled(buildDeck(`deal-${Date.now()}`)).slice(0, 7).map((card, index) => ({ ...card, id: `${card.id}-${index}-${Math.random().toString(36).slice(2)}` })); }
 function drawFromDeck(count: number, kept: Card[]) { const excluded = new Set(kept.map(cardKey)); return shuffled(buildDeck(`draw-${Date.now()}`).filter(card => !excluded.has(cardKey(card)))).slice(0, count).map((card, index) => ({ ...card, id: `${card.id}-${index}-${Math.random().toString(36).slice(2)}` })); }
 function pointOnPath(progress: number) { const loop = ((progress % 1) + 1) % 1, p = loop * (PATH.length - 1), i = Math.min(PATH.length - 2, Math.floor(p)), t = p - i; return { x: PATH[i].x + (PATH[i + 1].x - PATH[i].x) * t, y: PATH[i].y + (PATH[i + 1].y - PATH[i].y) * t }; }
-function tierFor(category: Category, power: number): Tier | null { if (["triplePair", "backStraight", "mountain", "sevenStraight", "doubleTriple", "backStraightFlush", "royalFlush", "fiveKind", "fourFullHouse", "sixKind", "sevenKind"].includes(category))
-    return null; if (category === "fourKind" || category === "straightFlush")
-    return 3; const first = category === "high" ? 8 : 6, second = category === "high" ? 11 : 10; return power <= first ? 1 : power <= second ? 2 : 3; }
+function tierFor(category: Category, power: number): Tier | null { if (["fourKind", "straightFlush", "triplePair", "backStraight", "mountain", "sevenStraight"].includes(category))
+    return 4; if (["royalFlush", "fiveKind", "doubleTriple", "backStraightFlush"].includes(category))
+    return 5; if (["fourFullHouse", "sixKind", "sevenKind"].includes(category))
+    return null; const first = category === "high" ? 8 : 6, second = category === "high" ? 11 : 10; return power <= first ? 1 : power <= second ? 2 : 3; }
 const CATEGORY_WEIGHT: Record<Category, number> = {
     high: 0, pair: 1, twoPair: 2, triplePair: 3, triple: 4, backStraight: 5, straight: 6, mountain: 7, flush: 8, sevenStraight: 9, fullHouse: 10, doubleTriple: 11, fourKind: 12, straightFlush: 13, backStraightFlush: 14, royalFlush: 15, fiveKind: 16, fourFullHouse: 17, sixKind: 18, sevenKind: 19,
 };
@@ -405,7 +407,7 @@ export default function Home() {
     useEffect(() => { document.documentElement.lang = locale; if (languageChosen)
         setMessage(copy.pausedRecruit); }, [locale, languageChosen, copy.pausedRecruit]);
     useEffect(() => { if (!running || gameOver || spawned >= waveTarget || wave > MAX_WAVE)
-        return; const timer = window.setInterval(() => { const bossSpawn = isBossWave && spawned === 0, hiddenSpawn = isHiddenWave && bossSpawn, baseMonsterHp = Math.round(baseHpForWave(wave) * Math.min(monster.hp, MAX_MONSTER_HP_MULTIPLIER) * normalMonsterHpScaleForWave(wave) * NORMAL_MONSTER_HP_MULTIPLIER * lateNormalMonsterHpScaleForWave(wave)), hp = bossSpawn ? bossHpForWave(wave) : baseMonsterHp, speed = Math.min(BALANCE.maxSpeed, (BALANCE.baseSpeed + wave * BALANCE.speedPerWave) * monster.speed), reward = goldPerKillForWave(wave) * (bossSpawn ? 20 : 1); if (bossSpawn) {
+        return; const timer = window.setInterval(() => { const bossSpawn = isBossWave && spawned === 0, hiddenSpawn = isHiddenWave && bossSpawn, baseMonsterHp = Math.round(baseHpForWave(wave) * Math.min(monster.hp, MAX_MONSTER_HP_MULTIPLIER) * normalMonsterHpScaleForWave(wave) * NORMAL_MONSTER_HP_MULTIPLIER * lateNormalMonsterHpScaleForWave(wave) * lateWaveFortyPercentScale(wave)), hp = bossSpawn ? bossHpForWave(wave) : baseMonsterHp, speed = Math.min(BALANCE.maxSpeed, (BALANCE.baseSpeed + wave * BALANCE.speedPerWave) * monster.speed), reward = goldPerKillForWave(wave) * (bossSpawn ? 20 : 1); if (bossSpawn) {
         bossWaveReleaseRef.current = gameClockRef.current + 60000;
         setBossWaveHold(60);
         gameAudioRef.current?.play("boss");
@@ -842,7 +844,7 @@ export default function Home() {
     {endingActive && <div className="seven-card-ending-overlay"><iframe title="Seven Card Hidden Ending" src={`${ASSET_BASE}/seven-card-preview/?embedded=1`}/><button type="button" onClick={restart}>PLAY AGAIN?</button></div>}
     {saintessEndingActive && <div className="seven-card-ending-overlay long-ending-overlay"><iframe title="Saintess Hidden Ending" src={`${ASSET_BASE}/saintess-ending-preview/?embedded=1&locale=${locale}`}/><button type="button" onClick={restart}>PLAY AGAIN?</button></div>}
     {directEndingActive && <div className="seven-card-ending-overlay long-ending-overlay"><iframe title="ABSOLUTE TRIUMPH" src={`${ASSET_BASE}/demon-triumph-preview/?embedded=1&locale=${locale}`}/><button type="button" onClick={restart}>PLAY AGAIN?</button></div>}
-    {returnerEndingActive && <div className="seven-card-ending-overlay long-ending-overlay"><iframe title={returnerEndingMode === "solo" ? "THE OTHERWORLDER AWAKENS" : "OTHERWORLDERS' COMPETE"} src={`${ASSET_BASE}/returner-ending-preview/?embedded=1&mode=${returnerEndingMode}`}/><button type="button" onClick={restart}>PLAY AGAIN?</button></div>}
+        {returnerEndingActive && <div className="seven-card-ending-overlay long-ending-overlay"><iframe title={returnerEndingMode === "solo" ? "THE OTHERWORLDER ARRIVES" : "OTHERWORLDERS' COMPETE"} src={`${ASSET_BASE}/returner-ending-preview/?embedded=1&mode=${returnerEndingMode}`}/><button type="button" onClick={restart}>PLAY AGAIN?</button></div>}
     <footer className="creator-credit">Made by Arlandstrm with AI · {APP_VERSION}</footer>
   </section></main>;
 }
